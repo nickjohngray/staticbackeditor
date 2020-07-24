@@ -2,11 +2,13 @@
   "name": "staticbackeditor",
   "version": "1.0.0",
   "description": "An Editor for Static Back",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
-    "clone-repo": "nodemon clone-repo.js"
+    "clone-repo": "nodemon src/clone-repo.js",
+    "start": "tsc && nodemon dist/app.js"
+
   },
   "author": "Nick Gray",
   "license": "ISC",
