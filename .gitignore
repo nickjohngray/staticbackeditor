@@ -1,0 +1,16 @@
+.idea/
+*.iml
+.DS_Store
+node_modules
+artifacts
+dist
+tmp
+.awcache
+*.log
+.yarnrc
+.yarn.lock
+coverage
+.history
+.vscode/
+doomroom
+tmp.txt
