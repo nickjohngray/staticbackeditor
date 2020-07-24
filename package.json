@@ -5,14 +5,14 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js",
+    "dev": "nodemon src/server.js",
     "clone-repo": "nodemon src/clone-repo.js",
     "start": "tsc && nodemon dist/app.js"
-
   },
   "author": "Nick Gray",
   "license": "ISC",
   "dependencies": {
+    "@types/body-parser": "^1.19.0",
     "body-parser": "^1.19.0",
     "express": "4.17.1",
     "mongodb": "^3.5.9",
