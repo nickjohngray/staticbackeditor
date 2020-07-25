@@ -8,3 +8,15 @@
     <input type="text" placeholder="repo name" name="repo_name">
     <button type="submit">Clone Repo</button>
 </form>
+
+ <form action="/commit" method="POST">
+     <input type="text" placeholder="repo name" name="repo_name">
+     <input type="text" placeholder="commit message" name="commit_message">
+     <input type="text" placeholder="file name[s], seperated by comma" name="file_names">
+     <button type="submit">Commit</button>
+ </form>
+
+ <form action="/push-to-master" method="POST">
+     <input type="text" placeholder="repo name" name="repo_name">
+     <button type="submit">Push to master</button>
+ </form>

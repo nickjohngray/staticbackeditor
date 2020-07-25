@@ -1,26 +1,51 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 
-const options: SimpleGitOptions = {
-    baseDir: process.cwd(),
-    binary: 'git',
-    maxConcurrentProcesses: 6,
-};
-
-const git: SimpleGit = simpleGit(options);
-
 export async function  cloneRepo(repoURL: string) {
     try{
-    await git.clone(repoURL)
+        const options: SimpleGitOptions = {
+            baseDir: process.cwd(),
+            binary: 'git',
+            maxConcurrentProcesses: 6,
+        };
+
+        const git: SimpleGit = simpleGit(options)
+        await git.clone(repoURL)
     } catch(e) {
         console.log('error====' + e)
-        throw e;
+        throw e
     }
 }
 
-export async function  commit(message: string) {
+export async function  commit(repoName: string, message: string, ...fileNames: string[]) {
     try{
-        await git.commit(message);
+        const options: SimpleGitOptions = {
+            baseDir: process.cwd() + '/' + repoName,
+            binary: 'git',
+            maxConcurrentProcesses: 6,
+        };
+
+        const git: SimpleGit = simpleGit(options)
+        await git.add(fileNames)
+        await git.commit(message)
     } catch(e) {
         console.log('error====' + e)
+        throw e
+    }
+}
+
+export async function  pushToMaster(repoName: string) {
+    try{
+        const options: SimpleGitOptions = {
+            baseDir: process.cwd() + '/' + repoName,
+            binary: 'git',
+            maxConcurrentProcesses: 6,
+        }
+
+        const git: SimpleGit = simpleGit(options)
+        await git.push('origin', 'master')
+
+    } catch(e) {
+        console.log('error====' + e)
+        throw e
     }
 }
