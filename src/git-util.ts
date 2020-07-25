@@ -1,6 +1,6 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 
-export async function  cloneRepo(repoURL: string) {
+export  const cloneRepo  = async  (repoURL: string)  =>  {
     try{
         const options: SimpleGitOptions = {
             baseDir: process.cwd(),
@@ -16,7 +16,7 @@ export async function  cloneRepo(repoURL: string) {
     }
 }
 
-export async function  commit(repoName: string, message: string, ...fileNames: string[]) {
+export const  commit = async (repoName: string, message: string, ...fileNames: string[]) => {
     try{
         const options: SimpleGitOptions = {
             baseDir: process.cwd() + '/' + repoName,
@@ -33,7 +33,7 @@ export async function  commit(repoName: string, message: string, ...fileNames: s
     }
 }
 
-export async function  pushToMaster(repoName: string) {
+export  const  pushToMaster = async (repoName: string) => {
     try{
         const options: SimpleGitOptions = {
             baseDir: process.cwd() + '/' + repoName,
