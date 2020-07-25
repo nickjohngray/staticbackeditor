@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import {indexRouter} from "./routes/index"
+import {indexRouter} from "./routes"
 import {commitRouter} from "./routes/commit"
 import {cloneRepoRouter} from "./routes/clone-repo"
 import {pushToMasterRouter} from "./routes/push-to-master"
