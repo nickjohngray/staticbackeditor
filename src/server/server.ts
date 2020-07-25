@@ -5,6 +5,7 @@ import {commitRouter} from "./routes/commit"
 import {cloneRepoRouter} from "./routes/clone-repo"
 import {pushToMasterRouter} from "./routes/push-to-master"
 import * as path from "path";
+import {loginRouter} from "./routes/login";
 
 const app = express()
 const port = 3000
@@ -16,6 +17,7 @@ app.use(indexRouter)
 app.use(commitRouter)
 app.use(cloneRepoRouter)
 app.use(pushToMasterRouter)
+app.use(loginRouter)
 
 app.listen(port, err => {
     if (err) {
