@@ -1,6 +1,6 @@
 import {commit} from "../git-util";
 import {fieldsAreEmptyMessage} from "../static";
-import {fieldsOk} from "../util";
+import {fieldsOk} from "../../util";
 import express from 'express'
 
 const router = express.Router();

@@ -1,5 +1,5 @@
 
-import {fieldsOk} from "../util"
+import {fieldsOk} from "../../util"
 import {fieldsAreEmptyMessage, repoAccount} from "../static"
 import express from 'express'
 const router = express.Router();
@@ -12,7 +12,7 @@ router.post('/login', async (req, res) => {
         res.send(fieldsAreEmptyMessage)
         return;
     }
-    res.send('going to log in')
+    res.send('going to log in HERE XXXX')
 
     try {
         //await cloneRepo(repoAccount + repoName)

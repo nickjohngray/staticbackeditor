@@ -7,19 +7,19 @@ import {pushToMasterRouter} from "./routes/push-to-master"
 import * as path from "path";
 import {loginRouter} from "./routes/login";
 
-const app = express()
-const port = 3000
+const server = express()
+const port = 3001
 
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(express.static(path.join(__dirname, 'public')))
+server.use(bodyParser.urlencoded({extended: true}))
+server.use(express.static(path.join(__dirname, 'public')))
 
-app.use(indexRouter)
-app.use(commitRouter)
-app.use(cloneRepoRouter)
-app.use(pushToMasterRouter)
-app.use(loginRouter)
+server.use(indexRouter)
+server.use(commitRouter)
+server.use(cloneRepoRouter)
+server.use(pushToMasterRouter)
+server.use(loginRouter)
 
-app.listen(port, err => {
+server.listen(port, err => {
     if (err) {
         return console.error(err)
     }
