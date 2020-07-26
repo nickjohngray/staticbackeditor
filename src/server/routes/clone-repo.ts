@@ -1,5 +1,5 @@
 import {cloneRepo} from "../git-util"
-import {fieldsOk} from "../../util"
+import {fieldsOk} from "../../client/util"
 import {fieldsAreEmptyMessage, repoAccount} from "../static"
 import express from 'express'
 const router = express.Router();

@@ -1,5 +1,5 @@
 
-import {fieldsOk} from "../../util"
+import {fieldsOk} from "../../client/util"
 import {fieldsAreEmptyMessage, repoAccount} from "../static"
 import express from 'express'
 const router = express.Router();
@@ -9,17 +9,11 @@ router.post('/login', async (req, res) => {
     const password: string = req.body.password
 
     if (!fieldsOk(email, password)) {
-        res.send(fieldsAreEmptyMessage)
+        res.json( {json: {message: fieldsAreEmptyMessage} } )
         return;
     }
-    res.send('going to log in HERE XXXX')
+    res.json( {json: { message: 'ABout to log you in'}} )
 
-    try {
-        //await cloneRepo(repoAccount + repoName)
-        //res.send('just cloned:' + repoName)
-    } catch (e) {
-        //res.send('bad:' + e)
-    }
 })
 
 export  {router as loginRouter}

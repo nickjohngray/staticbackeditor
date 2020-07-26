@@ -10,14 +10,18 @@ export const Login = () => {
 
         if (fieldsOk(email, password)) {
             try {
-                await axios.post('/login', {email, password})
+               const response = await axios.post('/api/login', {email, password})
+                alert(response.data.json.message)
+                console.log(response)
             } catch (e) {
-                alert(e);
+                alert(e)
             }
+        } else {
+            alert('fill in all fields')
         }
     }
-    return (<div>
-        <form onSubmit={login} action="/login" method="POST">
+    return (<div>xs
+        <form onSubmit={login} action="/api/login" method="POST">
             <input value={email} onChange={(e) => {
                 setEmail(e.target.value)
             }} type="text" placeholder="email" name="email"/>
