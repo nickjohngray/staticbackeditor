@@ -20,5 +20,9 @@
     "./src/client/*",
     "./src/client/types/**/*.d.ts",
     "./src/server/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }
