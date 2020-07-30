@@ -10,9 +10,6 @@ import os from 'os'
 import mongodb from 'mongodb'
 import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware';
 
-const MongoClient = mongodb.MongoClient;
-
-
 const app = express()
 const port = 8050;
 
@@ -49,16 +46,6 @@ router.route('/test')
     res.header("Access-Control-Allow-Origin", "*");
     next()
 });*/
-
-
-/*app.use('/api',
-    createProxyMiddleware({ target: 'localhost:8050', changeOrigin: true })
-
-);*/
-
-
-// http://localhost:3000/api/foo/bar -> http://www.example.org/api/foo/bar
-
 
 app.use('/api', router)
 const API = '/api';

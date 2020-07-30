@@ -11,10 +11,14 @@ export const Login = () => {
         if (fieldsOk(email, password)) {
             try {
                const response = await axios.post('/api/login', {email, password})
-                alert(response.data.json.message)
+                if(response.data.error) {
+                    alert(response.data.error);
+                    return;
+                }
+                alert(response.data.message + ', ' + response.data.repo)
                 console.log(response)
             } catch (e) {
-                alert(e)
+                alert(e);
             }
         } else {
             alert('fill in all fields')
