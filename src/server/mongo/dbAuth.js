@@ -6,7 +6,8 @@ module.exports = {
    * Authentication: Get Signed In User Data
    * Inputs: username
    */
-  getSignInUser: async (username) => (await (() => (
+  getSignInUser: async (username) => (
+    await (() => (
         new Promise((resolve, reject) => (
             clientConnect()
               .then(client => {

@@ -1,6 +1,6 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 
-export  const cloneRepo  = async  (repoURL: string)  =>  {
+export  const cloneRepo  = async  (repoURL: string)   =>  {
     try{
         const options: SimpleGitOptions = {
             baseDir: process.cwd(),
@@ -27,6 +27,7 @@ export const  commit = async (repoName: string, message: string, ...fileNames: s
         const git: SimpleGit = simpleGit(options)
         await git.add(fileNames)
         await git.commit(message)
+
     } catch(e) {
         console.log('error====' + e)
         throw e

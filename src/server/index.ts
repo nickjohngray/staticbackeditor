@@ -9,6 +9,7 @@ import {loginRouter} from "./routes/login"
 import os from 'os'
 import mongodb from 'mongodb'
 import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware';
+import {saveManifest} from "./routes/save-manifest";
 
 const app = express()
 const port = 8050;
@@ -53,6 +54,7 @@ app.use(API, commitRouter)
 app.use(API, cloneRepoRouter)
 app.use(API, pushToMasterRouter)
 app.use(API, loginRouter)
+app.use(API, saveManifest)
 app.use(API, (req, res) => {
 });
 
