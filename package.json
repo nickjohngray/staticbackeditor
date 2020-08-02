@@ -11,8 +11,7 @@
     "server2": "nodemon --watch '**/*.ts' --exec 'ts-node' src/server/index.ts",
     "server3": "tsc-watch --onSuccess \"node ./dist/server/index.js\"",
     "dev": "concurrently \"npm run server3\" \"npm run client\"",
-    "tsc-watches-but-brakes-proxy": "tsc -w && nodemon dist/server/index.js",
-    "server_fucked": "ts-node src/server/index.ts"
+    "tsc-watches-but-brakes-proxy": "tsc -w && nodemon dist/server/index.js"
   },
   "author": "Nick Gray",
   "license": "Apache License 2.0",

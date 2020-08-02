@@ -85,7 +85,7 @@ module.exports = {
       filename: './css/[name].css',
       chunkFilename: './css/[id].css'
     }),
-   /* new CopyPlugin({
+    new CopyPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, 'src', 'client'),
@@ -93,6 +93,6 @@ module.exports = {
         }
       ],
 
-    })*/
+    })
   ]
 };
