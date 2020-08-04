@@ -1,10 +1,13 @@
 import React from 'react';
 import {Login} from "./components/login";
+import Tree from "./components/Tree";
+
 
 function App() {
   return (
     <div className="App">
-     <Login/>
+        <Tree />
+      {/*  <Login/>*/}
     </div>
   );
 }

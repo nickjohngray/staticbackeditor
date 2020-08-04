@@ -7,10 +7,7 @@ import {pushToMasterRouter} from "./routes/push-to-master"
 import * as path from "path";
 import {loginRouter} from "./routes/login"
 import os from 'os'
-import mongodb from 'mongodb'
-import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware';
 import {saveManifest} from "./routes/save-manifest";
-
 const app = express()
 const port = 8050;
 
@@ -42,11 +39,6 @@ router.route('/test')
     .delete(bodyParser.json(), function (req, res) {
         res.json(req.body);
     });
-
-/*app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    next()
-});*/
 
 app.use('/api', router)
 const API = '/api';

@@ -22,7 +22,8 @@
     "./src/server/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+
+    "**/*.spec.ts",
+    "/node_modules/*"
   ]
 }

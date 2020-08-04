@@ -1,1 +1,2 @@
-export { default } from './Tree.tsx'
+export { default } from './Tree';
+
