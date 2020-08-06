@@ -5,7 +5,7 @@ interface State {
     data: {}
 }
 
-export class Layout extends React.Component< {}, State > {
+export class JsonTextEditor extends React.Component< {}, State > {
 
     constructor(props) {
         super(props);

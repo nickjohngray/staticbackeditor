@@ -1,0 +1,27 @@
+header {
+    display: flex;
+    flex-direction: row;
+    background: #000000d6;
+    justify-content: center;
+}
+nav {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    background: black;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+}
+
+nav a {
+    color: white
+}
+
+nav a:hover {
+    color: yellowgreen;
+}
+
+.link-active {
+    color: #ff0423;
+}
+

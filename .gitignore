@@ -12,3 +12,4 @@ tmp
 coverage
 .history
 .vscode/
+.npmrc

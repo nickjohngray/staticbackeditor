@@ -1,0 +1,61 @@
+.pages {
+    background: repeating-linear-gradient(45deg, #0000002b, transparent 100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page-and-button-controls {
+    display: flex;
+    min-width: 200px;
+}
+
+.page-name {
+    margin-left: 5px;
+}
+
+.page-button-movers {
+    padding-left:10px;
+    padding-right:10px;
+}
+
+.page-button-movers-placeholder {
+    min-width: 29px;
+    min-width: 27px;
+    appearance: button;
+    -webkit-writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-shadow: none;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    box-sizing: border-box;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+    padding: 1px 6px;
+    border-width: 2px;
+    border-style: outset;
+    border-image: initial;
+    opacity: 0;
+}
+
+.page-name {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+}
+
+
+
+

@@ -8,6 +8,7 @@ import * as path from "path";
 import {loginRouter} from "./routes/login"
 import os from 'os'
 import {saveManifest} from "./routes/save-manifest";
+import {testManifest} from "./routes/test_manifest";
 const app = express()
 const port = 8050;
 
@@ -40,6 +41,8 @@ router.route('/test')
         res.json(req.body);
     });
 
+
+
 app.use('/api', router)
 const API = '/api';
 app.use(API, commitRouter)
@@ -47,6 +50,7 @@ app.use(API, cloneRepoRouter)
 app.use(API, pushToMasterRouter)
 app.use(API, loginRouter)
 app.use(API, saveManifest)
+app.use(API, testManifest)
 app.use(API, (req, res) => {
 });
 

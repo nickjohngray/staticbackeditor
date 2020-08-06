@@ -12,6 +12,7 @@ const MongoClient = mongodb.MongoClient;
 const router = express.Router();
 
 router.post('/save-manifest', async (req, res) => {
+    console.log('in save-manifest')
     const email: string = req.body.email
     const data: string = req.body.data
     const repo: string = req.body.repo
