@@ -10,6 +10,7 @@ import {Home} from "../Home";
 import './Layout.css'
 import {Products} from "../Products";
 import {ErrorPage} from "../ErrorPage";
+import {NotFound} from "../NotFound";
 
 interface Props {
     changeURL: (url: IHistory) => void;
@@ -29,6 +30,9 @@ class Layout extends React.Component<Props, State>  {
     constructor(props) {
         super(props);
 
+
+        this.props.changeURL({URL: globalHistory.location.pathname});
+
         this.state = {
              links : [
                 { "name": "home", "path": "/"},
@@ -41,6 +45,7 @@ class Layout extends React.Component<Props, State>  {
 
     componentDidMount = () =>
     {
+
         globalHistory.listen((history: HistoryListenerParameter) => {
             this.props.changeURL({URL: history.location.pathname});
         });
@@ -66,6 +71,7 @@ class Layout extends React.Component<Props, State>  {
                         <Pages path="pages"/>
                         <ErrorPage path="error"/>
                         <Products path="products"/>
+                        <NotFound default />
                 </Router>
             </div>
             <footer>

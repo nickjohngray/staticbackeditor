@@ -64,8 +64,9 @@ module.exports = {
     port: 3000,
     open: true,
     proxy: {
-      '/api': 'http://localhost:8050'
+      '/api': 'http://localhost:8050',
     }
+
   },
   plugins: [
     new ExtractCssChunks({

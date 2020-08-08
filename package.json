@@ -4,12 +4,17 @@
   "description": "An Express, React with Typescript and Less boilerplate",
   "main": "src/server/index.js",
   "scripts": {
-    "build": "webpack --mode production",
-    "start": "npm run build && node src/server/index.js",
+    "build-server-dev": "webpack --mode development",
+    "build-server-prod": "webpack --mode production",
+    "start-server-prod": "npm run build-server-prod && node src/server/index.js",
+    "start-server-dev": "npm run build-server-dev && node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "tsc-watch --onSuccess \"node ./dist/server/index.js\"",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run build-server-dev\"  \"npm run server\" \"npm run client\""
   },
+
+
+
   "author": "Nick Gray",
   "license": "Apache License 2.0",
   "dependencies": {

@@ -59,21 +59,16 @@ class Pages extends  React.Component<Props, State> {
             }
         }
 
+        const pageIndexToMove = direction === 'up' ? pageIndex - 1 : pageIndex + 1
 
-        const pageIndexToMoveUp = direction === 'up' ? pageIndex - 1 : pageIndex + 1
-
-        const pageToMoveUp =  cloneDeep(pages[pageIndexToMoveUp]);
+        const pageToMoveUp =  cloneDeep(pages[pageIndexToMove]);
         // swap objects
-        pages[pageIndexToMoveUp] = pages[pageIndex]
+        pages[pageIndexToMove] = pages[pageIndex]
         pages[pageIndex] = pageToMoveUp
 
         this.setState({manifest: m})
 
 
-    }
-
-    moveDown = (pageName: string)=> {
-        alert('move down:' + pageName)
     }
 
     render = ()  => {
