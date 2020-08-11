@@ -1,9 +1,9 @@
 import React from 'react';
-import {Login} from "./components/login";
-import Tree from "./components/Tree";
+import Login from "./components/Login/login";
 import {Provider} from 'react-redux';
 import store from "./redux/store";
 import Layout from "./components/Layout/Layout";
+import './App.css'
 
 
 function App() {
@@ -11,9 +11,8 @@ function App() {
       <Provider store={store}>
       <div className="App">
 
-      {/*  <Tree />*/}
-      {/*  <Login/>*/}
-      <Layout />
+            <Layout />
+
     </div>
       </Provider>
   );

@@ -1,8 +1,8 @@
-import {createHistory, History} from '@reach/router';
+import {createHistory, History} from '@reach/router'
 // listen to the browser history
 
 //import {HistoryListener, HistoryListenerParameter, Link} from '@reach/router';
 
-const history: History = createHistory(window as any);
+const history: History = createHistory(window as any)
 
-export default history;
+export default history

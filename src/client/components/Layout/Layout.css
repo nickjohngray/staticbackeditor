@@ -25,3 +25,7 @@ nav a:hover {
     color: #ff0423;
 }
 
+.help_toggler{
+    position: fixed;
+    bottom: 0;
+}

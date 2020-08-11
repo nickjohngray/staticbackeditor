@@ -1,9 +1,9 @@
-import {pushToMaster} from "../git-util";
-import {fieldsOk} from "../../client/util";
-import {fieldsAreEmptyMessage} from "../static";
+import {pushToMaster} from '../git-util'
+import {fieldsOk} from '../../client/util'
+import {fieldsAreEmptyMessage} from '../static'
 import express from 'express'
 
-const router = express.Router();
+const router = express.Router()
 
 router.post('/push-to-master', async (req, res) => {
     const repoName: string = req.body.repo_name

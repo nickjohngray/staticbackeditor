@@ -1,4 +1,4 @@
-const { clientConnect, clientClose } = require('./dbMongo');
+const { clientConnect, clientClose } = require('./dbMongo')
 
 module.exports = {
 
@@ -24,9 +24,9 @@ module.exports = {
 
                       //validation would go here...
 
-                      clientClose(client);
-                      resolve(data[0]);
-                    });
+                      clientClose(client)
+                      resolve(data[0])
+                    })
                 }
               )
           )

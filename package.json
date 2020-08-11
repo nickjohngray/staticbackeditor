@@ -12,9 +12,6 @@
     "server": "tsc-watch --onSuccess \"node ./dist/server/index.js\"",
     "dev": "concurrently \"npm run build-server-dev\"  \"npm run server\" \"npm run client\""
   },
-
-
-
   "author": "Nick Gray",
   "license": "Apache License 2.0",
   "dependencies": {
@@ -25,8 +22,10 @@
     "@types/mongodb": "^3.5.25",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
+    "@types/redux-actions": "^2.6.1",
     "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -37,7 +36,7 @@
     "mongodb": "^3.5.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-redux": "^7.2.1",
+    "react-redux": "^7.0.3",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "simple-git": "^2.15.0"

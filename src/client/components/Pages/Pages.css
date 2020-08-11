@@ -1,9 +1,28 @@
-.pages {
+
+.pages_container{
     background: repeating-linear-gradient(45deg, #0000002b, transparent 100px);
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100vh;
+}
+
+.input-message{
+    position: absolute;
+    margin-left: 5px;
+}
+
+.tick {
+    margin-left: 5px;
+}
+
+.pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
+    max-height: 200px;
+    overflow: scroll;
 }
 
 .page {

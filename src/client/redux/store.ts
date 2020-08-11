@@ -1,9 +1,9 @@
 import {createStore} from 'redux';
 import reducer from './reducers'
 
-let reduxDevTools = {};
+let reduxDevTools = {}
 
-const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
 /*
  Load REDUX DEV tools!
@@ -13,10 +13,12 @@ const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'develo
  */
 if (isDev) {
     try {
-        reduxDevTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__();
+        reduxDevTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
     } catch (e) {}
 }
 
-const store = createStore(reducer, reduxDevTools);
+const store = createStore(reducer, reduxDevTools)
 
-export default store;
+export default store
+
+export type Istore = ReturnType<typeof reducer>

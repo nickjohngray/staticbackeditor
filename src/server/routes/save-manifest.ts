@@ -1,49 +1,35 @@
 import {fieldsOk} from "../../client/util"
-import {fieldsAreEmptyMessage, repoAccount} from "../static"
+import {fieldsAreEmptyMessage} from "../static"
 import express from 'express'
-import mongodb from 'mongodb'
 import {commit, pushToMaster} from "../git-util";
 import fs from 'fs';
-import {pushToMasterRouter} from "./push-to-master";
-
-
-const MongoClient = mongodb.MongoClient;
 
 const router = express.Router();
 
+const ErrorIn = 'Error in save-manifest.ts '
+
 router.post('/save-manifest', async (req, res) => {
-    console.log('in save-manifest')
-    const email: string = req.body.email
-    const data: string = req.body.data
-    const repo: string = req.body.repo
-    if (!fieldsOk(email, data, repo)) {
-        res.json({json: {message: fieldsAreEmptyMessage}})
+    const manifest: string = req.body.manifest
+    const repoName: string = req.body.repoName
+    if (!fieldsOk(manifest, repoName)) {
+        res.json({error: + ErrorIn +  fieldsAreEmptyMessage})
         return;
     }
     try {
-
-        const path = repo + '/manifest.json'
+        const path = repoName + '/manifest.json'
         if (await fs.existsSync(path)) {
             await fs.rmdirSync(path, {recursive: true})
         }
-        await fs.writeFileSync(path, data);
-        await commit(repo,'Static Back Editor 2','manifest.json')
-        await pushToMaster(repo)
-        res.json({message: 'pushed to master'})
-
-
+        await fs.writeFileSync(path, JSON.stringify( manifest));
+        await commit(repoName,'Static Back Editor 2 - ' + new Date().toDateString(),'manifest.json')
+        res.sendStatus(200)
+        // make a publish method for this
+        //await pushToMaster(repoName)
 
     } catch (error) {
 
-        res.json({error})
+        res.json({error: ErrorIn +  error.message})
     }
-    //here
-
-
-    //db.customers.find( { email: "strengthpitotara@gmail.com", pwd: "xyz" } )
-
-    //res.json( {json: { message: 'ABout to log you in'}} )
-
 })
 
 

@@ -1,8 +1,8 @@
 import express from 'express'
-import fs from 'fs';
-import * as path from "path";
+import fs from 'fs'
+import * as path from 'path'
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/manifest', async (req, res) => {
     try {
@@ -11,7 +11,7 @@ router.get('/manifest', async (req, res) => {
 
         const manifest = await fs.readFileSync(   path.resolve(process.cwd(),'src','server', 'manifest.json'), 'utf8')
 
-        res.json({manifest:  JSON.parse(manifest)} )
+        res.json( JSON.parse(manifest) )
         console.log('sending  json')
     } catch (error) {
         res.json({error : error.message})

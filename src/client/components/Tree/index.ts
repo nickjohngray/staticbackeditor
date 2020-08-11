@@ -1,2 +1,2 @@
-export { default } from './Tree';
+export { default } from './Tree'
 

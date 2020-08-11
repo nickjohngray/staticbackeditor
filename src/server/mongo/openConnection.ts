@@ -1,4 +1,4 @@
-import {MongoClient} from "mongodb";
+import {MongoClient} from 'mongodb'
 
 export const openConnection = async ()  => {
     try {
@@ -15,7 +15,7 @@ export const getUserInfo = async (client , email:string, pwd:string)   =>  {
                 .collection('customers')
                 .findOne({email, pwd}, {projection: {repo: 1, _id: 0}})
     }catch (e) {
-        throw  e;
+        throw  e
     }
 }
 

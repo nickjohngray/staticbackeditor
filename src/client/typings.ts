@@ -1,24 +1,24 @@
 export interface IPage {
-    name: string;
-    path: string;
-    images?: IImage[];
-    sections?: ISection[];
-    FBAccessToken?: string;
+    name: string
+    path: string
+    images?: IImage[]
+    sections?: ISection[]
+    FBAccessToken?: string
 }
 
 export interface ISection {
-    image?: IImage;
-    header: string;
-    body: string;
-    sections?: ISection[];
-    list?: string[];
-    link?: string;
-    opener?: SectionOpener;
+    image?: IImage
+    header: string
+    body: string
+    sections?: ISection[]
+    list?: string[]
+    link?: string
+    opener?: SectionOpener
 }
 
 export interface SectionOpener {
-    type: OPENER_TYPE;
-    open: boolean;
+    type: OPENER_TYPE
+    open: boolean
 }
 
 export enum OPENER_TYPE {
@@ -27,24 +27,38 @@ export enum OPENER_TYPE {
 }
 
 export interface IImage {
-    src: string;
-    url?: string;
+    src: string
+    url?: string
 }
 
+export type Direction =
+    ('UP' | 'DOWN')
+
+export const UP = 'UP'
+export const DOWN = 'DOWN'
+
+
 export interface IManifest {
-    appName: string;
-    imagePath: string;
-    pages: IPage[];
-    products: IProduct[];
-    FBAccessToken: string;
+    appName: string
+    imagePath: string
+    pages: IPage[]
+    products: IProduct[]
+    FBAccessToken: string,
+    repoName: string
+}
+export enum IBackendStatus {
+    NOT_INIT = 'NOT_INIT',
+    REQUEST = 'REQUEST',
+    SUCCESS = 'SUCCESS',
+    FAIL = 'FAIL'
 }
 
 export interface ICart {
-    items: ICartItem[];
+    items: ICartItem[]
 }
 
 export interface IHistory {
-    URL: string;
+    URL: string
 }
 
 /* a new id is made for each product added to the cart
@@ -54,9 +68,9 @@ export interface IHistory {
 
 */
 export interface ICartItem {
-    id: number;
-    product: IProduct;
-    selectedVariations: SingleVariation[];
+    id: number
+    product: IProduct
+    selectedVariations: SingleVariation[]
 }
 
 export interface IProduct {
@@ -104,6 +118,14 @@ export enum PRODUCT_TYPES {
 export type IShop = {
     products: IProduct[];
 };
+
+export type IManifest2  ={
+    appName: string;
+    imagePath: string;
+    pages: IPage[];
+    products: IProduct[];
+    FBAccessToken: string;
+}
 
 export interface IState {
     localize: any;
