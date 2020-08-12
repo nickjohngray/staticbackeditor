@@ -39,6 +39,7 @@
     "react-redux": "^7.0.3",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
+    "redux-undo": "^1.0.1",
     "simple-git": "^2.15.0"
   },
   "devDependencies": {

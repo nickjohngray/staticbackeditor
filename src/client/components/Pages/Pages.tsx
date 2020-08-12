@@ -149,9 +149,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 export default connect(
     (state: Istore) => ({
-        manifest: state.manifest.manifest,
-        isDirty: state.manifest.isDirty,
-        isBusy: state.manifest.isBusy
+        manifest: state.manifest.present.manifest,
+        isDirty: state.manifest.present.isDirty,
+        isBusy: state.manifest.present.isBusy
     }),
     mapDispatchToProps
 )(Pages)

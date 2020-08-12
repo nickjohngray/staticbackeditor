@@ -93,9 +93,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 export default connect(
     (state: Istore) => ({
-        requestStage: state.manifest.requestStage,
-        manifest: state.manifest.manifest,
-        isBusy: state.manifest.isBusy
+        requestStage: state.manifest.present.requestStage,
+        manifest: state.manifest.present.manifest,
+        isBusy: state.manifest.present.isBusy
     }),
     mapDispatchToProps
 )(Login)

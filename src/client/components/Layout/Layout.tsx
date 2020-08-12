@@ -14,13 +14,18 @@ import {NotFound} from '../NotFound'
 import {Istore} from '../../redux/store'
 import Login from "../Login/login";
 import {setProp} from '../../redux/actions/manifest.action'
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 interface Props {
     changeURL: (url: IHistory) => void
     currentPageURL: string
-    manifest: IManifest,
+    manifest: IManifest
     error: {},
     setProp: ({}) => void
+    isUndoable:boolean
+    isRedoable: boolean,
+    undo: () => void
+    redo: () => void
 }
 
 interface State {
@@ -83,6 +88,11 @@ class Layout extends React.Component<Props, State> {
                     </nav>
                 </header>
                 <div className="mainMontent">
+                    <div>
+                        <button disabled={!this.props.isUndoable} onClick={() => this.props.undo() }>Undo</button>
+                        <button disabled={!this.props.isRedoable} onClick={() => this.props.redo() }>Redo</button>
+
+                    </div>
                     <Router>
                         <Home path="/"/>
                         <Pages path="pages"/>
@@ -107,14 +117,18 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     setProp: (object) => {
         dispatch(setProp(object))
     },
+    undo: () => dispatch(UndoActionCreators.undo()),
+    redo: () => dispatch(UndoActionCreators.redo())
 
 })
 
 export default connect(
     (state: Istore) => ({
         currentPageURL: state.history.URL,
-        manifest: state.manifest.manifest,
-        error: state.manifest.error
+        manifest: state.manifest.present.manifest,
+        isUndoable: state.manifest.past.length > 0,
+        isRedoable: state.manifest.future.length > 0,
+        error: state.manifest.present.error
     }),
     mapDispatchToProps
 )(Layout)

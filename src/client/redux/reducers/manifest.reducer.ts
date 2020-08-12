@@ -3,15 +3,19 @@ import {handleActions} from 'redux-actions'
 import {Direction, IBackendStatus, IManifest, IPage, UP} from '../../typings'
 import ManifestActions, {
     IAddPage,
-    IAddPhysicalPage, IDeletePage, IDeletePhysicalPage,
+    IAddPhysicalPage,
+    IDeletePage,
+    IDeletePhysicalPage,
     ILoadManifestFail,
     ILoadManifestRequest,
     ILoadManifestSuccess,
     ILogin,
     IMovePage,
-    ISaveManifest, ISetProp
+    ISaveManifest,
+    ISetProp
 } from '../actions/manifest.action'
 import {remove} from 'lodash'
+import undoable, {includeAction} from 'redux-undo'
 
 interface IManifestExtened{
     requestStage: IBackendStatus
@@ -33,7 +37,7 @@ const initialState: IManifestExtened = {
 
 // these reduces could be simplified by adding them to an array
 
-export default handleActions<IManifestExtened, any>(
+const manifestReducer =  handleActions<IManifestExtened, any>(
     {
 
         // a hack to set any value
@@ -47,6 +51,7 @@ export default handleActions<IManifestExtened, any>(
                 }
             }),
 
+        // merge next three to one these three two one
         [ManifestActions.LOAD_MANIFEST_REQUEST]:
             produce((draft: IManifestExtened, action: ILoadManifestRequest) => {
                 draft.requestStage =  IBackendStatus.REQUEST
@@ -87,39 +92,6 @@ export default handleActions<IManifestExtened, any>(
                 draft.isBusy = action.payload.status === IBackendStatus.REQUEST
             }),
 
-        [ManifestActions.ADD_PAGE]:
-            produce((draft: IManifestExtened, action: IAddPage) => {
-                const page = {
-                    name:  action.payload.pageName,
-                    path:  action.payload.pagePath ,
-                    template: 'src/components/pages/' +  action.payload.pagePath
-                }
-                draft.manifest.pages.push(page)
-                draft.isDirty = true
-            }),
-
-        [ManifestActions.DELETE_PAGE]:
-            produce((draft: IManifestExtened, action: IDeletePage) => {
-                const pages = draft.manifest.pages
-                const pagesRemove = remove(pages,(p) =>
-                    {return p.name.toUpperCase() === action.payload.pageName.toUpperCase()})
-
-                if(pagesRemove.length === 0) {
-                    draft.error = 'Failed to remove page ' + action.payload.pageName
-                }
-                draft.isDirty = false
-            }),
-
-        [ManifestActions.SAVE_MANIFEST]:
-            produce((draft: IManifestExtened, action: ISaveManifest) => {
-                draft.requestStage =  action.payload.status
-                if(action.payload.status === IBackendStatus.FAIL) {
-                    draft.error = action.payload.error
-                }
-                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
-                draft.isDirty = false
-            }),
-
         [ManifestActions.LOGIN]:
             produce((draft: IManifestExtened, action: ILogin) => {
                 draft.requestStage =  action.payload.status
@@ -132,12 +104,45 @@ export default handleActions<IManifestExtened, any>(
                 draft.isBusy = action.payload.status === IBackendStatus.REQUEST
             }),
 
+        [ManifestActions.SAVE_MANIFEST]:
+            produce((draft: IManifestExtened, action: ISaveManifest) => {
+                draft.requestStage =  action.payload.status
+                if(action.payload.status === IBackendStatus.FAIL) {
+                    draft.error = action.payload.error
+                }
+                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
+                draft.isDirty = false
+            }),
 
+        // included un undo
+        [ManifestActions.ADD_PAGE]:
+            produce((draft: IManifestExtened, action: IAddPage) => {
+                const page = {
+                    name:  action.payload.pageName,
+                    path:  action.payload.pagePath ,
+                    template: 'src/components/pages/' +  action.payload.pagePath
+                }
+                draft.manifest.pages.push(page)
+                draft.isDirty = true
+            }),
 
         [ManifestActions.MOVE_PAGE]:
             produce((draft: IManifestExtened, action: IMovePage) => {
                 movePage(draft.manifest, action.payload.pageName , action.payload.direction)
                 draft.isDirty = true
+            }),
+
+
+        [ManifestActions.DELETE_PAGE]:
+            produce((draft: IManifestExtened, action: IDeletePage) => {
+                const pages = draft.manifest.pages
+                const pagesRemove = remove(pages,(p) =>
+                {return p.name.toUpperCase() === action.payload.pageName.toUpperCase()})
+
+                if(pagesRemove.length === 0) {
+                    draft.error = 'Failed to remove page ' + action.payload.pageName
+                }
+                draft.isDirty = false
             }),
 
     },
@@ -172,3 +177,13 @@ const movePage = (manifest: IManifest,
     pages[pageIndexToMove] = pages[pageIndex]
     pages[pageIndex] = pageToMoveUp
 }
+
+// allow user to undo/redo their changes
+export default  undoable(manifestReducer, {
+    ignoreInitialState: true,
+    filter: includeAction(
+        [ManifestActions.ADD_PAGE,
+            ManifestActions.DELETE_PAGE,
+            ManifestActions.MOVE_PAGE
+                ])
+})
