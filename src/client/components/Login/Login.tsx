@@ -3,14 +3,12 @@ import {fieldsOk} from '../../util'
 import {Istore} from "../../redux/store";
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
-import {loginThenDispatch} from "../../redux/actions/manifest.action";
 import {IManifest} from "../../typings";
 //@ts-ignore
 import logoImagePath from './../../images/logo.png'
 import './Login.css'
 import Loader from "../Loader/Loader";
-
-
+import {login} from '../../redux/actions/manifest.action'
 
 /*const salt = await bcrypt.genSalt(20);
 user.password = await bcrypt.hash(user.password, salt);*/
@@ -43,9 +41,7 @@ class  Login extends React.Component<Props,State>  {
             alert('Please fill in all the fields')
             return
         }
-
             this.props.login(this.state.email, this.state.pwd)
-
         }
 
     render = () =>{
@@ -79,21 +75,16 @@ class  Login extends React.Component<Props,State>  {
         </div>
 
         )  }
-
 }
-
-
-
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     login: (email: string, pwd: string) => {
-        loginThenDispatch(dispatch,email,pwd)
+        dispatch(login(email,pwd))
     }
 });
 
 export default connect(
     (state: Istore) => ({
-        requestStage: state.manifest.present.requestStage,
         manifest: state.manifest.present.manifest,
         isBusy: state.manifest.present.isBusy
     }),

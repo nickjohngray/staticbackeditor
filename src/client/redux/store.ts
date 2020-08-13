@@ -1,5 +1,6 @@
-import {createStore} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 import reducer from './reducers'
+import actionMiddleware from './actionMiddleware'
 
 let reduxDevTools = {}
 
@@ -17,7 +18,8 @@ if (isDev) {
     } catch (e) {}
 }
 
-const store = createStore(reducer, reduxDevTools)
+
+const store = createStore(reducer,  applyMiddleware(actionMiddleware  ))
 
 export default store
 

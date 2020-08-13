@@ -3,7 +3,9 @@ export interface IPage {
     path: string
     images?: IImage[]
     sections?: ISection[]
-    FBAccessToken?: string
+    FBAccessToken?: string,
+    template: string,
+
 }
 
 export interface ISection {
@@ -46,12 +48,29 @@ export interface IManifest {
     FBAccessToken: string,
     repoName: string
 }
-export enum IBackendStatus {
+export enum APICallStatus {
     NOT_INIT = 'NOT_INIT',
-    REQUEST = 'REQUEST',
-    SUCCESS = 'SUCCESS',
-    FAIL = 'FAIL'
+    request = 'request',
+    success = 'success',
+    fail = 'fail'
 }
+
+export enum ApiMethods   {
+    post = 'post',
+    get = 'get'
+}
+
+export interface IAction {
+    status?: APICallStatus,
+    error?: any,
+    api?: string,
+    payload?: {},
+    backendPayload?: any
+    type: string // force this latter
+    method?: ApiMethods
+}
+
+
 
 export interface ICart {
     items: ICartItem[]

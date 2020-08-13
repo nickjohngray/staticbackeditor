@@ -1,39 +1,32 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {Direction, IBackendStatus, IManifest, IPage, UP} from '../../typings'
+import {Direction,
+    APICallStatus,
+    IManifest,
+    IPage,
+    UP,
+    IAction} from '../../typings'
 import ManifestActions, {
-    IAddPage,
-    IAddPhysicalPage,
-    IDeletePage,
-    IDeletePhysicalPage,
-    ILoadManifestFail,
-    ILoadManifestRequest,
-    ILoadManifestSuccess,
-    ILogin,
-    IMovePage,
-    ISaveManifest,
-    ISetProp
+    IAddPage, IMovePage
 } from '../actions/manifest.action'
-import {remove} from 'lodash'
 import undoable, {includeAction} from 'redux-undo'
+import {remove} from 'lodash'
 
 interface IManifestExtened{
-    requestStage: IBackendStatus
+    requestStage: APICallStatus
     manifest: IManifest
     error: any,
-    isDirty: boolean,
+    isSaved: boolean,
     isBusy?: boolean,
-
-
 }
+
 const initialState: IManifestExtened = {
     manifest: null,
-    requestStage: IBackendStatus.NOT_INIT,
+    requestStage: APICallStatus.NOT_INIT,
     error: null,
-    isDirty: false,
+    isSaved: false,
     isBusy: false,
 }
-
 
 // these reduces could be simplified by adding them to an array
 
@@ -42,7 +35,7 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
 
         // a hack to set any value
         [ManifestActions.SET_PROP]:
-            produce((draft: IManifestExtened, action: ISetProp) => {
+            produce((draft: IManifestExtened, action: IAction) => {
                 const keys = Object.keys(action.payload)
                 const values = Object.values(action.payload)
 
@@ -51,67 +44,54 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                 }
             }),
 
-        // merge next three to one these three two one
-        [ManifestActions.LOAD_MANIFEST_REQUEST]:
-            produce((draft: IManifestExtened, action: ILoadManifestRequest) => {
-                draft.requestStage =  IBackendStatus.REQUEST
-                    draft.isBusy = true
-        }),
-
-        [ManifestActions.LOAD_MANIFEST_SUCCESS]:
-            produce((draft: IManifestExtened, action: ILoadManifestSuccess) => {
-                draft.manifest =  action.payload.manifest
-                draft.requestStage = IBackendStatus.SUCCESS
-                draft.isBusy = false
+        [ManifestActions.saveManifest]:
+            produce((draft: IManifestExtened, action: IAction) => {
+                draft.requestStage =  action.status
+                if(action.status === APICallStatus.fail) {
+                    draft.error = action.error
+                }
+                draft.isBusy = action.status === APICallStatus.request
+                draft.isSaved = false
             }),
 
-        [ManifestActions.LOAD_MANIFEST_FAIL]:
-            produce((draft: IManifestExtened, action: ILoadManifestFail) => {
-                draft.requestStage =  IBackendStatus.FAIL
-                draft.error = action.error
-                draft.isBusy = false
+        [ManifestActions.loadManifest]:
+            produce((draft: IManifestExtened, action: IAction) => {
+                draft.requestStage =  action.status
+                if(action.status === APICallStatus.fail) {
+                    draft.error = action.error
+                }
+                if(action.status === APICallStatus.success) {
+                    draft.manifest =  action.backendPayload as IManifest
+                }
+                draft.isBusy = action.status === APICallStatus.request
+                draft.isSaved = false
             }),
 
-        [ManifestActions.ADD_PHYSICAL_PAGE]:
-            produce((draft: IManifestExtened, action: IAddPhysicalPage) => {
-                draft.requestStage =  action.payload.status
-                if(action.payload.status === IBackendStatus.FAIL) {
-                    draft.error = action.payload.error
+        [ManifestActions.login]:
+            produce((draft: IManifestExtened, action: IAction) => {
+                draft.requestStage =  action.status
+                if(action.status === APICallStatus.fail) {
+                    draft.error = action.error
                 }
-                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
+                if(action.status === APICallStatus.success) {
+                    if( action.backendPayload.error ) {
+                        draft.error =  action.backendPayload.error
+                    } else {
+                        draft.manifest = action.backendPayload
+                    }
+
+                }
+                draft.isBusy = action.status === APICallStatus.request
             }),
 
-        //  updates the request stats while the scr/pages/components/page is
-        //  being removed from projects cloned git repository
-        [ManifestActions.DELETE_PHYSICAL_PAGE]:
-            produce((draft: IManifestExtened, action: IDeletePhysicalPage) => {
-                draft.requestStage =  action.payload.status
-                if(action.payload.status === IBackendStatus.FAIL) {
-                    draft.error = action.payload.error
+        [ManifestActions.saveManifest]:
+            produce((draft: IManifestExtened, action: IAction) => {
+                draft.requestStage =  action.status
+                if(action.status === APICallStatus.fail) {
+                    draft.error = action.error
                 }
-                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
-            }),
-
-        [ManifestActions.LOGIN]:
-            produce((draft: IManifestExtened, action: ILogin) => {
-                draft.requestStage =  action.payload.status
-                if(action.payload.status === IBackendStatus.FAIL) {
-                    draft.error = action.payload.error
-                }
-                if(action.payload.status === IBackendStatus.SUCCESS) {
-                    draft.manifest = action.payload.outputData as IManifest
-                }
-                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
-            }),
-
-        [ManifestActions.SAVE_MANIFEST]:
-            produce((draft: IManifestExtened, action: ISaveManifest) => {
-                draft.requestStage =  action.payload.status
-                if(action.payload.status === IBackendStatus.FAIL) {
-                    draft.error = action.payload.error
-                }
-                draft.isBusy = action.payload.status === IBackendStatus.REQUEST
-                draft.isDirty = false
+                draft.isBusy = action.status === APICallStatus.request
+                draft.isSaved = false
             }),
 
         // included un undo
@@ -123,18 +103,18 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                     template: 'src/components/pages/' +  action.payload.pagePath
                 }
                 draft.manifest.pages.push(page)
-                draft.isDirty = true
+                draft.isSaved = true
             }),
 
         [ManifestActions.MOVE_PAGE]:
             produce((draft: IManifestExtened, action: IMovePage) => {
                 movePage(draft.manifest, action.payload.pageName , action.payload.direction)
-                draft.isDirty = true
+                draft.isSaved = true
             }),
 
 
         [ManifestActions.DELETE_PAGE]:
-            produce((draft: IManifestExtened, action: IDeletePage) => {
+            produce((draft: IManifestExtened, action: IAddPage) => {
                 const pages = draft.manifest.pages
                 const pagesRemove = remove(pages,(p) =>
                 {return p.name.toUpperCase() === action.payload.pageName.toUpperCase()})
@@ -142,7 +122,7 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                 if(pagesRemove.length === 0) {
                     draft.error = 'Failed to remove page ' + action.payload.pageName
                 }
-                draft.isDirty = false
+                draft.isSaved = false
             }),
 
     },

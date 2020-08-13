@@ -1,43 +1,44 @@
 import * as React from 'react'
 import {RouteComponentProps} from '@reach/router'
-import {Direction, DOWN, IManifest, IBackendStatus, UP} from '../../typings'
+import {Direction, DOWN, IManifest, APICallStatus, UP} from '../../typings'
 import './Pages.css'
 import {Dispatch} from 'redux'
 import {Istore} from '../../redux/store'
 import {
-    addPageThenDispatch,
-    deletePageThenDispatch,
-    movePage,
-    saveManifestThenDispatch
+    addPage, deletePage,
+    movePage, saveManifest
 } from '../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
 import Loader from '../Loader/Loader'
+
 
 type Props = RouteComponentProps & {
     manifest: IManifest
     movePage: (pageName: string, direction: Direction) => void
     addPage: (pageName: string,
-              pagePath: string,
-              repoName: string) => void
-    deletePage: (pageName: string,
-                 repoName: string) => void
+              pagePath: string) => void
+    deletePage: (pageName: string) => void
     loadManifest: () => void
-    requestStage: IBackendStatus
     saveManifest: (repoName: string, manifest: IManifest ) => void
-    isDirty: boolean
+    isSaved: boolean
     isBusy: false
 }
 
 interface State {
     pageName: string
-    pagePath: string
+    pagePath: string,
+    isDirty: boolean
 }
 
 class Pages extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        this.state = {pageName: '', pagePath: ''}
+        this.state = {
+            pageName: '',
+            pagePath: '',
+            isDirty: false
+        }
     }
 
     loadPage = (pageName: string) => {
@@ -56,6 +57,17 @@ class Pages extends React.Component<Props, State> {
              this.state.pagePath.trim() !== '' &&
              !this.pageExists()
 
+    getPageNameMessage = ()=> {
+        if( this.state.pageName.trim() === '' ) {
+            return 'Page name is requied'
+        }
+        if(this.pageExists() ) {
+            return this.state.pageName + ' already exist'
+        }
+        return null;
+    }
+
+
     render = () => {
 
         const { manifest :{repoName, pages }} = this.props
@@ -72,16 +84,16 @@ class Pages extends React.Component<Props, State> {
                             <div className="page-and-button-controls" key={key + page.name}>
                                 <div className={'page-button-movers'}>
                                     <button title='Delete Page'
-                                        onClick={() => this.props.deletePage(page.name,repoName)}>  &#10016; </button>
+                                        onClick={() => this.props.deletePage(page.name)}> <Shapes.Cross/> </button>
 
 
                                     {(key > 0) ?
                                         <button title='Move Page Up or more left on the menu'
-                                            onClick={() => this.props.movePage(page.name, UP)}>  &#x2B06; </button> :
+                                            onClick={() => this.props.movePage(page.name, UP)}>  <Shapes.UpArrow/>  </button> :
                                         <div className={'page-button-movers-placeholder'}></div>}
                                     {(key < pages.length - 1) ?
                                         <button title='Move Page Down or  more right on the menu'
-                                            onClick={() => this.props.movePage(page.name, DOWN)}> &#x2B07; </button> :
+                                            onClick={() => this.props.movePage(page.name, DOWN)}> <Shapes.DownArrow/> </button> :
                                         <div className={'page-button-movers-placeholder '}></div>}
                                 </div>
                                 <div className="page-name" onClick={() => this.loadPage(page.name)}>  {page.name} </div>
@@ -96,9 +108,7 @@ class Pages extends React.Component<Props, State> {
                            <input placeholder='Page Name' type='text' value={pageName}
                                         onChange={(e) =>
                                             this.setState({pageName: e.target.value})}/>
-                            {pageName.trim() === '' ? <span className='input-message'>
-                                Please enter a  page name for your new page.
-                            </span>: <Tick />}
+                            {this.getPageNameMessage() || <Shapes.Tick />}
                         </div>
 
                         <div className='form_element'>
@@ -108,19 +118,17 @@ class Pages extends React.Component<Props, State> {
                                             this.setState({pagePath: e.target.value})}/>
                             {pagePath.trim() === '' ?  <span className='input-message'>
                               Please enter a  page path.
-                            </span> :  <Tick />}
+                            </span> :  <Shapes.Tick/>}
                         </div>
                         <div className='form-controls'>
                             <input value='Create Page' type='button' disabled={!this.isFormOk()}
-                                   onClick={() => this.props.addPage(pageName, pagePath, repoName)}>
+                                   onClick={() => this.props.addPage(pageName, pagePath)}>
 
                             </input>
-                            { this.pageExists() && <div className='input-message'>
-                              The page exist
-                            </div>}
-                            {this.isFormOk() && <Tick />}
+
+                            {this.isFormOk() && <Shapes.Tick/>}
                             <div>
-                                <input value='Save' type='button' disabled={!this.props.isDirty}
+                                <input value='Save' type='button' disabled={!this.props.isSaved}
                                        onClick={() => this.props.saveManifest(repoName, this.props.manifest)}>
 
                                 </input>
@@ -133,24 +141,32 @@ class Pages extends React.Component<Props, State> {
     }
 }
 
-const Tick = () => <span className='tick'>&#10004;</span>
+const Shapes =
+{
+    Tick : () => <span className='shape_tick'>&#10004;</span>,
+    DownArrow : () => <span className='shape_down_arrow'>&#x2B07;</span>,
+    UpArrow : () => <span className='shape_up_arrow'>&#x2B06;</span>,
+    Cross : () => <span className='shape_up_arrow'>&#10016;</span>
+
+}
+
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     movePage: (pageName: string, direction: Direction) =>
         dispatch(movePage(pageName, direction)),
     addPage: (pageName: string, pagePath: string, repoName: string ) =>
-        addPageThenDispatch(dispatch, pageName, pagePath, repoName ),
-    deletePage: (pageName: string, repoName: string ) =>
-        deletePageThenDispatch(dispatch, pageName, repoName ),
+        dispatch(addPage(pageName, pagePath)),
+    deletePage: (pageName: string ) =>
+        dispatch(deletePage( pageName)),
     saveManifest: (repoName: string, manifest: IManifest ) =>
-        saveManifestThenDispatch(dispatch, repoName, manifest),
+        dispatch(saveManifest(manifest))
 
 })
 
 export default connect(
     (state: Istore) => ({
         manifest: state.manifest.present.manifest,
-        isDirty: state.manifest.present.isDirty,
+        isSaved: state.manifest.present.isSaved,
         isBusy: state.manifest.present.isBusy
     }),
     mapDispatchToProps
