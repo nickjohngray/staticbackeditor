@@ -5,6 +5,8 @@ export interface IPage {
     sections?: ISection[]
     FBAccessToken?: string,
     template: string,
+    // this field is only used on the backend
+    templateContent?: string
 
 }
 

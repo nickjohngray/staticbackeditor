@@ -1,13 +1,11 @@
 import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage, repoAccount} from '../static'
 import express from 'express'
-import mongodb from 'mongodb'
 import {getUserInfo, openConnection} from './../mongo/openConnection'
 import {cloneRepo} from '../git-util'
 import fs from 'fs'
-
-const MongoClient = mongodb.MongoClient
-
+import {IManifest, IPage} from '../../client/typings'
+import {dumpError, getPageComponentName, getPageComponentPath, startUpPreviewRepo} from './util'
 
 const router = express.Router()
 
@@ -31,44 +29,43 @@ router.post('/login', async (req, res) => {
             await cloneRepo(repoAccount + userInfo.repo)
         }
 
-        const manifest = await fs.readFileSync(userInfo.repo + '/manifest.json', 'utf8')
-        res.json( JSON.parse(manifest))
-    } catch (error) {
+        const manifest : IManifest = await JSON.parse(
+            fs.readFileSync(userInfo.repo + '/manifest.json', 'utf8'))
 
+       /*  set the  value of every pages templateContent to the file value of template
+         this is needed as we need "one source of truth"  for undo/redo
+         when saved is clicked it will create these template files and set the conent*/
+
+        const repoName = manifest.repoName
+        if(!repoName) {
+            console.log('No repoName key found in Manifest, this must be set')
+            throw new Error('No repoName key found in Manifest, this must be set')
+        }
+        const pages = manifest.pages
+        for( let i=0; i< pages.length; i++) {
+            const page = pages[i]
+            // get file path of component of this page from template key
+            console.log('getting page component name for ' + page.template)
+            const templatePath = getPageComponentPath(
+                getPageComponentName(page.template), repoName )
+            console.log('template path=== ' + templatePath)
+            // read the file content into template_content const
+            const templateContent = await fs.readFileSync(templatePath, 'utf8')
+            //  set the  value of templateContent to the value of template_content const
+            page.templateContent = templateContent
+        }
+
+        startUpPreviewRepo(repoName)
+
+        res.json( manifest)
+    } catch (error) {
+        dumpError(error)
         res.json({error: 'Error in login.ts. ' +  error.message})
     }
-    //here
-
-
-    //db.customers.find( { email: "strengthpitotara@gmail.com", pwd: "xyz" } )
-
-    //res.json( {json: { message: 'ABout to log you in'}} )
 
 })
 
 var path = require("path")
 
-var rmdir = function (dir) {
-    return new Promise((resolve, reject) => {
-        console.log('HERE')
-        var list = fs.readdirSync(dir)
-        for (var i = 0; i < list.length; i++) {
-            var filename = path.join(dir, list[i])
-            var stat = fs.statSync(filename)
-
-            if (filename == "." || filename == "..") {
-                // pass these files
-            } else if (stat.isDirectory()) {
-                // rmdir recursively
-                rmdir(filename)
-            } else {
-                // rm fiilename
-                fs.unlinkSync(filename)
-            }
-        }
-        fs.rmdirSync(dir)
-        resolve(true)
-    })
-}
 
 export {router as loginRouter}

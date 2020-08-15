@@ -5,13 +5,28 @@ import {commit, pushToMaster} from "../git-util";
 import fs from 'fs';
 import {IManifest, IPage} from './../../client/typings'
 import path from "path"
-import {capitalize} from 'lodash' // move this to share dir
-
+import {
+    deletePageComponent,
+    getPageComponentName, makePageComponet,
+    makePageComponetIfNotExist, pageTemplate
+} from './util' // move this to share dir
 
 const router = express.Router();
 
 const ErrorIn = 'Error in save-manifest.ts '
 
+
+/*
+ Here will Just save the manifest and update files.
+ save will not perform publish items
+* publish will
+* git add .
+* git commit
+* git push
+*
+*
+*
+* */
 router.post('/save-manifest', async (req, res) => {
     console.log('in save-manifest.ts ')
     const manifest = req.body.manifest
@@ -34,12 +49,19 @@ router.post('/save-manifest', async (req, res) => {
         if (await fs.existsSync(manifestPath)) {
             console.log('putting  old manifest into memory')
             manifestOld = JSON.parse( await fs.readFileSync(manifestPath, 'utf8'))
-            await fs.rmdirSync(manifestPath, {recursive: true})
+            await fs.unlinkSync(manifestPath)
             console.log('deleting  old manifest file')
         } else {
             res.json({error: ErrorIn +  'manifest file does not exist'})
         }
         console.log('saving new  manifest data to manifest file')
+
+        // we dont have to set template content key or or value
+        // this will be done on login
+        // or frontend can set this key , do this when building the editor
+        // for the page , need a standard html pr markdown editor
+        // this will be the default editor
+
         await fs.writeFileSync(manifestPath, JSON.stringify( manifest));
         console.log('Done!,  manifest file saved')
 
@@ -47,7 +69,13 @@ router.post('/save-manifest', async (req, res) => {
         console.log('making new pages')
         for(let i=0;  i<pages.length; i++ ){
             const pageName = getPageComponentName( pages[i].template)
-             if(!await makePageComponetIfNotExist(pageName,repoName) )
+
+            // pageContent  is set on login, or when a new page is made on the frontend,
+            // this file  nees to be made now for preview
+            // user may click preview at any time
+
+            const pageContent =  pages[i].templateContent
+             if(!await makePageComponet(pageName,repoName, pageContent) )
             {
               console.log('Could not make page ' + pageName)
             } else {
@@ -57,6 +85,7 @@ router.post('/save-manifest', async (req, res) => {
         console.log('making new pages Done!')
         // making new pages Done!
 
+        // Delete any components  removed from manifest
         const oldPages = (manifestOld as IManifest).pages
 
         // if old page is not one of the new pages then , the page file componets
@@ -74,11 +103,12 @@ router.post('/save-manifest', async (req, res) => {
             }
         }
         console.log('deleting removed pages Done!')
+
         console.log('save complete')
 
-        console.log('committing changes to git')
+    /*    console.log('committing changes to git')
         await commit(repoName,'Static Back Editor 2 - ' + new Date().toDateString(),'manifest.json')
-        console.log('committing changes to git Done!')
+        console.log('committing changes to git Done!')*/
 
         res.sendStatus(200)
         // make a publish method for this
@@ -86,55 +116,9 @@ router.post('/save-manifest', async (req, res) => {
 
     } catch (error) {
 
+        console.log("error===" + error.message )
         res.json({error: ErrorIn +  error.message})
     }
 })
-
-const deletePageComponent = async (pageName: string, repoName: string) : Promise<boolean> => {
-    const pageComponentPath = getPageComponentPath(pageName,repoName)
-    if (await fs.existsSync(pageComponentPath)) {
-        await fs.unlinkSync(pageComponentPath)
-        return true
-    } else {
-        return  false
-    }
-}
-
-const makePageComponetIfNotExist = async (pageName: string, repoName: string) : Promise<boolean> =>  {
-    const pageComponentPath = getPageComponentPath(pageName,repoName)
-    if (await !fs.existsSync(pageComponentPath)) {
-        // write new page to the current repo pages dir
-        console.log('adding ' + pageComponentPath + ' with content: ' + pageTemplate)
-        await fs.writeFileSync(pageComponentPath, pageTemplate)
-        return true
-    } else {
-        console.log(pageComponentPath + ' exists can make')
-        return  false
-    }
-}
-
-const getPageComponentPath = (pageName: string, repoName: string)  =>
-   path.resolve(
-        process.cwd(),
-       repoName,'src','components',
-       'pages', capitalize(pageName) + '.tsx' )
-
-
-const pageTemplate = `import React from 'react'
-import SectionList from 'components/SectionList'
-import {getPage} from 'components/pages/pageUtil'
-
-export default () => (
-    <div className={'page center-it '}>
-        <h1>Athletes</h1>
-        <SectionList sections={getPage('athletes').sections} />
-    </div>
-)`
-
-const getPageComponentName = (template: string) : string => {
-    const pathBits =  template.split('/')
-    console.log('getPageComponentName=== ' + pathBits[pathBits.length-1] )
-    return pathBits[pathBits.length-1]
-}
 
 export {router as saveManifest}

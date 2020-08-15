@@ -154,8 +154,8 @@ const Shapes =
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     movePage: (pageName: string, direction: Direction) =>
         dispatch(movePage(pageName, direction)),
-    addPage: (pageName: string, pagePath: string, repoName: string ) =>
-        dispatch(addPage(pageName, pagePath)),
+    addPage: (pageName: string, pagePath: string) =>
+        dispatch(addPage(pageName, pagePath, getPageTemplate(pageName) )),
     deletePage: (pageName: string ) =>
         dispatch(deletePage( pageName)),
     saveManifest: (repoName: string, manifest: IManifest ) =>
@@ -171,5 +171,15 @@ export default connect(
     }),
     mapDispatchToProps
 )(Pages)
+
+const getPageTemplate = ( pageName: string) => {
+    return `import React from 'react'
+
+export default () => (
+    <div className={'page center-it'}>
+        <h1>${pageName}</h1>
+    </div>
+)`
+}
 
 

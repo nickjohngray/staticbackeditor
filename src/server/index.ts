@@ -43,6 +43,14 @@ app.use(API, deletePage)
 
 app.use(indexRouter)
 
+//http://localhost:3000/easyecom/dist/index.html
+
+/*app.get('/easyecom', (req, res) => {
+    console.log('sending easyecom index.html')
+    res.sendFile(path.resolve('easyecom', 'dist', 'index.html'))
+
+});*/
+
 app.get('*', (req, res) => {
     console.log('sending index.html')
     res.sendFile(path.resolve('dist', 'index.html'))

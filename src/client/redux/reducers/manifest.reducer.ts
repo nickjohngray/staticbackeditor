@@ -79,7 +79,6 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                     } else {
                         draft.manifest = action.backendPayload
                     }
-
                 }
                 draft.isBusy = action.status === APICallStatus.request
             }),
@@ -90,6 +89,13 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                 if(action.status === APICallStatus.fail) {
                     draft.error = action.error
                 }
+
+                if(action.status === APICallStatus.success) {
+                    if( action.backendPayload.error ) {
+                        draft.error =  action.backendPayload.error
+                    }
+                }
+
                 draft.isBusy = action.status === APICallStatus.request
                 draft.isSaved = false
             }),
@@ -100,7 +106,8 @@ const manifestReducer =  handleActions<IManifestExtened, any>(
                 const page = {
                     name:  action.payload.pageName,
                     path:  action.payload.pagePath ,
-                    template: 'src/components/pages/' +  action.payload.pagePath
+                    template: 'src/components/pages/' +  action.payload.pagePath,
+                    templateContent: action.payload.pageContent
                 }
                 draft.manifest.pages.push(page)
                 draft.isSaved = true

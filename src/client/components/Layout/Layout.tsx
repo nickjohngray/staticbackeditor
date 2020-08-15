@@ -25,7 +25,8 @@ interface Props {
     isUndoable:boolean
     isRedoable: boolean,
     undo: () => void
-    redo: () => void
+    redo: () => void,
+
 }
 
 interface State {
@@ -51,6 +52,27 @@ class Layout extends React.Component<Props, State> {
                 {"name": "products", "path": "products"}
             ]
         }
+    }
+
+    openAppPreview = () => {
+       // window.open (window.location.hostname + ':3001')
+
+        const windowObjectReference = window.open(
+            window.location.protocol + '//' + window.location.hostname +':3001',
+            this.props.manifest.appName,
+            "resizable,scrollbars,status"
+
+
+        );
+        windowObjectReference. location.reload()
+    }
+
+     openRequestedPopup = () => {
+        const windowObjectReference = window.open(
+            "http://www.gmail.com",
+            "DescriptiveWindowName",
+            "resizable,scrollbars,status"
+        );
     }
 
     componentDidMount = () => {
@@ -89,8 +111,12 @@ class Layout extends React.Component<Props, State> {
                 </header>
                 <div className="mainMontent">
                     <div>
-                        <button disabled={!this.props.isUndoable} onClick={() => this.props.undo() }>Undo</button>
-                        <button disabled={!this.props.isRedoable} onClick={() => this.props.redo() }>Redo</button>
+                        <button disabled={!this.props.isUndoable}
+                                onClick={() => this.props.undo() }>Undo</button>
+                        <button disabled={!this.props.isRedoable}
+                                onClick={() => this.props.redo() }>Redo</button>
+                        <button
+                                onClick={() => this.openAppPreview() }>Preview</button>
 
                     </div>
                     <Router>

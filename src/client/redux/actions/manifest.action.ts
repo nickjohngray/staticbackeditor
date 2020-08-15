@@ -28,7 +28,7 @@ export const movePage =
 
 export const addPage =
     createAction(ManifestActions.ADD_PAGE,
-        (pageName: string, pagePath: string) => ({ pageName,pagePath}))
+        (pageName: string, pagePath: string, pageContent: string, ) => ({ pageName,pagePath, pageContent}))
 
 export const deletePage =
     createAction(ManifestActions.DELETE_PAGE,

@@ -10,7 +10,9 @@
     "start-server-dev": "npm run build-server-dev && node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "tsc-watch --onSuccess \"node ./dist/server/index.js\"",
-    "dev": "concurrently \"npm run build-server-dev\"  \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run build-server-dev\"  \"npm run server\" \"npm run client\"",
+    "repo-install": "npm i --prefix ${arg[0]}",
+    "repo-start": "npm start --prefix ${arg[0]}"
   },
   "author": "Nick Gray",
   "license": "Apache License 2.0",
