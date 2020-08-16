@@ -1,22 +1,22 @@
-import * as React from "react";
-import {debug} from "webpack";
+import * as React from 'react'
+import {debug} from 'webpack'
 
 interface  Props {
-    isEditMode: boolean;
-    value: string;
+    isEditMode: boolean
+    value: string
 }
 
 class EditableLeaf extends React.Component<Props, any> {
 
     constructor(props) {
-        super(props);
+        super(props)
     }
 
     render = () =>  {
         return (
-        <li className="leaf">
+        <li className='leaf'>
             {this.props.isEditMode ? <input value={this.props.value}  /> :
-                <div className="leaf"
+                <div className='leaf'
                     onClick={
                         (e) => {
 
@@ -27,4 +27,4 @@ class EditableLeaf extends React.Component<Props, any> {
         )}
 }
 
-export  default  EditableLeaf;
+export  default  EditableLeaf

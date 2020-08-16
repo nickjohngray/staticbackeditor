@@ -1,4 +1,4 @@
-import {createStore, applyMiddleware, compose} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux'
 import reducer from './reducers'
 import actionMiddleware from './actionMiddleware'
 
@@ -17,7 +17,6 @@ if (isDev) {
         reduxDevTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
     } catch (e) {}
 }
-
 
 const store = createStore(reducer,  applyMiddleware(actionMiddleware  ))
 

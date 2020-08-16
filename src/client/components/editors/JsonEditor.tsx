@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react'
 
 interface State {
     isDirty: boolean
@@ -10,12 +10,10 @@ interface Props {
     saveData: () => void
 }
 
-
-
 export class JsonEditor extends React.Component< Props, State > {
 
     constructor(props) {
-        super(props);
+        super(props)
     }
 
     render = () =>   <>
@@ -25,6 +23,5 @@ export class JsonEditor extends React.Component< Props, State > {
       </textarea>
         <button onClick={   this.props.saveData} > Save </button>
         </>
-
 
 }

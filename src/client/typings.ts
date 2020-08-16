@@ -41,7 +41,6 @@ export type Direction =
 export const UP = 'UP'
 export const DOWN = 'DOWN'
 
-
 export interface IManifest {
     appName: string
     imagePath: string
@@ -72,8 +71,6 @@ export interface IAction {
     method?: ApiMethods
 }
 
-
-
 export interface ICart {
     items: ICartItem[]
 }
@@ -95,19 +92,19 @@ export interface ICartItem {
 }
 
 export interface IProduct {
-    title: string;
-    description: string;
-    image: string;
-    type: string;
-    variations: Variation[];
-    price?: number;
+    title: string
+    description: string
+    image: string
+    type: string
+    variations: Variation[]
+    price?: number
 }
 
 export interface ICartItemsByType {
-    productKey: string;
-    items: ICartItem[];
-    isVariation: boolean;
-    variationName: string;
+    productKey: string
+    items: ICartItem[]
+    isVariation: boolean
+    variationName: string
 }
 
 /*export interface ProductVariation {
@@ -115,42 +112,42 @@ export interface ICartItemsByType {
     value: string
 }*/
 
-export type SingleVariation = {
-    name: string;
-    option: VariationItem;
-};
+export interface SingleVariation {
+    name: string
+    option: VariationItem
+}
 
-export type Variation = {
-    title: string;
-    item: VariationItem[];
-};
+export interface Variation {
+    title: string
+    item: VariationItem[]
+}
 
-export type VariationItem = {
-    optionValue: string;
-    image?: string;
-    price?: number;
-};
+export interface VariationItem {
+    optionValue: string
+    image?: string
+    price?: number
+}
 
 export enum PRODUCT_TYPES {
     TSHIRT = 'TSHIRT',
     RING = 'RING'
 }
 
-export type IShop = {
-    products: IProduct[];
-};
+export interface IShop {
+    products: IProduct[]
+}
 
-export type IManifest2  ={
-    appName: string;
-    imagePath: string;
-    pages: IPage[];
-    products: IProduct[];
-    FBAccessToken: string;
+export interface IManifest2  {
+    appName: string
+    imagePath: string
+    pages: IPage[]
+    products: IProduct[]
+    FBAccessToken: string
 }
 
 export interface IState {
-    localize: any;
-    cart: ICart;
-    shop: IShop;
-    history: IHistory;
+    localize: any
+    cart: ICart
+    shop: IShop
+    history: IHistory
 }

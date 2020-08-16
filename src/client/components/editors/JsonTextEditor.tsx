@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react'
 
 interface State {
     isDirty: boolean
@@ -8,7 +8,7 @@ interface State {
 export class JsonTextEditor extends React.Component< {}, State > {
 
     constructor(props) {
-        super(props);
+        super(props)
     }
 
     render = () =>   <>
@@ -16,7 +16,7 @@ export class JsonTextEditor extends React.Component< {}, State > {
           this.setState( {data: event.target.value, } )}>
           {this.state.data}
       </textarea>
-        <button onClick={ ()=>  this.save} />
+        <button onClick={ () =>  this.save} />
     </>
 
     save = () => {
