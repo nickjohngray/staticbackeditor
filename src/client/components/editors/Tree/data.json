@@ -1,21 +1,16 @@
 {
-  "Beverages": [
-    "Water",
-    "Coffee",
-    {
-      "Tea": [
-        "Black Tea",
-        "White Tea",
-        "Green Tea",
+    "Beverages": [
+        "Water",
+        "Coffee",
         {
-          "Sencha": [
-            "Gyokuro",
-            "Matcha",
-            "Pi Lo Chun"
-          ]
+            "Tea": [
+                "Black Tea",
+                "White Tea",
+                "Green Tea",
+                {
+                    "Sencha": ["Gyokuro", "Matcha", "Pi Lo Chun"]
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
-

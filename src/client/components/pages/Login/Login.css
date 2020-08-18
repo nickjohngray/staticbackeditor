@@ -1,12 +1,11 @@
 .login {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
     font-family: cursive;
-
+    text-align: center;
 }
+
 body {
-   background-color:  #f7f7f7;
+    background-color: #f7f7f7;
 }
-

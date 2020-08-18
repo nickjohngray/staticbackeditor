@@ -5,21 +5,17 @@ interface State {
     data: {}
 }
 
-export class JsonTextEditor extends React.Component< {}, State > {
-
+export class JsonTextEditor extends React.Component<{}, State> {
     constructor(props) {
         super(props)
     }
 
-    render = () =>   <>
-      <textarea onChange={ (event) =>
-          this.setState( {data: event.target.value, } )}>
-          {this.state.data}
-      </textarea>
-        <button onClick={ () =>  this.save} />
-    </>
+    render = () => (
+        <>
+            <textarea onChange={(event) => this.setState({data: event.target.value})}>{this.state.data}</textarea>
+            <button onClick={() => this.save} />
+        </>
+    )
 
-    save = () => {
-
-    }
+    save = () => {}
 }

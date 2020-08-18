@@ -2,8 +2,9 @@ import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {Direction, APICallStatus, IManifest, IPage, UP, IAction} from '../../typings'
 import ManifestActions, {IAddPage, IMovePage, IUpdatePage} from '../actions/manifest.action'
-import undoable, {includeAction} from 'redux-undo'
+import undoable, {excludeAction, includeAction} from 'redux-undo'
 import {remove, cloneDeep} from 'lodash'
+import {getArchtype} from 'immer/dist/utils/common'
 
 interface IManifestExtened {
     requestStage: APICallStatus
@@ -11,6 +12,7 @@ interface IManifestExtened {
     error: any
     isSaved: boolean
     isBusy?: boolean
+    undoableStart?: boolean
 }
 
 const initialState: IManifestExtened = {
@@ -18,7 +20,8 @@ const initialState: IManifestExtened = {
     requestStage: APICallStatus.NOT_INIT,
     error: null,
     isSaved: false,
-    isBusy: false
+    isBusy: false,
+    undoableStart: false
 }
 
 // these reduces could be simplified by adding them to an array
@@ -26,7 +29,7 @@ const initialState: IManifestExtened = {
 const manifestReducer = handleActions<IManifestExtened, any>(
     {
         // a hack to set any value
-        [ManifestActions.SET_PROP]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SetAnyTopLevelProperty]: produce((draft: IManifestExtened, action: IAction) => {
             const keys = Object.keys(action.payload)
             const values = Object.values(action.payload)
 
@@ -35,7 +38,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             }
         }),
 
-        [ManifestActions.saveManifest]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -56,7 +59,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = false
         }),
 
-        [ManifestActions.login]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.Login]: produce((draft: IManifestExtened, action: IAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -71,7 +74,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isBusy = action.status === APICallStatus.request
         }),
 
-        [ManifestActions.saveManifest]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -87,8 +90,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = false
         }),
 
-        // included un undo
-        [ManifestActions.ADD_PAGE]: produce((draft: IManifestExtened, action: IAddPage) => {
+        [ManifestActions.AddPage]: produce((draft: IManifestExtened, action: IAddPage) => {
             const page = {
                 name: action.payload.pageName,
                 path: action.payload.pagePath,
@@ -99,19 +101,19 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = true
         }),
 
-        [ManifestActions.UPDATE_PAGE]: produce((draft: IManifestExtened, action: IUpdatePage) => {
+        [ManifestActions.UpdatePage]: produce((draft: IManifestExtened, action: IUpdatePage) => {
             const updatedPage = action.payload.page
             const pageIndex = findPageIndex(draft.manifest.pages, action.payload.originalPageName)
             draft.manifest.pages[pageIndex] = updatedPage
             draft.isSaved = false
         }),
 
-        [ManifestActions.MOVE_PAGE]: produce((draft: IManifestExtened, action: IMovePage) => {
+        [ManifestActions.MovePage]: produce((draft: IManifestExtened, action: IMovePage) => {
             movePage(draft.manifest, action.payload.pageName, action.payload.direction)
             draft.isSaved = true
         }),
 
-        [ManifestActions.DELETE_PAGE]: produce((draft: IManifestExtened, action: IAddPage) => {
+        [ManifestActions.DeletePage]: produce((draft: IManifestExtened, action: IAddPage) => {
             const pages = draft.manifest.pages
             const pagesRemove = remove(pages, (p) => {
                 return p.name.toUpperCase() === action.payload.pageName.toUpperCase()
@@ -121,6 +123,10 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 draft.error = 'Failed to remove page ' + action.payload.pageName
             }
             draft.isSaved = false
+        }),
+
+        [ManifestActions.TriggerUndoableStart]: produce((draft: IManifestExtened, action: IAction) => {
+            draft.undoableStart = true
         })
     },
     initialState
@@ -163,9 +169,10 @@ const movePage = (manifest: IManifest, pageName: string, direction: Direction): 
 export default undoable(manifestReducer, {
     ignoreInitialState: true,
     filter: includeAction([
-        ManifestActions.UPDATE_PAGE,
-        ManifestActions.ADD_PAGE,
-        ManifestActions.DELETE_PAGE,
-        ManifestActions.MOVE_PAGE
+        ManifestActions.UpdatePage,
+        ManifestActions.AddPage,
+        ManifestActions.DeletePage,
+        ManifestActions.MovePage,
+        ManifestActions.TriggerUndoableStart
     ])
 })

@@ -3,11 +3,15 @@ export interface IPage {
     path: string
     images?: IImage[]
     sections?: ISection[]
-    FBAccessToken?: string,
-    template: string,
+    FBAccessToken?: string
+    template: string
     // this field is only used on the backend
     templateContent?: string
+    editor?: PageEditors
+}
 
+export enum PageEditors {
+    sectionEditor = 'sectionEditor'
 }
 
 export interface ISection {
@@ -35,8 +39,7 @@ export interface IImage {
     url?: string
 }
 
-export type Direction =
-    ('UP' | 'DOWN')
+export type Direction = 'UP' | 'DOWN'
 
 export const UP = 'UP'
 export const DOWN = 'DOWN'
@@ -46,7 +49,7 @@ export interface IManifest {
     imagePath: string
     pages: IPage[]
     products: IProduct[]
-    FBAccessToken: string,
+    FBAccessToken: string
     repoName: string
 }
 export enum APICallStatus {
@@ -56,16 +59,16 @@ export enum APICallStatus {
     fail = 'fail'
 }
 
-export enum ApiMethods   {
+export enum ApiMethods {
     post = 'post',
     get = 'get'
 }
 
 export interface IAction {
-    status?: APICallStatus,
-    error?: any,
-    api?: string,
-    payload?: {},
+    status?: APICallStatus
+    error?: any
+    api?: string
+    payload?: {}
     backendPayload?: any
     type: string // force this latter
     method?: ApiMethods
@@ -137,7 +140,7 @@ export interface IShop {
     products: IProduct[]
 }
 
-export interface IManifest2  {
+export interface IManifest2 {
     appName: string
     imagePath: string
     pages: IPage[]

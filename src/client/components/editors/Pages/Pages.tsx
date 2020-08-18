@@ -4,7 +4,14 @@ import {Direction, DOWN, IManifest, APICallStatus, UP, IPage} from '../../../typ
 import './Pages.css'
 import {Dispatch} from 'redux'
 import {Istore} from '../../../redux/store'
-import {addPage, deletePage, movePage, saveManifest, updatePage} from '../../../redux/actions/manifest.action'
+import {
+    addPage,
+    deletePage,
+    movePage,
+    saveManifest,
+    triggerUndoableStart,
+    updatePage
+} from '../../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
 import Loader from '../../pages/Loader/Loader'
 import PageEditor from '../PageEditor/PageEditor'
@@ -19,6 +26,7 @@ type IProps = RouteComponentProps & {
     saveManifest: (repoName: string, manifest: IManifest) => void
     isSaved: boolean
     isBusy: false
+    triggerUndoableStart: () => void
 }
 
 interface IState {
@@ -39,6 +47,8 @@ class Pages extends React.Component<IProps, IState> {
             currentPage: null
         }
     }
+
+    componentDidMount = () => this.props.triggerUndoableStart()
 
     loadEditor = (page: IPage) => {
         this.setState({currentPage: page})
@@ -94,21 +104,21 @@ class Pages extends React.Component<IProps, IState> {
         const {pageName, pagePath} = this.state
 
         return (
-            <div className='pages_container'>
+            <div className="pages_container">
                 {this.props.isBusy && <Loader />}
-                <div className='pages'>
+                <div className="pages">
                     <h2> Pages </h2>
                     {pages.map((page, key) => (
-                        <div className='page-and-button-controls' key={key + page.name}>
+                        <div className="page-and-button-controls" key={key + page.name}>
                             <div className={'page-button-movers'}>
-                                <button title='Delete Page' onClick={() => this.props.deletePage(page.name)}>
+                                <button title="Delete Page" onClick={() => this.props.deletePage(page.name)}>
                                     {' '}
                                     <Shapes.Cross />{' '}
                                 </button>
 
                                 {key > 0 ? (
                                     <button
-                                        title='Move Page Up or more left on the menu'
+                                        title="Move Page Up or more left on the menu"
                                         onClick={() => this.props.movePage(page.name, UP)}>
                                         {' '}
                                         <Shapes.UpArrow />{' '}
@@ -118,7 +128,7 @@ class Pages extends React.Component<IProps, IState> {
                                 )}
                                 {key < pages.length - 1 ? (
                                     <button
-                                        title='Move Page Down or  more right on the menu'
+                                        title="Move Page Down or  more right on the menu"
                                         onClick={() => this.props.movePage(page.name, DOWN)}>
                                         {' '}
                                         <Shapes.DownArrow />{' '}
@@ -127,51 +137,51 @@ class Pages extends React.Component<IProps, IState> {
                                     <div className={'page-button-movers-placeholder '}></div>
                                 )}
                             </div>
-                            <div className='page-name' onClick={() => this.loadEditor(page)}>
+                            <div className="page-name" onClick={() => this.loadEditor(page)}>
                                 {' '}
                                 {page.name}{' '}
                             </div>
                         </div>
                     ))}
                 </div>
-                <div className='add_page'>
+                <div className="add_page">
                     <h2> New Page </h2>
                     <form onSubmit={() => {}}>
-                        <div className='form_element'>
+                        <div className="form_element">
                             <input
-                                placeholder='Page Name'
-                                type='text'
+                                placeholder="Page Name"
+                                type="text"
                                 value={pageName}
                                 onChange={(e) => this.setState({pageName: e.target.value})}
                             />
                             {this.getPageNameMessage() || <Shapes.Tick />}
                         </div>
 
-                        <div className='form_element'>
+                        <div className="form_element">
                             <input
-                                placeholder='Page Path'
-                                type='text'
+                                placeholder="Page Path"
+                                type="text"
                                 value={pagePath}
                                 onChange={(e) => this.setState({pagePath: e.target.value})}
                             />
                             {pagePath.trim() === '' ? (
-                                <span className='input-message'>Please enter a page path.</span>
+                                <span className="input-message">Please enter a page path.</span>
                             ) : (
                                 <Shapes.Tick />
                             )}
                         </div>
-                        <div className='form-controls'>
+                        <div className="form-controls">
                             <input
-                                value='Create Page'
-                                type='button'
+                                value="Create Page"
+                                type="button"
                                 disabled={!this.isFormOk()}
                                 onClick={() => this.props.addPage(pageName, pagePath)}></input>
 
                             {this.isFormOk() && <Shapes.Tick />}
                             <div>
                                 <input
-                                    value='Save'
-                                    type='button'
+                                    value="Save"
+                                    type="button"
                                     disabled={!this.props.isSaved}
                                     onClick={() => this.props.saveManifest(repoName, this.props.manifest)}></input>
                             </div>
@@ -184,10 +194,10 @@ class Pages extends React.Component<IProps, IState> {
 }
 
 const Shapes = {
-    Tick: () => <span className='shape_tick'>&#10004;</span>,
-    DownArrow: () => <span className='shape_down_arrow'>&#x2B07;</span>,
-    UpArrow: () => <span className='shape_up_arrow'>&#x2B06;</span>,
-    Cross: () => <span className='shape_up_arrow'>&#10016;</span>
+    Tick: () => <span className="shape_tick">&#10004;</span>,
+    DownArrow: () => <span className="shape_down_arrow">&#x2B07;</span>,
+    UpArrow: () => <span className="shape_up_arrow">&#x2B06;</span>,
+    Cross: () => <span className="shape_up_arrow">&#10016;</span>
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -195,7 +205,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     movePage: (pageName: string, direction: Direction) => dispatch(movePage(pageName, direction)),
     addPage: (pageName: string, pagePath: string) => dispatch(addPage(pageName, pagePath, getPageTemplate(pageName))),
     deletePage: (pageName: string) => dispatch(deletePage(pageName)),
-    saveManifest: (repoName: string, manifest: IManifest) => dispatch(saveManifest(manifest))
+    saveManifest: (repoName: string, manifest: IManifest) => dispatch(saveManifest(manifest)),
+    triggerUndoableStart: () => dispatch(triggerUndoableStart())
 })
 
 export default connect(

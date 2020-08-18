@@ -29,9 +29,7 @@ app.use((request, response) => {
         });
 });*/
 
-
-
-const API = '/api';
+const API = '/api'
 app.use(API, commitRouter)
 app.use(API, cloneRepoRouter)
 app.use(API, pushToMasterRouter)
@@ -43,7 +41,7 @@ app.use(API, deletePage)
 
 app.use(indexRouter)
 
-//http://localhost:3000/easyecom/dist/index.html
+// http://localhost:3000/easyecom/dist/index.html
 
 /*app.get('/easyecom', (req, res) => {
     console.log('sending easyecom index.html')
@@ -54,20 +52,16 @@ app.use(indexRouter)
 app.get('*', (req, res) => {
     console.log('sending index.html')
     res.sendFile(path.resolve('dist', 'index.html'))
+})
 
-});
-
-app.listen(port, err => {
+app.listen(port, (err) => {
     if (err) {
-        return console.error(err);
+        return console.error(err)
     }
     return console.log(`server is listening on ${port}`)
 })
 
-
 // Callback function for checking connecting or error
-app.on("error", err => {
-    return console.error(err);
-});
-
-
+app.on('error', (err) => {
+    return console.error(err)
+})

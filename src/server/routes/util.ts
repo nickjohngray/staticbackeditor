@@ -2,10 +2,7 @@ import path from 'path'
 import fs from 'fs'
 
 export const getPageComponentPath = (pageName: string, repoName: string) =>
-    path.resolve(
-        process.cwd(),
-        repoName, 'src', 'components',
-        'pages', pageName + '.tsx')
+    path.resolve(process.cwd(), repoName, 'src', 'components', 'pages', pageName + '.tsx')
 
 export const getPageComponentName = (template: string): string => {
     const pathBits = template.split('/')
@@ -49,15 +46,14 @@ export const makePageComponet = async (pageName: string, repoName: string, pageC
     } catch (error) {
         throw error
     }
-
 }
 
 const rmdir = (dir) => {
     return new Promise((resolve, reject) => {
-        var list = fs.readdirSync(dir)
-        for (var i = 0; i < list.length; i++) {
-            var filename = path.join(dir, list[i])
-            var stat = fs.statSync(filename)
+        let list = fs.readdirSync(dir)
+        for (let i = 0; i < list.length; i++) {
+            let filename = path.join(dir, list[i])
+            let stat = fs.statSync(filename)
 
             if (filename == '.' || filename == '..') {
                 // pass these files
@@ -85,7 +81,6 @@ export default () => (
     </div>
 )`
 
-
 export const dumpError = (err) => {
     if (typeof err === 'object') {
         if (err.message) {
@@ -94,23 +89,23 @@ export const dumpError = (err) => {
         if (err.stack) {
             console.log('\nStacktrace:')
             console.log('====================')
-            console.log(err.stack);
+            console.log(err.stack)
         }
     } else {
-        console.log('dumpError :: argument is not an object');
+        console.log('dumpError :: argument is not an object')
     }
 }
 
-const  childProcess = require('child_process');
-export const startUpPreviewRepo = async (repoName) =>  {
+const childProcess = require('child_process')
+export const startUpPreviewRepo = async (repoName) => {
     try {
-        console.log('About to install node modules for: ' + repoName);
+        console.log('About to install node modules for: ' + repoName)
 
-        const cp = childProcess.exec(`npm run repo-install ${repoName}`);
+        const cp = childProcess.exec(`npm run repo-install ${repoName}`)
 
         cp.on('exit', function (code) {
-            var err = code === 0 ? null : new Error('exit code ' + code)
-            if( err) {
+            let err = code === 0 ? null : new Error('exit code ' + code)
+            if (err) {
                 console.log(err)
                 return
             }
@@ -122,14 +117,12 @@ export const startUpPreviewRepo = async (repoName) =>  {
         cp.on('error', function (err) {
             console.log(err)
         })
-    }catch (err){
+    } catch (err) {
         console.error(err)
     }
 }
 
-
-
-//var childProcess = require('child_process');
+// var childProcess = require('child_process');
 /*
 export const runScript = (scriptPath, callback) => {
 

@@ -1,8 +1,8 @@
-import {cloneRepo} from "../git-util"
-import {fieldsOk} from "../../client/util"
-import {fieldsAreEmptyMessage, repoAccount} from "../static"
+import {cloneRepo} from '../git-util'
+import {fieldsOk} from '../../client/util'
+import {fieldsAreEmptyMessage, repoAccount} from '../static'
 import express from 'express'
-const router = express.Router();
+const router = express.Router()
 
 router.post('/clone-repo', async (req, res) => {
     const repoName: string = req.body.repo_name
@@ -19,4 +19,4 @@ router.post('/clone-repo', async (req, res) => {
     }
 })
 
-export  {router as cloneRepoRouter}
+export {router as cloneRepoRouter}

@@ -1,5 +1,3 @@
-
-
-export  const undo = ()=> {
-    //git reset --hard HEAD~1
+export const undo = () => {
+    // git reset --hard HEAD~1
 }

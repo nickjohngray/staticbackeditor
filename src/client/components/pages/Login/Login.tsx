@@ -45,30 +45,30 @@ class Login extends React.Component<Props, State> {
         const {email, pwd} = this.state
 
         return (
-            <div className='login'>
+            <div className="login">
                 {this.props.isBusy && <Loader />}
-                <div className='login-container'>
+                <div className="login-container">
                     <h1> Login to take control</h1>
                     <form onSubmit={(event) => this.login(event)}>
                         <input
                             value={email}
                             type={email}
-                            placeholder='email'
-                            name='email'
+                            placeholder="email"
+                            name="email"
                             onChange={(e) => {
                                 this.setState({email: e.target.value})
                             }}
                         />
                         <input
                             value={pwd}
-                            type='password'
-                            placeholder='pwd'
-                            name='pwd'
+                            type="password"
+                            placeholder="pwd"
+                            name="pwd"
                             onChange={(e) => {
                                 this.setState({pwd: e.target.value})
                             }}
                         />
-                        <button type='submit'>Login</button>
+                        <button type="submit">Login</button>
                     </form>
                 </div>
                 <img src={logoImagePath} />

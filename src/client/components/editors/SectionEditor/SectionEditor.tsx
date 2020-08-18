@@ -3,7 +3,8 @@ import * as React from 'react'
 import Tree from '../Tree'
 
 interface IProps {
-    pageSections: ISection[]
+    sections: ISection[]
+    onUpdate: (sections: ISection[]) => void
 }
 
 interface ISate {
@@ -15,5 +16,14 @@ class SectionEditor extends React.Component<IProps, ISate> {
         super(props)
     }
 
-    render = () => <Tree data={this.props.pageSections} />
+    render = () => (
+        <Tree
+            onUpdate={(data) => this.props.onUpdate(data as ISection[])}
+            skipKey="opener"
+            nodeKeyForObjectsAndArrays="header"
+            data={this.props.sections}
+        />
+    )
 }
+
+export default SectionEditor

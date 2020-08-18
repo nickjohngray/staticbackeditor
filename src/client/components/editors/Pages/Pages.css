@@ -1,15 +1,14 @@
-
-.pages_container{
+.pages_container {
+    align-items: center;
     background: repeating-linear-gradient(45deg, #0000002b, transparent 100px);
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 100vh;
 }
 
-.input-message{
-    position: absolute;
+.input-message {
     margin-left: 5px;
+    position: absolute;
 }
 
 .tick {
@@ -17,18 +16,18 @@
 }
 
 .pages {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
     max-height: 200px;
     overflow: scroll;
+    padding: 20px;
 }
 
 .page {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .page-and-button-controls {
@@ -37,44 +36,35 @@
 }
 
 .page-name {
+    align-self: center;
+    display: flex;
+    flex-direction: row;
     margin-left: 5px;
 }
 
 .page-button-movers {
-    padding-left:10px;
-    padding-right:10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .page-button-movers-placeholder {
-    min-width: 29px;
-    min-width: 27px;
-    appearance: button;
-    -webkit-writing-mode: horizontal-tb !important;
-    text-rendering: auto;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-shadow: none;
-    display: inline-block;
-    text-align: center;
     align-items: flex-start;
-    cursor: default;
-    box-sizing: border-box;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    padding: 1px 6px;
-    border-width: 2px;
-    border-style: outset;
     border-image: initial;
+    border-style: outset;
+    border-width: 2px;
+    box-sizing: border-box;
+    cursor: default;
+    display: inline-block;
+    font: 400 13.3333px sans-serif, Arial;
+    letter-spacing: normal;
+    margin: 0;
+    min-width: 29px;
     opacity: 0;
+    padding: 1px 6px;
+    text-align: center;
+    text-rendering: auto;
+    text-shadow: none;
+    text-transform: none;
+    word-spacing: normal;
+    -webkit-writing-mode: horizontal-tb !important;
 }
-
-.page-name {
-    display: flex;
-    flex-direction: row;
-    align-self: center;
-}
-
-
-
-

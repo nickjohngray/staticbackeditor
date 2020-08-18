@@ -10,18 +10,15 @@ interface Props {
     saveData: () => void
 }
 
-export class JsonEditor extends React.Component< Props, State > {
-
+export class JsonEditor extends React.Component<Props, State> {
     constructor(props) {
         super(props)
     }
 
-    render = () =>   <>
-      <textarea onChange={ (event) =>
-          this.props.dataChnage(  event.target.value) }>
-          {this.props.data}
-      </textarea>
-        <button onClick={   this.props.saveData} > Save </button>
+    render = () => (
+        <>
+            <textarea onChange={(event) => this.props.dataChnage(event.target.value)}>{this.props.data}</textarea>
+            <button onClick={this.props.saveData}> Save </button>
         </>
-
+    )
 }

@@ -3,7 +3,7 @@ import React, {FC} from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
-import {IHistory, IManifest, IState} from '../../../typings'
+import {IHistory, IManifest} from '../../../typings'
 import {ContentToggler} from '@nickjohngray/blockout'
 import Pages from '../../editors/Pages/Pages'
 import {Home} from '../Home'
@@ -13,10 +13,10 @@ import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
 import {Istore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {setProp} from '../../../redux/actions/manifest.action'
+import {setProp, triggerUndoableStart} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 
-interface Props {
+interface IProps {
     changeURL: (url: IHistory) => void
     currentPageURL: string
     manifest: IManifest
@@ -28,7 +28,7 @@ interface Props {
     redo: () => void
 }
 
-interface State {
+interface IState {
     links: link[]
 }
 
@@ -37,7 +37,7 @@ interface link {
     path: string
 }
 
-class Layout extends React.Component<Props, State> {
+class Layout extends React.Component<IProps, IState> {
     constructor(props) {
         super(props)
 
@@ -77,7 +77,7 @@ class Layout extends React.Component<Props, State> {
             this.props.changeURL({URL: history.location.pathname})
         })
     }
-    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
         if (this.props.error && this.props.error !== prevProps.error) {
             alert(this.props.error)
             this.props.setProp({isBusy: false, error: null})
@@ -104,7 +104,7 @@ class Layout extends React.Component<Props, State> {
                         ))}
                     </nav>
                 </header>
-                <div className='mainMontent'>
+                <div className="mainMontent">
                     <div>
                         <button disabled={!this.props.isUndoable} onClick={() => this.props.undo()}>
                             Undo
@@ -115,15 +115,15 @@ class Layout extends React.Component<Props, State> {
                         <button onClick={() => this.openAppPreview()}>Preview</button>
                     </div>
                     <Router>
-                        <Home path='/' />
-                        <Pages path='pages' />
-                        <ErrorPage path='error' />
-                        <Products path='products' />
+                        <Home path="/" />
+                        <Pages path="pages" />
+                        <ErrorPage path="error" />
+                        <Products path="products" />
                         <NotFound default />
                     </Router>
                 </div>
                 <footer>
-                    <ContentToggler className='help_toggler' title='Help?'>
+                    <ContentToggler className="help_toggler" title="Help?">
                         <p>Help Here</p>
                     </ContentToggler>
                 </footer>

@@ -1,12 +1,12 @@
 /* Remove default bullets */
-ul, #myUL {
+ul,
+#myUL {
     list-style-type: none;
 }
 
 body {
     background: red;
 }
-
 
 /* Remove margins and padding from the parent ul */
 #myUL {
@@ -18,20 +18,19 @@ body {
 .caret {
     cursor: pointer;
     user-select: none; /* Prevent text selection */
-    background: red;
 }
 
 /* Create the caret/arrow with a unicode, and style it */
 .caret::before {
-    content: "\25B6";
-    color: black;
+    color: #00000038;
+    content: '+';
     display: inline-block;
     margin-right: 6px;
 }
 
 /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
 .caret-down::before {
-    transform: rotate(90deg);
+    content: '-';
 }
 
 /* Hide the nested list */
@@ -43,5 +42,3 @@ body {
 .active {
     display: block;
 }
-
-

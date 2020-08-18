@@ -1,20 +1,21 @@
 header {
+    background: #000000d6;
     display: flex;
     flex-direction: row;
-    background: #000000d6;
     justify-content: center;
 }
+
 nav {
+    background: black;
     display: flex;
     flex-direction: row;
-    width: 50%;
-    background: black;
     flex-wrap: nowrap;
     justify-content: space-evenly;
+    width: 50%;
 }
 
 nav a {
-    color: white
+    color: white;
 }
 
 nav a:hover {
@@ -25,7 +26,7 @@ nav a:hover {
     color: #ff0423;
 }
 
-.help_toggler{
-    position: fixed;
+.help_toggler {
     bottom: 0;
+    position: fixed;
 }

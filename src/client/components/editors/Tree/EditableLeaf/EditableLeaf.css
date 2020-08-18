@@ -1,0 +1,12 @@
+.leaf_in_edit_mode {
+    cursor: auto;
+    font-size: 20px;
+    width: 50vw;
+    width: -webkit-fill-available;
+}
+
+.leaf_in_view_mode {
+    color: yellowgreen;
+    cursor: pointer;
+    font-size: 20px;
+}

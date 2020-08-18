@@ -7,12 +7,11 @@ const router = express.Router()
 
 router.post('/push-to-master', async (req, res) => {
     const repoName: string = req.body.repo_name
-    if ((!fieldsOk(repoName))) {
+    if (!fieldsOk(repoName)) {
         res.send(fieldsAreEmptyMessage)
         return
     }
     try {
-
         await pushToMaster(repoName)
         res.send('just pushed ' + repoName + ' to master')
     } catch (e) {
