@@ -1,10 +1,8 @@
 {
   "**/*.+(js|jsx|css|less|scss|ts|tsx|md)": [
-    "prettier --write",
-    "git add"
+    "prettier --write"
   ],
   "*.{css,less,sass}": [
-        "./node_modules/.bin/stylelint --fix",
-        "git add"
+        "./node_modules/.bin/stylelint --fix"
       ]
 }
