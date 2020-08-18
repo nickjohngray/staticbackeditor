@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import childProcess from 'child_process'
 
 export const getPageComponentPath = (pageName: string, repoName: string) =>
     path.resolve(process.cwd(), repoName, 'src', 'components', 'pages', pageName + '.tsx')
@@ -20,12 +21,12 @@ export const deletePageComponent = async (pageName: string, repoName: string): P
     }
 }
 
-export const makePageComponetIfNotExist = async (pageName: string, repoName: string): Promise<boolean> => {
+export const makePageComponentIfNotExist = (pageName: string, repoName: string): boolean => {
     const pageComponentPath = getPageComponentPath(pageName, repoName)
-    if (await !fs.existsSync(pageComponentPath)) {
+    if (!fs.existsSync(pageComponentPath)) {
         // write new page to the current repo pages dir
         console.log('adding ' + pageComponentPath + ' with content: ' + pageTemplate)
-        await fs.writeFileSync(pageComponentPath, pageTemplate)
+        fs.writeFileSync(pageComponentPath, pageTemplate)
         return true
     } else {
         console.log(pageComponentPath + ' exists can make')
@@ -33,7 +34,7 @@ export const makePageComponetIfNotExist = async (pageName: string, repoName: str
     }
 }
 
-export const makePageComponet = async (pageName: string, repoName: string, pageContent: string): Promise<boolean> => {
+export const makePageComponent = async (pageName: string, repoName: string, pageContent: string): Promise<boolean> => {
     try {
         const pageComponentPath = getPageComponentPath(pageName, repoName)
         // remove old component file if it exist
@@ -48,26 +49,28 @@ export const makePageComponet = async (pageName: string, repoName: string, pageC
     }
 }
 
-const rmdir = (dir) => {
-    return new Promise((resolve, reject) => {
+const rmdir = (dir: any): boolean | string => {
+    try {
         let list = fs.readdirSync(dir)
         for (let i = 0; i < list.length; i++) {
             let filename = path.join(dir, list[i])
             let stat = fs.statSync(filename)
 
-            if (filename == '.' || filename == '..') {
+            if (filename === '.' || filename === '..') {
                 // pass these files
             } else if (stat.isDirectory()) {
                 // rmdir recursively
                 rmdir(filename)
             } else {
-                // rm fiilename
+                // rm filename
                 fs.unlinkSync(filename)
             }
         }
         fs.rmdirSync(dir)
-        resolve(true)
-    })
+        return true
+    } catch (e) {
+        return e
+    }
 }
 
 export const pageTemplate = `import React from 'react'
@@ -96,25 +99,23 @@ export const dumpError = (err) => {
     }
 }
 
-const childProcess = require('child_process')
 export const startUpPreviewRepo = async (repoName) => {
     try {
         console.log('About to install node modules for: ' + repoName)
 
         const cp = childProcess.exec(`npm run repo-install ${repoName}`)
 
-        cp.on('exit', function (code) {
+        cp.on('exit', (code) => {
             let err = code === 0 ? null : new Error('exit code ' + code)
             if (err) {
                 console.log(err)
                 return
             }
             console.log(repoName + ' modules installed, starting up...')
-            const p = childProcess.exec(`npm run repo-start ${repoName}`)
         })
 
         // listen for errors as they may prevent the exit event from firing
-        cp.on('error', function (err) {
+        cp.on('error', (err) => {
             console.log(err)
         })
     } catch (err) {

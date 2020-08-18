@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {RouteComponentProps} from '@reach/router'
-import {Direction, DOWN, IManifest, APICallStatus, UP, IPage} from '../../../typings'
+import {Direction, DOWN, IManifest, UP, IPage} from '../../../typings'
 import './Pages.css'
 import {Dispatch} from 'redux'
 import {Istore} from '../../../redux/store'
@@ -146,7 +146,7 @@ class Pages extends React.Component<IProps, IState> {
                 </div>
                 <div className="add_page">
                     <h2> New Page </h2>
-                    <form onSubmit={() => {}}>
+                    <form>
                         <div className="form_element">
                             <input
                                 placeholder="Page Name"

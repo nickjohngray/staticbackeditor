@@ -3,6 +3,9 @@
     "prettier --write"
   ],
   "*.{css,less,sass}": [
-        "./node_modules/.bin/stylelint --fix"
-      ]
+          "npm run checkcss"
+  ],
+  "*.{ts,tsx}": [
+        "npm run checkts"
+   ]
 }

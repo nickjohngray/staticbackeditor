@@ -1,6 +1,5 @@
 import {createAction} from 'redux-actions'
 import {Direction, IManifest, IAction, ApiMethods, IPage} from '../../typings'
-import undoable from 'redux-undo'
 
 export enum ManifestActions {
     MovePage = 'CHANGE/PAGE/POSITION',

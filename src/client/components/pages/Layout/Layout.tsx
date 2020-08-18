@@ -1,5 +1,5 @@
 import {globalHistory, HistoryListenerParameter, Router, Link} from '@reach/router'
-import React, {FC} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
@@ -13,7 +13,7 @@ import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
 import {Istore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {setProp, triggerUndoableStart} from '../../../redux/actions/manifest.action'
+import {setProp} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 
 interface IProps {
@@ -29,10 +29,10 @@ interface IProps {
 }
 
 interface IState {
-    links: link[]
+    links: ILink[]
 }
 
-interface link {
+interface ILink {
     name: string
     path: string
 }
@@ -62,14 +62,6 @@ class Layout extends React.Component<IProps, IState> {
             'resizable,scrollbars,status'
         )
         windowObjectReference.location.reload()
-    }
-
-    openRequestedPopup = () => {
-        const windowObjectReference = window.open(
-            'http://www.gmail.com',
-            'DescriptiveWindowName',
-            'resizable,scrollbars,status'
-        )
     }
 
     componentDidMount = () => {

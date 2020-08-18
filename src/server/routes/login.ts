@@ -1,10 +1,10 @@
 import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage, repoAccount} from '../static'
 import express from 'express'
-import {getUserInfo, openConnection} from './../mongo/openConnection'
+import {getUserInfo, openConnection} from '../mongo/openConnection'
 import {cloneRepo} from '../git-util'
 import fs from 'fs'
-import {IManifest, IPage} from '../../client/typings'
+import {IManifest} from '../../client/typings'
 import {dumpError, getPageComponentName, getPageComponentPath, startUpPreviewRepo} from './util'
 
 const router = express.Router()
@@ -61,7 +61,5 @@ router.post('/login', async (req, res) => {
         res.json({error: 'Error in login.ts. ' + error.message})
     }
 })
-
-let path = require('path')
 
 export {router as loginRouter}

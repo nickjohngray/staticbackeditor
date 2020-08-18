@@ -13,20 +13,21 @@ import {login} from '../../../redux/actions/manifest.action'
 /*const salt = await bcrypt.genSalt(20);
 user.password = await bcrypt.hash(user.password, salt);*/
 
-interface State {
+interface IState {
     email: string
     pwd: string
     manifest: IManifest
     repoName: string
 }
 
-interface Props {
+interface IProps {
     login: (email: string, pwd: string) => void
     manifest: IManifest
     isBusy: boolean
 }
-class Login extends React.Component<Props, State> {
-    constructor(props: Props) {
+
+class Login extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props)
 
         this.state = {email: '', pwd: '', manifest: null, repoName: ''}

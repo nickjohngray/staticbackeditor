@@ -21,10 +21,10 @@ export interface ISection {
     sections?: ISection[]
     list?: string[]
     link?: string
-    opener?: SectionOpener
+    opener?: ISectionOpener
 }
 
-export interface SectionOpener {
+export interface ISectionOpener {
     type: OPENER_TYPE
     open: boolean
 }
@@ -91,7 +91,7 @@ export interface IHistory {
 export interface ICartItem {
     id: number
     product: IProduct
-    selectedVariations: SingleVariation[]
+    selectedVariations: ISingleVariation[]
 }
 
 export interface IProduct {
@@ -99,7 +99,7 @@ export interface IProduct {
     description: string
     image: string
     type: string
-    variations: Variation[]
+    variations: IVariation[]
     price?: number
 }
 
@@ -115,17 +115,17 @@ export interface ICartItemsByType {
     value: string
 }*/
 
-export interface SingleVariation {
+export interface ISingleVariation {
     name: string
-    option: VariationItem
+    option: IVariationItem
 }
 
-export interface Variation {
+export interface IVariation {
     title: string
-    item: VariationItem[]
+    item: IVariationItem[]
 }
 
-export interface VariationItem {
+export interface IVariationItem {
     optionValue: string
     image?: string
     price?: number

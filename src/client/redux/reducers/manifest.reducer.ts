@@ -2,9 +2,8 @@ import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {Direction, APICallStatus, IManifest, IPage, UP, IAction} from '../../typings'
 import ManifestActions, {IAddPage, IMovePage, IUpdatePage} from '../actions/manifest.action'
-import undoable, {excludeAction, includeAction} from 'redux-undo'
-import {remove, cloneDeep} from 'lodash'
-import {getArchtype} from 'immer/dist/utils/common'
+import undoable, {includeAction} from 'redux-undo'
+import {remove} from 'lodash'
 
 interface IManifestExtened {
     requestStage: APICallStatus

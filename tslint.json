@@ -14,7 +14,8 @@
         ]
     },
     "rules": {
-
+        "promise-function-async": { "severity": "error" },
+        "prefer-for-of" : false,
         "no-irregular-whitespace": true,
         "no-trailing-whitespace": true,
         "align": true,
@@ -24,7 +25,12 @@
         "semicolon": [true,"never"],
         "object-literal-sort-keys": false,
         "interface-name": [true, "always-prefix"],
-        "await-promise": true,
+        "await-promise": false,
+
+        "no-empty": {
+            "options": ["allow-empty-catch"],
+            "severity": "default"
+        },
         "arrow-return-shorthand": true,
         "class-name": true,
         "curly": [
@@ -43,21 +49,19 @@
             }
         ],
         "no-console": false,
-        "no-duplicate-imports": true,
+        "no-duplicate-imports": { "severity": "error" },
         "no-magic-numbers": false,
         "no-implicit-dependencies": false,
-        "no-parameter-reassignment": true,
-        "no-return-await": true,
-        "no-string-literal": true,
-        "no-unnecessary-initializer": true,
-        "no-unused-variable": true,
+        "no-parameter-reassignment": { "severity": "error" },
+        "no-return-await": { "severity": "error" },
+        "no-string-literal": { "severity": "error" },
+        "no-unnecessary-initializer": { "severity": "error" },
         "ordered-imports": false,
         "prefer-const": false,
         "prefer-template": false,
-        "promise-function-async": true,
-        "switch-default": true,
-        "triple-equals": true,
-        "use-isnan": true
+        "switch-default": { "severity": "error" },
+        "triple-equals": { "severity": "error" },
+        "use-isnan": { "severity": "error" }
     },
     "rulesDirectory": []
 }

@@ -1,17 +1,10 @@
 import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage} from '../static'
 import express from 'express'
-import {commit, pushToMaster} from '../git-util'
 import fs from 'fs'
-import {IManifest, IPage} from './../../client/typings'
+import {IManifest} from './../../client/typings'
 import path from 'path'
-import {
-    deletePageComponent,
-    getPageComponentName,
-    makePageComponet,
-    makePageComponetIfNotExist,
-    pageTemplate
-} from './util' // move this to share dir
+import {deletePageComponent, getPageComponentName, makePageComponent} from './util' // move this to share dir
 
 const router = express.Router()
 
@@ -74,7 +67,7 @@ router.post('/save-manifest', async (req, res) => {
             // user may click preview at any time
 
             const pageContent = pages[i].templateContent
-            if (!(await makePageComponet(pageName, repoName, pageContent))) {
+            if (!(await makePageComponent(pageName, repoName, pageContent))) {
                 console.log('Could not make page ' + pageName)
             } else {
                 console.log(i + -'made page  ' + pages[i].template)

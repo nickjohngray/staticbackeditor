@@ -1,4 +1,4 @@
-import {APICallStatus, ApiMethods, IAction, IManifest} from '../typings'
+import {APICallStatus, ApiMethods, IAction} from '../typings'
 import axios from 'axios'
 
 // to get in here the action must have the api value set.

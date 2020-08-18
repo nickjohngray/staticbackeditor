@@ -27,12 +27,13 @@ router.post('/add-page', async (req, res) => {
             'pages',
             capitalize(pageName) + '.tsx'
         )
-        if (await fs.existsSync(pageComponentPagePath)) {
+
+        if (fs.existsSync(pageComponentPagePath)) {
             res.json({error: ErrorIn + pageComponentPagePath + ' ' + ' already exist,  cannot add-page'})
         }
         // write new page to the current repo pages dir
         console.log('adding ' + pageComponentPagePath + ' with content: ' + pageTemplate)
-        await fs.writeFileSync(pageComponentPagePath, pageTemplate)
+        fs.writeFileSync(pageComponentPagePath, pageTemplate)
         res.sendStatus(200)
     } catch (error) {
         console.log(ErrorIn + error.message)
