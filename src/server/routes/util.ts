@@ -103,19 +103,40 @@ export const startUpPreviewRepo = async (repoName) => {
     try {
         console.log('About to install node modules for: ' + repoName)
 
-        const cp = childProcess.exec(`npm run repo-install ${repoName}`)
+        const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
 
-        cp.on('exit', (code) => {
+        repoInstallProcess.on('exit', (code) => {
             let err = code === 0 ? null : new Error('exit code ' + code)
             if (err) {
-                console.log(err)
+                console.log(
+                    'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
+                )
                 return
             }
-            console.log(repoName + ' modules installed, starting up...')
+            console.log(repoName + ' nodle modules installed, starting up...')
+
+            const repoStartProcess = childProcess.exec(`npm run repo-start ${repoName}`)
+
+            repoStartProcess.on('exit', (code2) => {
+                let err2 = code2 === 0 ? null : new Error('exit code ' + code)
+                if (err2) {
+                    console.log(err2)
+                    return
+                }
+                console.log(repoName + ' is no longer running')
+            })
+            // show all console messages from repo start
+            repoStartProcess.stdout.on('data', (message) => {
+                console.log(repoName + '>>>' + message)
+            })
+
+            repoStartProcess.on('error', (code2) => {
+                console.log('error starting up ' + repoName + 'Error is ' + code2)
+            })
         })
 
         // listen for errors as they may prevent the exit event from firing
-        cp.on('error', (err) => {
+        repoInstallProcess.on('error', (err) => {
             console.log(err)
         })
     } catch (err) {
