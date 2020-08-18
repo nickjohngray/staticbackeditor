@@ -77,13 +77,7 @@ class Pages extends React.Component<IProps, IState> {
         this.props.manifest.pages.find((page) => pageName.toUpperCase() === page.name.toUpperCase())
 
     savePage = (modifiedPage: IPage) => {
-        window.alert('saving page ' + modifiedPage.name)
-        if (this.pageExists(modifiedPage.name)) {
-            alert('This Page already Exist, choose a different name')
-            return
-        }
         this.props.updatePage(modifiedPage, this.state.currentPage.name)
-
         this.clearCurrentPage()
     }
 
