@@ -2,13 +2,14 @@ import {IPage, ISection, PageEditors} from '../../../typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {cloneDeep, isEqual} from 'lodash'
+import {RouteComponentProps, Link} from '@reach/router'
 
-interface IProps {
+type IProps = {
     page: IPage
     save: (page: IPage) => void
     onSectionChange: (text: string, objectPath: any[]) => void
     cancel: () => void
-}
+} & RouteComponentProps // routable
 
 interface IState {
     name: string
@@ -39,24 +40,6 @@ class PageEditor extends React.Component<IProps, IState> {
         }*/
     }
 
-    updateSections = (text, objectPath) => this.props.onSectionChange(text, objectPath)
-
-    getEditor = () => {
-        switch (this.props.page.editor) {
-            case PageEditors.sectionEditor: {
-                return (
-                    <SectionEditor
-                        onUpdate={(text, objectPath) => this.updateSections(text, objectPath)}
-                        sections={this.props.page.sections}
-                    />
-                )
-            }
-            default: {
-                return <div> No Editor</div>
-            }
-        }
-    }
-
     render = () => {
         const {name, path} = this.state
 
@@ -83,13 +66,32 @@ class PageEditor extends React.Component<IProps, IState> {
                         }}
                     />
                     <button type="submit">Update</button>
-                    <button type="button" onClick={() => this.props.cancel()}>
-                        Cancel
-                    </button>
+                    <Link to="/pages">Back</Link>
                 </form>
                 {this.getEditor()}
             </>
         )
+    }
+
+    updateSections = (text, objectPath) => this.props.onSectionChange(text, objectPath)
+
+    getEditor = () => {
+        if (!this.props.page) {
+            return <div> Page is null </div>
+        }
+        switch (this.props.page.editor) {
+            case PageEditors.sectionEditor: {
+                return (
+                    <SectionEditor
+                        onUpdate={(text, objectPath) => this.updateSections(text, objectPath)}
+                        sections={this.props.page.sections}
+                    />
+                )
+            }
+            default: {
+                return <div> No Editor</div>
+            }
+        }
     }
 }
 

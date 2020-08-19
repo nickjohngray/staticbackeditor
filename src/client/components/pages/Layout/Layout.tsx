@@ -108,7 +108,7 @@ class Layout extends React.Component<IProps, IState> {
                     </div>
                     <Router>
                         <Home path="/" />
-                        <Pages path="pages" />
+                        <Pages path="pages/*" />
                         <ErrorPage path="error" />
                         <Products path="products" />
                         <NotFound default />

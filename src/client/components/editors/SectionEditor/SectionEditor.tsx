@@ -1,6 +1,7 @@
 import {ISection} from '../../../typings'
 import * as React from 'react'
 import Tree from '../Tree'
+import {RouteComponentProps} from '@reach/router'
 
 interface IProps {
     sections: ISection[]

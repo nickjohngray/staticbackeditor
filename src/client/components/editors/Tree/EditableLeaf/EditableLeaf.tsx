@@ -1,5 +1,6 @@
 import * as React from 'react'
 import './EditableLeaf.css'
+import {isEqual} from 'lodash'
 
 interface IProps {
     value: string
@@ -20,11 +21,6 @@ class EditableLeaf extends React.Component<IProps, IState> {
         this.state = {isEditMode: false, value: this.props.value}
     }
 
-    updateStateAfterTextChange = (event) => {
-        this.setState({value: event.target.value})
-        this.props.onUpdate(event.target.value)
-    }
-
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
         if (!prevState.isEditMode && this.state.isEditMode) {
             this.realText.focus()
@@ -32,14 +28,34 @@ class EditableLeaf extends React.Component<IProps, IState> {
         }
     }
 
+    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+        if (!isEqual(nextProps.value, this.props.value)) {
+            this.setState({value: nextProps.value})
+        }
+    }
+
+    updateValueAfterTextChange = (event) => {
+        this.setState({value: event.target.value})
+    }
+
     toggleEditMode = () => {
         const isEditMode = !this.state.isEditMode
         this.setState({isEditMode})
     }
 
+    fireUpdate = () => {
+        this.props.onUpdate(this.state.value)
+    }
+
+    stopEdit = () => {
+        this.setState({isEditMode: false})
+        this.fireUpdate()
+    }
+
     maybeUpdateValue = (event) => {
         if (event.key === 'Enter') {
-            this.toggleEditMode()
+            this.fireUpdate()
+            this.stopEdit()
         }
     }
 
@@ -49,8 +65,8 @@ class EditableLeaf extends React.Component<IProps, IState> {
                 {this.state.isEditMode ? (
                     <input
                         className="leaf_in_edit_mode"
-                        onBlur={() => this.toggleEditMode()}
-                        onChange={(event) => this.updateStateAfterTextChange(event)}
+                        onBlur={() => this.stopEdit()}
+                        onChange={(event) => this.updateValueAfterTextChange(event)}
                         value={this.state.value}
                         ref={(elm: HTMLInputElement) => (this.realText = elm)}
                         onKeyUp={(event) => this.maybeUpdateValue(event)}
