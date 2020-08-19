@@ -4,7 +4,7 @@ import Tree from '../Tree'
 
 interface IProps {
     sections: ISection[]
-    onUpdate: (sections: ISection[]) => void
+    onUpdate: (text: string, objectPath: any[]) => void
 }
 
 interface ISate {
@@ -18,7 +18,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
 
     render = () => (
         <Tree
-            onUpdate={(data) => this.props.onUpdate(data as ISection[])}
+            onUpdate={(text, objectPath) => this.props.onUpdate(text, objectPath)}
             skipKey="opener"
             nodeKeyForObjectsAndArrays="header"
             data={this.props.sections}

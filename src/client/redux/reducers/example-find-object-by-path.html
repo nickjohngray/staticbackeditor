@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" >
+    </script>
+</head>
+<body>
+<script>
+
+    // example how a tree leaf data is updated in reducer
+
+    const obj = [
+        {x:0},
+        {y:1},
+        {y:2},
+        {y:3},
+        {y:4},
+        {"sections":  [
+            {"label":"this is sec 0 data it has list prop next", "list":["a","b","GOT ME!","d"] }]  },
+        {y:6},
+        {y:7},
+    ]
+
+    const path = ["5", "sections", 0, "list", 2]
+    let object = _.cloneDeep(obj)
+    path.forEach( (item) => {
+            object = object[item]
+    } )
+    alert(object)
+
+</script>
+
+</body>
+</html>

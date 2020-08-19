@@ -4,6 +4,7 @@ import './EditableLeaf.css'
 interface IProps {
     value: string
     onUpdate: (text: string) => void
+    elementPath: string[]
 }
 
 interface IState {

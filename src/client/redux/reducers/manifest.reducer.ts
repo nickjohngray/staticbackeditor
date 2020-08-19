@@ -1,9 +1,9 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {Direction, APICallStatus, IManifest, IPage, UP, IAction} from '../../typings'
-import ManifestActions, {IAddPage, IMovePage, IUpdatePage} from '../actions/manifest.action'
+import ManifestActions, {IAddPage, IMovePage, IUpdatePage, IUpdateTextByObjectPath} from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
-import {remove} from 'lodash'
+import {remove, cloneDeep} from 'lodash'
 
 interface IManifestExtened {
     requestStage: APICallStatus
@@ -12,6 +12,7 @@ interface IManifestExtened {
     isSaved: boolean
     isBusy?: boolean
     undoableStart?: boolean
+    currentPage?: null
 }
 
 const initialState: IManifestExtened = {
@@ -23,18 +24,23 @@ const initialState: IManifestExtened = {
     undoableStart: false
 }
 
-// these reduces could be simplified by adding them to an array
+const setAnyTopLevelProperty = (action: IAction, draft: IManifestExtened) => {
+    const keys = Object.keys(action.payload)
+    const values = Object.values(action.payload)
+
+    for (let i = 0; i < keys.length; i++) {
+        draft[keys[i]] = values[i]
+    }
+}
 
 const manifestReducer = handleActions<IManifestExtened, any>(
     {
         // a hack to set any value
+        [ManifestActions.SetAnyTopLevelPropertyUndoable]: produce((draft: IManifestExtened, action: IAction) => {
+            setAnyTopLevelProperty(action, draft)
+        }),
         [ManifestActions.SetAnyTopLevelProperty]: produce((draft: IManifestExtened, action: IAction) => {
-            const keys = Object.keys(action.payload)
-            const values = Object.values(action.payload)
-
-            for (let i = 0; i < keys.length; i++) {
-                draft[keys[i]] = values[i]
-            }
+            setAnyTopLevelProperty(action, draft)
         }),
 
         [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IAction) => {
@@ -99,6 +105,29 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.manifest.pages.push(page)
             draft.isSaved = true
         }),
+
+        [ManifestActions.UpdateTextByObjectPath]: produce(
+            (draft: IManifestExtened, action: IUpdateTextByObjectPath) => {
+                const path = action.payload.objectPath
+                const pageIndex = findPageIndex(draft.manifest.pages, action.payload.page.name)
+
+                // find the parent object by path and set the value
+                // see example-find-object-by-path.html for moore info
+                // this path is set on an editable leaf during the tree build process
+                let obj = draft.manifest.pages[pageIndex]
+                for (let i = 0; i < path.length - 1; i++) {
+                    const item = path[i]
+                    // keep going up to the next parent
+                    obj = obj[item] // this is by reference
+                }
+
+                obj[path[path.length - 1]] = action.payload.text
+
+                // @ts-ignore
+                draft.currentPage = draft.manifest.pages[pageIndex] as IPage
+                draft.isSaved = false
+            }
+        ),
 
         [ManifestActions.UpdatePage]: produce((draft: IManifestExtened, action: IUpdatePage) => {
             const updatedPage = action.payload.page
@@ -172,6 +201,8 @@ export default undoable(manifestReducer, {
         ManifestActions.AddPage,
         ManifestActions.DeletePage,
         ManifestActions.MovePage,
-        ManifestActions.TriggerUndoableStart
+        ManifestActions.TriggerUndoableStart,
+        ManifestActions.UpdateTextByObjectPath,
+        ManifestActions.SetAnyTopLevelPropertyUndoable
     ])
 })

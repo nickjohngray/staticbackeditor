@@ -9,12 +9,16 @@ import {
     deletePage,
     movePage,
     saveManifest,
+    setAnyTopLevelProperty,
+    setAnyTopLevelPropertyUndoable,
     triggerUndoableStart,
-    updatePage
+    updatePage,
+    updateTextByObjectPath
 } from '../../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
 import Loader from '../../pages/Loader/Loader'
 import PageEditor from '../PageEditor/PageEditor'
+import {isEqual} from 'lodash'
 
 type IProps = RouteComponentProps & {
     manifest: IManifest
@@ -27,13 +31,15 @@ type IProps = RouteComponentProps & {
     isSaved: boolean
     isBusy: false
     triggerUndoableStart: () => void
+    updateSection: (page: IPage, text: string, objectPath: any[]) => void
+    setCurrentPage: (currentPage: IPage) => void
+    currentPage: IPage
 }
 
 interface IState {
     pageName: string
     pagePath: string
     isDirty: boolean
-    currentPage: IPage
 }
 
 class Pages extends React.Component<IProps, IState> {
@@ -43,15 +49,20 @@ class Pages extends React.Component<IProps, IState> {
         this.state = {
             pageName: '',
             pagePath: '',
-            isDirty: false,
-            currentPage: null
+            isDirty: false
         }
     }
+
+    /* componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+        if ( !isEqual(nextProps.manifest, this.props.manifest )) {
+            this.setState()
+        }
+    }*/
 
     componentDidMount = () => this.props.triggerUndoableStart()
 
     loadEditor = (page: IPage) => {
-        this.setState({currentPage: page})
+        this.props.setCurrentPage(page)
     }
 
     pageExists = (pageName: string): boolean => {
@@ -77,19 +88,31 @@ class Pages extends React.Component<IProps, IState> {
         this.props.manifest.pages.find((page) => pageName.toUpperCase() === page.name.toUpperCase())
 
     savePage = (modifiedPage: IPage) => {
-        this.props.updatePage(modifiedPage, this.state.currentPage.name)
+        this.props.updatePage(modifiedPage, this.props.currentPage.name)
         this.clearCurrentPage()
+    }
+
+    saveSection = (text: string, objectPath: any[]) => {
+        // @ts-ignore
+        this.props.updateSection(this.props.currentPage, text, ['sections'].concat(objectPath))
     }
 
     cancelPageEdit = () => {
         this.clearCurrentPage()
     }
 
-    clearCurrentPage = () => this.setState({currentPage: null})
+    clearCurrentPage = () => this.props.setCurrentPage(null)
 
     render = () => {
-        if (this.state.currentPage) {
-            return <PageEditor page={this.state.currentPage} cancel={this.cancelPageEdit} save={this.savePage} />
+        if (this.props.currentPage) {
+            return (
+                <PageEditor
+                    onSectionChange={(text, objectPath) => this.saveSection(text, objectPath)}
+                    page={this.props.currentPage}
+                    cancel={this.cancelPageEdit}
+                    save={this.savePage}
+                />
+            )
         }
 
         const {
@@ -169,7 +192,8 @@ class Pages extends React.Component<IProps, IState> {
                                 value="Create Page"
                                 type="button"
                                 disabled={!this.isFormOk()}
-                                onClick={() => this.props.addPage(pageName, pagePath)}></input>
+                                onClick={() => this.props.addPage(pageName, pagePath)}
+                            />
 
                             {this.isFormOk() && <Shapes.Tick />}
                             <div>
@@ -177,7 +201,8 @@ class Pages extends React.Component<IProps, IState> {
                                     value="Save"
                                     type="button"
                                     disabled={!this.props.isSaved}
-                                    onClick={() => this.props.saveManifest(repoName, this.props.manifest)}></input>
+                                    onClick={() => this.props.saveManifest(repoName, this.props.manifest)}
+                                />
                             </div>
                         </div>
                     </form>
@@ -196,18 +221,22 @@ const Shapes = {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     updatePage: (page: IPage, originalPageName: string) => dispatch(updatePage(page, originalPageName)),
+    updateSection: (page: IPage, text: string, objectPath: any[]) =>
+        dispatch(updateTextByObjectPath(page, text, objectPath)),
     movePage: (pageName: string, direction: Direction) => dispatch(movePage(pageName, direction)),
     addPage: (pageName: string, pagePath: string) => dispatch(addPage(pageName, pagePath, getPageTemplate(pageName))),
     deletePage: (pageName: string) => dispatch(deletePage(pageName)),
     saveManifest: (repoName: string, manifest: IManifest) => dispatch(saveManifest(manifest)),
-    triggerUndoableStart: () => dispatch(triggerUndoableStart())
+    triggerUndoableStart: () => dispatch(triggerUndoableStart()),
+    setCurrentPage: (currentPage: IPage) => dispatch(setAnyTopLevelProperty({currentPage}))
 })
 
 export default connect(
     (state: Istore) => ({
         manifest: state.manifest.present.manifest,
         isSaved: state.manifest.present.isSaved,
-        isBusy: state.manifest.present.isBusy
+        isBusy: state.manifest.present.isBusy,
+        currentPage: state.manifest.present.currentPage
     }),
     mapDispatchToProps
 )(Pages)

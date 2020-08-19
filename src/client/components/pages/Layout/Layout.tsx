@@ -13,7 +13,7 @@ import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
 import {Istore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {setProp} from '../../../redux/actions/manifest.action'
+import {setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 
 interface IProps {
@@ -129,7 +129,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(changeURL(url))
     },
     setProp: (object) => {
-        dispatch(setProp(object))
+        dispatch(setAnyTopLevelProperty(object))
     },
     undo: () => dispatch(UndoActionCreators.undo()),
     redo: () => dispatch(UndoActionCreators.redo())

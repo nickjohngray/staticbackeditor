@@ -1,18 +1,17 @@
 import * as React from 'react'
 import './Tree.css'
 import EditableLeaf from './EditableLeaf/EditableLeaf'
-import {cloneDeep} from 'lodash'
+import {isNumber} from 'lodash'
 
 export interface IProps {
     data: object[]
     nodeKeyForObjectsAndArrays: string
     skipKey: string
-    onUpdate: (data: {}) => void
+    onUpdate: (text: string, path: any[]) => void
 }
 
 interface IState {
     isDirty: boolean
-    data: object[]
 }
 
 /*
@@ -31,30 +30,33 @@ interface IState {
 class Tree extends React.Component<IProps, IState> {
     constructor(props) {
         super(props)
-        // clone the the data as when leaf data changes it can easy update by reference
-        // at the same time not mutating the original data
-        this.state = {isDirty: false, data: cloneDeep(this.props.data)}
+        this.state = {isDirty: false}
     }
+    // to do get rid of any should be string or number array
 
-    processObject = (object) =>
+    processObject = (object, currentPath: any[]) =>
         Object.keys(object).map((key, reactKey) => {
             if (key === this.props.skipKey) {
                 return <> </>
             }
+
+            const elementPath = currentPath.concat(this.getNodePathKey(key))
             return (
                 <li key={reactKey + key}>
                     {this.buildNode(this.getOpenerName(object[key], key))}
                     {/*if  "nested active" here it will it expanded*/}
                     <ul className="nested">
                         {this.isPrimitive(object[key])
-                            ? this.buildLeaf(object, key)
+                            ? this.buildLeaf(object[key], elementPath)
                             : this.isArray(object[key])
-                            ? this.loopArray(object[key])
-                            : this.startProObject(object[key], false)}
+                            ? this.loopArray(object[key], elementPath)
+                            : this.startProObject(object[key], false, elementPath)}
                     </ul>
                 </li>
             )
         })
+
+    getNodePathKey = (key: string) => parseInt(key, 10) || key
 
     getOpenerName = (object, alternativeName = 'opener') => {
         if (object[this.props.nodeKeyForObjectsAndArrays]) {
@@ -64,27 +66,27 @@ class Tree extends React.Component<IProps, IState> {
         }
     }
 
-    startProObject = (object, parentIsArray) => {
+    startProObject = (object, parentIsArray, currentPath: string[]) => {
         return parentIsArray ? (
             <li>
                 {' '}
                 {this.buildNode(this.getOpenerName(object))}
                 {/*if  "nested active" here it will be expanded on make*/}
-                <ul className="nested">{this.processObject(object)}</ul>
+                <ul className="nested">{this.processObject(object, currentPath)}</ul>
             </li>
         ) : (
-            this.processObject(object)
+            this.processObject(object, currentPath)
         )
     }
 
-    loopArray = (array) =>
+    loopArray = (array, elementPath: string[]) =>
         array.map((value, key) => (
             <div key={key + value}>
                 {this.isPrimitive(value)
-                    ? this.buildLeafOld(value)
+                    ? this.buildLeaf(value, elementPath.concat(key))
                     : this.isArray(value)
-                    ? this.loopArray(value)
-                    : this.startProObject(value, true)}
+                    ? this.loopArray(value, elementPath.concat(key))
+                    : this.startProObject(value, true, elementPath.concat(key))}
             </div>
         ))
 
@@ -103,18 +105,16 @@ class Tree extends React.Component<IProps, IState> {
             {nodeName}
         </span>
     )
-    buildLeafOld = (value: string) => <EditableLeaf onUpdate={(text) => alert(text)} value={value} />
 
-    buildLeaf = (object: {}, key: string) => (
+    buildLeaf = (value: string, elementPath: string[]) => (
         <EditableLeaf
+            elementPath={elementPath}
             onUpdate={(text) => {
-                /* object is part of this state
-                This is only possible as state is cloned
-                this provides a very easy way to get this leaf data updated*/
-                object[key] = text
-                this.props.onUpdate(this.state.data)
+                console.log('update value ' + text + ' for ')
+                console.log(elementPath)
+                this.props.onUpdate(text, elementPath)
             }}
-            value={object[key]}
+            value={value}
         />
     )
 
@@ -123,11 +123,7 @@ class Tree extends React.Component<IProps, IState> {
         event.target.classList.toggle('caret-down')
     }
 
-    render = () => (
-        <>
-            <ul id="myUL">{this.processObject(this.state.data)}</ul>
-        </>
-    )
+    render = () => <ul id="myUL">{this.processObject(this.props.data, [])}</ul>
 }
 
 export default Tree

@@ -6,6 +6,7 @@ import {cloneDeep, isEqual} from 'lodash'
 interface IProps {
     page: IPage
     save: (page: IPage) => void
+    onSectionChange: (text: string, objectPath: any[]) => void
     cancel: () => void
 }
 
@@ -24,7 +25,7 @@ class PageEditor extends React.Component<IProps, IState> {
     }
 
     update = (event) => {
-        event.preventDefault()
+        /*   event.preventDefault()
         const {name, path} = this.state
         if (path.trim() !== '' && name.trim() !== '') {
             const page = (cloneDeep(this.props.page) as unknown) as IPage
@@ -35,15 +36,17 @@ class PageEditor extends React.Component<IProps, IState> {
             this.props.save({...page, name, path})
         } else {
             alert('fill in all values')
-        }
+        }*/
     }
+
+    updateSections = (text, objectPath) => this.props.onSectionChange(text, objectPath)
 
     getEditor = () => {
         switch (this.props.page.editor) {
             case PageEditors.sectionEditor: {
                 return (
                     <SectionEditor
-                        onUpdate={(sections) => this.setState({sections})}
+                        onUpdate={(text, objectPath) => this.updateSections(text, objectPath)}
                         sections={this.props.page.sections}
                     />
                 )
