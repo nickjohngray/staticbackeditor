@@ -7,10 +7,11 @@ export interface IPage {
     template: string
     // this field is only used on the backend
     templateContent?: string
-    editor?: PageEditors
+    editor?: PageContentEditors
+    id: number
 }
 
-export enum PageEditors {
+export enum PageContentEditors {
     sectionEditor = 'sectionEditor'
 }
 

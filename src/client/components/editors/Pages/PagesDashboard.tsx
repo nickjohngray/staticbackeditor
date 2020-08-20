@@ -1,118 +1,95 @@
-import {Direction, DOWN, IManifest, IPage, UP} from '../../../typings'
 import * as React from 'react'
-import {Link, RouteComponentProps} from '@reach/router'
-import Shapes from './../../Shapes'
+import {RouteComponentProps, Router} from '@reach/router'
+import {Direction, IManifest, IPage} from '../../../typings'
+import './PagesDashboard.css'
+import {Dispatch} from 'redux'
+import {Istore} from '../../../redux/store'
+import {
+    addPage,
+    deletePage,
+    deleteObjectByObjectPath,
+    movePage,
+    saveManifest,
+    triggerUndoableStart,
+    updatePage,
+    updateTextByObjectPath
+} from '../../../redux/actions/manifest.action'
+import {connect} from 'react-redux'
+import Loader from '../../pages/Loader/Loader'
+import PageEditor from '../PageEditor/PageEditor'
+import {Pages} from './Pages'
+import {setCurrentPage} from '../../../redux/actions/ui.actions'
+import {isEqual} from 'lodash'
+import {findPageById} from '../../../util'
 
-interface IState {
-    pageName: string
-    pagePath: string
+type IProps = RouteComponentProps & {
+    manifest: IManifest
+    movePage: (pageID: number, direction: Direction) => void
+    addPage: (pageName: string, pagePath: string) => void
+    deletePage: (pageID: number) => void
+    updatePage: (id: number, name: string, path: string) => void
+    loadManifest: () => void
+    isSaved: boolean
+    isBusy: false
+    triggerUndoableStart: () => void
+    updateSection: (page: IPage, text: string, objectPath: any[]) => void
+    deleteObjectByObjectPath: (page: IPage, objectPath: any[]) => void
+    setCurrentPage: (currentPage: IPage) => void
+    currentPage: IPage
 }
 
-type IProps = {
-    deletePage: (pageName: string) => void
-    loadEditor: (page: IPage) => void
-    movePage: (pageName: string, direction: Direction) => void
-    manifest: IManifest
-    addPage: (pageName: string, pagePath: string) => void
-    saveManifest: (repoName: string, manifest: IManifest) => void
-    isSaved: boolean
-} & RouteComponentProps // routable
+interface IState {
+    isDirty: boolean
+}
 
-export class PageDashboard extends React.Component<IProps, IState> {
+// tslint:disable-next-line:max-classes-per-file
+class PagesDashboard extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props)
 
         this.state = {
-            pageName: '',
-            pagePath: ''
+            isDirty: false
         }
     }
 
+    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+        if (!this.props.currentPage) {
+            return
+        }
+        if (!isEqual(nextProps.manifest, this.props.manifest)) {
+            const page = findPageById(this.props.currentPage.id, nextProps.manifest.pages)
+            if (!page) {
+                alert('could not find page with name ' + this.props.currentPage.name.toUpperCase())
+            }
+            this.props.setCurrentPage(page)
+        }
+    }
+
+    componentDidMount = () => this.props.triggerUndoableStart()
+
     render = () => (
-        <div className="dashboard">
-            <div className="pages">
-                <h2> Pages </h2>
-                {this.props.manifest.pages.map((page, key) => (
-                    <div className="page-and-button-controls" key={key + page.name}>
-                        <div className={'page-button-movers'}>
-                            <button title="Delete Page" onClick={() => this.props.deletePage(page.name)}>
-                                <Shapes.Cross />
-                            </button>
+        <div className="pages_container">
+            {this.props.isBusy && <Loader />}
 
-                            {key > 0 ? (
-                                <button
-                                    title="Move Page Up or more left on the menu"
-                                    onClick={() => this.props.movePage(page.name, UP)}>
-                                    <Shapes.UpArrow />
-                                </button>
-                            ) : (
-                                <div className={'page-button-movers-placeholder'} />
-                            )}
-                            {key < this.props.manifest.pages.length - 1 ? (
-                                <button
-                                    title="Move Page Down or  more right on the menu"
-                                    onClick={() => this.props.movePage(page.name, DOWN)}>
-                                    <Shapes.DownArrow />
-                                </button>
-                            ) : (
-                                <div className={'page-button-movers-placeholder '} />
-                            )}
-                        </div>
+            <Router>
+                <Pages
+                    path="/"
+                    manifest={this.props.manifest}
+                    isSaved={this.props.isSaved}
+                    onAddPage={this.props.addPage}
+                    onDeletePage={this.props.deletePage}
+                    onPageChange={this.props.setCurrentPage}
+                    onMovePage={this.props.movePage}
+                />
 
-                        <Link onClick={() => this.props.loadEditor(page)} to="edit">
-                            {page.name}
-                        </Link>
-                    </div>
-                ))}
-            </div>
-            <div className="add_page">
-                <h2> New Page </h2>
-                <form>
-                    <div className="form_element">
-                        <input
-                            placeholder="Page Name"
-                            type="text"
-                            value={this.state.pageName}
-                            onChange={(e) => this.setState({pageName: e.target.value})}
-                        />
-                        {this.getPageNameMessage() || <Shapes.Tick />}
-                    </div>
-
-                    <div className="form_element">
-                        <input
-                            placeholder="Page Path"
-                            type="text"
-                            value={this.state.pagePath}
-                            onChange={(e) => this.setState({pagePath: e.target.value})}
-                        />
-                        {this.state.pagePath.trim() === '' ? (
-                            <span className="input-message">Please enter a page path.</span>
-                        ) : (
-                            <Shapes.Tick />
-                        )}
-                    </div>
-                    <div className="form-controls">
-                        <input
-                            value="Create Page"
-                            type="button"
-                            disabled={!this.isFormOk()}
-                            onClick={() => this.props.addPage(this.state.pageName, this.state.pagePath)}
-                        />
-
-                        {this.isFormOk() && <Shapes.Tick />}
-                        <div>
-                            <input
-                                value="Save"
-                                type="button"
-                                disabled={!this.props.isSaved}
-                                onClick={() =>
-                                    this.props.saveManifest(this.props.manifest.repoName, this.props.manifest)
-                                }
-                            />
-                        </div>
-                    </div>
-                </form>
-            </div>
+                <PageEditor
+                    path="edit"
+                    onSectionChange={(text, objectPath) => this.updateSection(text, objectPath)}
+                    onSectionDelete={(objectPath) => this.deleteSection(objectPath)}
+                    page={this.props.currentPage}
+                    onPageNameAndPathChange={this.props.updatePage}
+                />
+            </Router>
         </div>
     )
 
@@ -121,20 +98,49 @@ export class PageDashboard extends React.Component<IProps, IState> {
         return !!page
     }
 
-    getPageNameMessage = () => {
-        if (this.state.pageName.trim() === '') {
-            return 'Page name is requied'
-        }
-        if (this.pageExists(this.state.pageName)) {
-            return this.state.pageName + ' already exist'
-        }
-        return null
+    updateSection = (text: string, objectPath: any[]) => {
+        // @ts-ignore
+        this.props.updateSection(this.props.currentPage, text, ['sections'].concat(objectPath))
+    }
+
+    deleteSection = (objectPath: any[]) => {
+        // @ts-ignore
+        this.props.deleteObjectByObjectPath(this.props.currentPage, ['sections'].concat(objectPath))
     }
 
     getPage = (pageName: string) =>
         this.props.manifest.pages.find((page) => pageName.toUpperCase() === page.name.toUpperCase())
+}
 
-    // all values filled and the page does not exist
-    isFormOk = () =>
-        this.state.pageName.trim() !== '' && this.state.pagePath.trim() !== '' && !this.pageExists(this.state.pageName)
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    updatePage: (id: number, name: string, path: string) => dispatch(updatePage(id, name, path)),
+    updateSection: (page: IPage, text: string, objectPath: any[]) =>
+        dispatch(updateTextByObjectPath(page, text, objectPath)),
+    deleteObjectByObjectPath: (page: IPage, objectPath: any[]) => dispatch(deleteObjectByObjectPath(page, objectPath)),
+
+    movePage: (pageID: number, direction: Direction) => dispatch(movePage(pageID, direction)),
+    addPage: (pageName: string, pagePath: string) => dispatch(addPage(pageName, pagePath, getPageTemplate(pageName))),
+    deletePage: (pageID: number) => dispatch(deletePage(pageID)),
+    triggerUndoableStart: () => dispatch(triggerUndoableStart()),
+    setCurrentPage: (currentPage: IPage) => dispatch(setCurrentPage(currentPage))
+})
+
+export default connect(
+    (state: Istore) => ({
+        manifest: state.manifest.present.manifest,
+        isSaved: state.ui.isSaved,
+        isBusy: state.manifest.present.isBusy,
+        currentPage: state.ui.currentPage
+    }),
+    mapDispatchToProps
+)(PagesDashboard)
+
+const getPageTemplate = (pageName: string) => {
+    return `import React from 'react'
+
+export default () => (
+    <div className={'page center-it'}>
+        <h1>${pageName}</h1>
+    </div>
+)`
 }

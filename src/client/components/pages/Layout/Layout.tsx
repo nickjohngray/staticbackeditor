@@ -5,7 +5,7 @@ import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
 import {IHistory, IManifest} from '../../../typings'
 import {ContentToggler} from '@nickjohngray/blockout'
-import Pages from '../../editors/Pages/Pages'
+import Pages from '../../editors/Pages/PagesDashboard'
 import {Home} from '../Home'
 import './Layout.css'
 import {Products} from '../Products'
@@ -13,7 +13,7 @@ import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
 import {Istore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
+import {saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 
 interface IProps {
@@ -26,6 +26,8 @@ interface IProps {
     isRedoable: boolean
     undo: () => void
     redo: () => void
+    isSaved: boolean
+    saveManifest: (manifest: IManifest) => void
 }
 
 interface IState {
@@ -88,7 +90,12 @@ class Layout extends React.Component<IProps, IState> {
         return (
             <>
                 <header>
-                    <div className="undo_redo_container">
+                    <div className="undo_redo_save_container">
+                        <button
+                            disabled={this.props.isSaved}
+                            onClick={() => this.props.saveManifest(this.props.manifest)}>
+                            Save
+                        </button>
                         <button disabled={!this.props.isUndoable} onClick={() => this.props.undo()}>
                             Undo
                         </button>
@@ -132,7 +139,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(setAnyTopLevelProperty(object))
     },
     undo: () => dispatch(UndoActionCreators.undo()),
-    redo: () => dispatch(UndoActionCreators.redo())
+    redo: () => dispatch(UndoActionCreators.redo()),
+    saveManifest: (manifest: IManifest) => dispatch(saveManifest(manifest))
 })
 
 export default connect(
@@ -141,7 +149,8 @@ export default connect(
         manifest: state.manifest.present.manifest,
         isUndoable: state.manifest.past.length > 0,
         isRedoable: state.manifest.future.length > 0,
-        error: state.manifest.present.error
+        error: state.manifest.present.error,
+        isSaved: state.ui.isSaved
     }),
     mapDispatchToProps
 )(Layout)

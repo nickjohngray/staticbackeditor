@@ -1,18 +1,28 @@
 import {createAction} from 'redux-actions'
 import {Direction, IManifest, IManifestAction, ApiMethods, IPage} from '../../typings'
 
-export enum ManifestActions {
+export enum ManifestActionsActionsThatMakeUIDirty {
     MovePage = 'CHANGE/PAGE/POSITION',
     AddPage = 'ADD/PAGE',
     DeletePage = 'DELETE/PAGE',
     UpdatePage = 'UPDATE/PAGE',
     UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH',
+    DeleteObjectByObjectPath = 'DELETE/OBJECT/BY/OBJECT/PATH'
+}
+
+export enum ManifestActions {
+    MovePage = 'CHANGE/PAGE/POSITION',
+    AddPage = 'ADD/PAGE',
+    DeletePage = 'DELETE/PAGE',
+    UpdatePage = 'UPDATE/PAGE',
     Login = 'Login',
     SaveManifest = 'SAVE/MANIFEST',
     loadManifest = 'LOAD/MANIFEST',
     SetAnyTopLevelProperty = 'SET/ANY/TOP/LEVEL/PROPERTY',
     SetAnyTopLevelPropertyUndoable = 'SET/ANY/TOP/LEVEL/PROPERTY/UNDOABLE',
-    TriggerUndoableStart = 'TRIGGER/UNDOABLE/START'
+    TriggerUndoableStart = 'TRIGGER/UNDOABLE/START',
+    DeleteObjectByObjectPath = 'DELETE/OBJECT/BY/OBJECT/PATH',
+    UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH'
 }
 
 enum ApiRoutes {
@@ -27,8 +37,8 @@ export const setAnyTopLevelPropertyUndoable = createAction(
     (object) => object
 )
 
-export const movePage = createAction(ManifestActions.MovePage, (pageName: string, direction: Direction) => ({
-    pageName,
+export const movePage = createAction(ManifestActions.MovePage, (pageID: number, direction: Direction) => ({
+    pageID,
     direction
 }))
 
@@ -37,9 +47,10 @@ export const addPage = createAction(
     (pageName: string, pagePath: string, pageContent: string) => ({pageName, pagePath, pageContent})
 )
 
-export const updatePage = createAction(ManifestActions.UpdatePage, (page: IPage, originalPageName: string) => ({
-    page,
-    originalPageName
+export const updatePage = createAction(ManifestActions.UpdatePage, (id: number, name: string, path: string) => ({
+    id,
+    name,
+    path
 }))
 
 export const updateTextByObjectPath = createAction(
@@ -51,7 +62,15 @@ export const updateTextByObjectPath = createAction(
     })
 )
 
-export const deletePage = createAction(ManifestActions.DeletePage, (pageName: string) => ({pageName}))
+export const deleteObjectByObjectPath = createAction(
+    ManifestActions.DeleteObjectByObjectPath,
+    (page: IPage, objectPath: any[]) => ({
+        page,
+        objectPath
+    })
+)
+
+export const deletePage = createAction(ManifestActions.DeletePage, (pageID: number) => ({pageID}))
 
 export const triggerUndoableStart = createAction(ManifestActions.TriggerUndoableStart, () => ({}))
 
@@ -82,5 +101,6 @@ export type IUpdatePage = ReturnType<typeof updatePage>
 export type IUpdateTextByObjectPath = ReturnType<typeof updateTextByObjectPath>
 export type ISetAnyTopLevelPropertyUndoable = ReturnType<typeof setAnyTopLevelPropertyUndoable>
 export type ISetAnyTopLevelProperty = ReturnType<typeof setAnyTopLevelProperty>
+export type IDeleteTextByObjectPath = ReturnType<typeof deleteObjectByObjectPath>
 
 export default ManifestActions

@@ -1,14 +1,14 @@
-import {IPage, ISection, PageEditors} from '../../../typings'
+import {IPage, ISection, PageContentEditors} from '../../../typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
-import {cloneDeep, isEqual} from 'lodash'
 import {RouteComponentProps, Link} from '@reach/router'
+import EditableLabel from '../EditableLabel/EditableLabel'
 
 type IProps = {
     page: IPage
-    save: (page: IPage) => void
+    onPageNameAndPathChange: (id: number, name: string, path: string) => void
     onSectionChange: (text: string, objectPath: any[]) => void
-    cancel: () => void
+    onSectionDelete: (objectPath: any[]) => void
 } & RouteComponentProps // routable
 
 interface IState {
@@ -25,19 +25,13 @@ class PageEditor extends React.Component<IProps, IState> {
         this.state = {name, path}
     }
 
-    update = (event) => {
-        /*   event.preventDefault()
-        const {name, path} = this.state
-        if (path.trim() !== '' && name.trim() !== '') {
-            const page = (cloneDeep(this.props.page) as unknown) as IPage
-            // update sections if they changed
-            if (this.state.sections !== null && !isEqual(this.state.sections, this.props.page.sections)) {
-                page.sections = this.state.sections
-            }
-            this.props.save({...page, name, path})
-        } else {
-            alert('fill in all values')
-        }*/
+    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+        if (!nextProps.page) {
+            return
+        }
+        if (nextProps.page.name !== this.props.page.name || nextProps.page.path !== this.props.page.path) {
+            this.setState({name: nextProps.page.name, path: nextProps.page.path})
+        }
     }
 
     render = () => {
@@ -46,50 +40,42 @@ class PageEditor extends React.Component<IProps, IState> {
         return (
             <div>
                 <h2>
-                    Editing {name}
-                    <Link to="/pages" replace>
-                        {' '}
-                        {'<'} Back
-                    </Link>
+                    <Link placeholder={'Back to pages dashboard'} to="/pages" replace>
+                        {'<'}
+                    </Link>{' '}
+                    pages {'/'} {name}
                 </h2>
-                <form
-                    onSubmit={(event) => {
-                        this.update(event)
-                    }}>
-                    <input
-                        value={name}
-                        type="text"
+                <div className={'path-and-name-container'}>
+                    <EditableLabel
                         placeholder="Name"
-                        onChange={(e) => {
-                            this.setState({name: e.target.value})
+                        value={name}
+                        onUpdate={(name) => {
+                            this.fireUpdatePath(name)
                         }}
                     />
-                    <input
-                        value={path}
-                        type="text"
+                    <EditableLabel
                         placeholder="Path"
-                        onChange={(e) => {
-                            this.setState({path: e.target.value})
+                        value={path}
+                        onUpdate={(path) => {
+                            this.fireUpdatePath(undefined, path)
                         }}
                     />
-                    <button type="submit">Update</button>
-                </form>
-                {this.getEditor()}
+                </div>
+                {this.getContentEditor()}
             </div>
         )
     }
 
-    updateSections = (text, objectPath) => this.props.onSectionChange(text, objectPath)
-
-    getEditor = () => {
+    getContentEditor = () => {
         if (!this.props.page) {
             return <div> Page is null </div>
         }
         switch (this.props.page.editor) {
-            case PageEditors.sectionEditor: {
+            case PageContentEditors.sectionEditor: {
                 return (
                     <SectionEditor
-                        onUpdate={(text, objectPath) => this.updateSections(text, objectPath)}
+                        onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
+                        onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
                         sections={this.props.page.sections}
                     />
                 )
@@ -98,6 +84,25 @@ class PageEditor extends React.Component<IProps, IState> {
                 return <div> No Editor</div>
             }
         }
+    }
+
+    fireOnPageNameAndPathChange = (event) => {
+        const {name, path} = this.state
+        if (path.trim() === '' || name.trim() === '') {
+            alert('Please fill in all values')
+            return
+        }
+
+        this.props.onPageNameAndPathChange(this.props.page.id, name, path)
+    }
+
+    fireUpdatePath = (name: string = this.state.name, path: string = this.state.path) => {
+        if (path.trim() === '' || name.trim() === '') {
+            alert('Please fill in all values')
+            return
+        }
+
+        this.props.onPageNameAndPathChange(this.props.page.id, name, path)
     }
 }
 

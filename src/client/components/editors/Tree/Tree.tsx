@@ -1,13 +1,13 @@
 import * as React from 'react'
 import './Tree.css'
-import EditableLeaf from './EditableLeaf/EditableLeaf'
-import {isNumber} from 'lodash'
+import EditableLabel from '../EditableLabel/EditableLabel'
 
 export interface IProps {
     data: object[]
     nodeKeyForObjectsAndArrays: string
     skipKey: string
     onUpdate: (text: string, path: any[]) => void
+    onDelete: (path: any[]) => void
 }
 
 interface IState {
@@ -107,15 +107,18 @@ class Tree extends React.Component<IProps, IState> {
     )
 
     buildLeaf = (value: string, elementPath: string[]) => (
-        <EditableLeaf
-            elementPath={elementPath}
-            onUpdate={(text) => {
-                console.log('update value ' + text + ' for ')
-                console.log(elementPath)
-                this.props.onUpdate(text, elementPath)
-            }}
-            value={value}
-        />
+        <li className="leaf">
+            <button onClick={() => this.props.onDelete(elementPath)}>X</button>
+            <EditableLabel
+                elementPath={elementPath}
+                onUpdate={(text) => {
+                    console.log('update value ' + text + ' for ')
+                    console.log(elementPath)
+                    this.props.onUpdate(text, elementPath)
+                }}
+                value={value}
+            />
+        </li>
     )
 
     toggle = (event) => {

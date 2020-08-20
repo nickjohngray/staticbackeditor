@@ -1,11 +1,12 @@
 import * as React from 'react'
-import './EditableLeaf.css'
+import './EditableLabel.css'
 import {isEqual} from 'lodash'
 
 interface IProps {
     value: string
     onUpdate: (text: string) => void
-    elementPath: string[]
+    elementPath?: string[]
+    placeholder?: string
 }
 
 interface IState {
@@ -13,7 +14,7 @@ interface IState {
     value: string
 }
 
-class EditableLeaf extends React.Component<IProps, IState> {
+class EditableLabel extends React.Component<IProps, IState> {
     realText: HTMLInputElement
     constructor(props) {
         super(props)
@@ -61,24 +62,25 @@ class EditableLeaf extends React.Component<IProps, IState> {
 
     render = () => {
         return (
-            <li className="leaf">
+            <>
                 {this.state.isEditMode ? (
                     <input
-                        className="leaf_in_edit_mode"
+                        className="editable_label_in_edit_mode"
                         onBlur={() => this.stopEdit()}
                         onChange={(event) => this.updateValueAfterTextChange(event)}
                         value={this.state.value}
                         ref={(elm: HTMLInputElement) => (this.realText = elm)}
                         onKeyUp={(event) => this.maybeUpdateValue(event)}
+                        placeholder={this.props.placeholder}
                     />
                 ) : (
-                    <div className="leaf_in_view_mode" onClick={() => this.toggleEditMode()}>
-                        {this.state.value}
+                    <div className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
+                        {this.props.placeholder} : {this.state.value}
                     </div>
                 )}
-            </li>
+            </>
         )
     }
 }
 
-export default EditableLeaf
+export default EditableLabel

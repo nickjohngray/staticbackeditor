@@ -6,6 +6,7 @@ import {RouteComponentProps} from '@reach/router'
 interface IProps {
     sections: ISection[]
     onUpdate: (text: string, objectPath: any[]) => void
+    onDelete: (objectPath: any[]) => void
 }
 
 interface ISate {
@@ -19,7 +20,8 @@ class SectionEditor extends React.Component<IProps, ISate> {
 
     render = () => (
         <Tree
-            onUpdate={(text, objectPath) => this.props.onUpdate(text, objectPath)}
+            onUpdate={this.props.onUpdate}
+            onDelete={this.props.onDelete}
             skipKey="opener"
             nodeKeyForObjectsAndArrays="header"
             data={this.props.sections}
