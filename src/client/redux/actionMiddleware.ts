@@ -1,11 +1,11 @@
-import {APICallStatus, ApiMethods, IAction} from '../typings'
+import {APICallStatus, ApiMethods, IManifestAction} from '../typings'
 import axios from 'axios'
 
 // to get in here the action must have the api value set.
 // repoName is not needed as that is defined in the manifest
 // nod will extract  that
 const actionMiddleware = ({dispatch, getState}) => {
-    return (next) => async (action: IAction) => {
+    return (next) => async (action: IManifestAction) => {
         const {type, api = null, payload = {}, method} = action
 
         if (!api) {
@@ -27,7 +27,7 @@ const actionMiddleware = ({dispatch, getState}) => {
 }
 
 const makeAction = (payload: {}, type, data, status: APICallStatus, error: string) => {
-    const apiActionSuccess: IAction = {
+    const apiActionSuccess: IManifestAction = {
         status,
         payload,
         type,

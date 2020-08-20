@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {Link, RouteComponentProps, Router, redirectTo, navigate} from '@reach/router'
-import {Direction, DOWN, IManifest, UP, IPage} from '../../../typings'
+import {RouteComponentProps, Router} from '@reach/router'
+import {Direction, IManifest, IPage} from '../../../typings'
 import './Pages.css'
 import {Dispatch} from 'redux'
 import {Istore} from '../../../redux/store'
@@ -9,8 +9,6 @@ import {
     deletePage,
     movePage,
     saveManifest,
-    setAnyTopLevelProperty,
-    setAnyTopLevelPropertyUndoable,
     triggerUndoableStart,
     updatePage,
     updateTextByObjectPath
@@ -19,6 +17,8 @@ import {connect} from 'react-redux'
 import Loader from '../../pages/Loader/Loader'
 import PageEditor from '../PageEditor/PageEditor'
 import {PageDashboard} from './PagesDashboard'
+import {setCurrentPage} from '../../../redux/actions/pages.actions'
+import {isEqual} from 'lodash'
 
 type IProps = RouteComponentProps & {
     manifest: IManifest
@@ -50,16 +50,49 @@ class Pages extends React.Component<IProps, IState> {
         }
     }
 
-    /* componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
-        if ( !isEqual(nextProps.manifest, this.props.manifest )) {
-            this.setState()
+    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+        if (!isEqual(nextProps.manifest, this.props.manifest)) {
+            const page = nextProps.manifest.pages.find(
+                // tslint:disable-next-line:no-shadowed-variable
+                (page) => this.props.currentPage.name.toUpperCase() === page.name.toUpperCase()
+            )
+            this.props.setCurrentPage(page)
         }
-    }*/
+    }
 
     componentDidMount = () => this.props.triggerUndoableStart()
 
-    loadEditor = (page: IPage) => {
-        this.props.setCurrentPage(page)
+    render = () => {
+        const {
+            manifest: {repoName, pages}
+        } = this.props
+
+        return (
+            <div className="pages_container">
+                {this.props.isBusy && <Loader />}
+
+                <Router>
+                    <PageDashboard
+                        path="/"
+                        manifest={this.props.manifest}
+                        isSaved={this.props.isSaved}
+                        addPage={this.props.addPage}
+                        deletePage={this.props.deletePage}
+                        loadEditor={this.props.setCurrentPage}
+                        movePage={this.props.movePage}
+                        saveManifest={this.props.saveManifest}
+                    />
+
+                    <PageEditor
+                        path="edit"
+                        onSectionChange={(text, objectPath) => this.saveSection(text, objectPath)}
+                        page={this.props.currentPage}
+                        cancel={this.cancelPageEdit}
+                        save={this.savePage}
+                    />
+                </Router>
+            </div>
+        )
     }
 
     pageExists = (pageName: string): boolean => {
@@ -85,39 +118,6 @@ class Pages extends React.Component<IProps, IState> {
     }
 
     clearCurrentPage = () => this.props.setCurrentPage(null)
-
-    render = () => {
-        const {
-            manifest: {repoName, pages}
-        } = this.props
-
-        return (
-            <div className="pages_container">
-                {this.props.isBusy && <Loader />}
-
-                <Router>
-                    <PageDashboard
-                        path="/"
-                        manifest={this.props.manifest}
-                        isSaved={this.props.isSaved}
-                        addPage={this.props.addPage}
-                        deletePage={this.props.deletePage}
-                        loadEditor={this.loadEditor}
-                        movePage={this.props.movePage}
-                        saveManifest={this.props.saveManifest}
-                    />
-
-                    <PageEditor
-                        path="edit"
-                        onSectionChange={(text, objectPath) => this.saveSection(text, objectPath)}
-                        page={this.props.currentPage}
-                        cancel={this.cancelPageEdit}
-                        save={this.savePage}
-                    />
-                </Router>
-            </div>
-        )
-    }
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -129,7 +129,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     deletePage: (pageName: string) => dispatch(deletePage(pageName)),
     saveManifest: (repoName: string, manifest: IManifest) => dispatch(saveManifest(manifest)),
     triggerUndoableStart: () => dispatch(triggerUndoableStart()),
-    setCurrentPage: (currentPage: IPage) => dispatch(setAnyTopLevelPropertyUndoable({currentPage}))
+    setCurrentPage: (currentPage: IPage) => dispatch(setCurrentPage(currentPage))
 })
 
 export default connect(
@@ -137,7 +137,7 @@ export default connect(
         manifest: state.manifest.present.manifest,
         isSaved: state.manifest.present.isSaved,
         isBusy: state.manifest.present.isBusy,
-        currentPage: state.manifest.present.currentPage
+        currentPage: state.pages.currentPage
     }),
     mapDispatchToProps
 )(Pages)

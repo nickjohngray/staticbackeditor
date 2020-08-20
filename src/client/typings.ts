@@ -64,7 +64,7 @@ export enum ApiMethods {
     get = 'get'
 }
 
-export interface IAction {
+export interface IManifestAction {
     status?: APICallStatus
     error?: any
     api?: string

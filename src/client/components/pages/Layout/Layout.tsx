@@ -88,16 +88,7 @@ class Layout extends React.Component<IProps, IState> {
         return (
             <>
                 <header>
-                    <nav>
-                        {this.state.links.map((link) => (
-                            <Link className={this.getActiveLinkClassName(link.path)} to={link.path}>
-                                {link.name}
-                            </Link>
-                        ))}
-                    </nav>
-                </header>
-                <div className="mainMontent">
-                    <div>
+                    <div className="undo_redo_container">
                         <button disabled={!this.props.isUndoable} onClick={() => this.props.undo()}>
                             Undo
                         </button>
@@ -106,6 +97,15 @@ class Layout extends React.Component<IProps, IState> {
                         </button>
                         <button onClick={() => this.openAppPreview()}>Preview</button>
                     </div>
+                    <nav>
+                        {this.state.links.map((link, key) => (
+                            <Link key={key} className={this.getActiveLinkClassName(link.path)} to={link.path}>
+                                {link.name}
+                            </Link>
+                        ))}
+                    </nav>
+                </header>
+                <div className="main-content">
                     <Router>
                         <Home path="/" />
                         <Pages path="pages/*" />

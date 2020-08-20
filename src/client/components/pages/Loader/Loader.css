@@ -54,125 +54,125 @@ svg .g1 {
 }
 
 @keyframes or2ol {
-    0% {
-        transform: scale(1) translate(0);
-    }
+0% {
+    transform: scale(1) translate(0);
+}
 
-    25% {
-        transform: scale(1) translate(0);
-    }
+25% {
+    transform: scale(1) translate(0);
+}
 
-    50% {
-        transform: scale(1) translate(-50px, 0);
-    }
+50% {
+    transform: scale(1) translate(-50px, 0);
+}
 
-    50.001% {
-        transform: scale(1) translate(0);
-    }
+50.001% {
+    transform: scale(1) translate(0);
+}
 }
 
 @keyframes ul2ol {
-    0% {
-        transform: scale(1) translate(0);
-    }
+0% {
+    transform: scale(1) translate(0);
+}
 
-    75% {
-        transform: scale(1) translate(0);
-    }
+75% {
+    transform: scale(1) translate(0);
+}
 
-    100% {
-        transform: scale(1) translate(0, -50px);
-    }
+100% {
+    transform: scale(1) translate(0, -50px);
+}
 }
 
 @keyframes small2big {
-    0% {
-        transform: scale(1) translate(0);
-    }
+0% {
+    transform: scale(1) translate(0);
+}
 
-    25% {
-        transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
-    }
+25% {
+    transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
+}
 
-    50% {
-        transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
-    }
+50% {
+    transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
+}
 
-    50.001% {
-        transform: scale(1) translate(0);
-    }
+50.001% {
+    transform: scale(1) translate(0);
+}
 
-    75% {
-        transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
-    }
+75% {
+    transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
+}
 
-    100% {
-        transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
-    }
+100% {
+    transform: scale(5) translate(calc(9px / 5), calc(9px / 5));
+}
 }
 
 @keyframes big2small {
-    0% {
-        transform: scale(5) translate(calc(-9px / 5), calc(-9px / 5));
-    }
+0% {
+    transform: scale(5) translate(calc(-9px / 5), calc(-9px / 5));
+}
 
-    25% {
-        transform: scale(1) translate(0);
-    }
+25% {
+    transform: scale(1) translate(0);
+}
 
-    50% {
-        transform: scale(1) translate(0, -50px);
-    }
+50% {
+    transform: scale(1) translate(0, -50px);
+}
 
-    50.001% {
-        transform: scale(5) translate(calc(-9px / 5), calc(-9px / 5));
-    }
+50.001% {
+    transform: scale(5) translate(calc(-9px / 5), calc(-9px / 5));
+}
 
-    75% {
-        transform: scale(1) translate(0);
-    }
+75% {
+    transform: scale(1) translate(0);
+}
 
-    100% {
-        transform: scale(1) translate(-50px, 0);
-    }
+100% {
+    transform: scale(1) translate(-50px, 0);
+}
 }
 
 @keyframes rot {
-    0% {
-        transform: rotate(45deg);
-    }
+0% {
+    transform: rotate(45deg);
+}
 
-    12.5% {
-        transform: rotate(45deg);
-    }
+12.5% {
+    transform: rotate(45deg);
+}
 
-    25% {
-        transform: rotate(135deg);
-    }
+25% {
+    transform: rotate(135deg);
+}
 
-    37.5% {
-        transform: rotate(135deg);
-    }
+37.5% {
+    transform: rotate(135deg);
+}
 
-    50% {
-        transform: rotate(225deg);
-    }
+50% {
+    transform: rotate(225deg);
+}
 
-    62.5% {
-        transform: rotate(225deg);
-    }
+62.5% {
+    transform: rotate(225deg);
+}
 
-    75% {
-        transform: rotate(315deg);
-    }
+75% {
+    transform: rotate(315deg);
+}
 
-    87.5% {
-        transform: rotate(315deg);
-    }
+87.5% {
+    transform: rotate(315deg);
+}
 
-    100% {
-        transform: rotate(405deg);
-    }
+100% {
+    transform: rotate(405deg);
+}
 }
 
 * {
@@ -185,7 +185,9 @@ svg .g1 {
     font-family: 'Roboto';
     font-style: italic;
     font-weight: 400;
-    src: local('Roboto Italic'), local('Roboto-Italic'),
+    src:
+        local('Roboto Italic'),
+        local('Roboto-Italic'),
         url(https://fonts.gstatic.com/s/roboto/v20/KFOkCnqEu92Fr1Mu51xIIzc.ttf) format('truetype');
 }
 
@@ -193,7 +195,9 @@ svg .g1 {
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'),
+    src:
+        local('Roboto'),
+        local('Roboto-Regular'),
         url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
 }
 
@@ -201,6 +205,8 @@ svg .g1 {
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 700;
-    src: local('Roboto Bold'), local('Roboto-Bold'),
+    src:
+        local('Roboto Bold'),
+        local('Roboto-Bold'),
         url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmWUlfBBc9.ttf) format('truetype');
 }

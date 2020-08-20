@@ -44,7 +44,14 @@ class PageEditor extends React.Component<IProps, IState> {
         const {name, path} = this.state
 
         return (
-            <>
+            <div>
+                <h2>
+                    Editing {name}
+                    <Link to="/pages" replace>
+                        {' '}
+                        {'<'} Back
+                    </Link>
+                </h2>
                 <form
                     onSubmit={(event) => {
                         this.update(event)
@@ -66,10 +73,9 @@ class PageEditor extends React.Component<IProps, IState> {
                         }}
                     />
                     <button type="submit">Update</button>
-                    <Link to="/pages">Back</Link>
                 </form>
                 {this.getEditor()}
-            </>
+            </div>
         )
     }
 

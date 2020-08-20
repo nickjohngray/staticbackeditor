@@ -1,12 +1,19 @@
 header {
+    align-items: center;
     background: #000000d6;
+    border-radius: 5px;
     display: flex;
     flex-direction: row;
     justify-content: center;
+    position: fixed;
+    width: 100%;
+}
+
+.undo_redo_container {
+    background: #000000d6;
 }
 
 nav {
-    background: black;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;

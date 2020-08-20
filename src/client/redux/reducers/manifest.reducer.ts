@@ -1,6 +1,6 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {Direction, APICallStatus, IManifest, IPage, UP, IAction} from '../../typings'
+import {Direction, APICallStatus, IManifest, IPage, UP, IManifestAction} from '../../typings'
 import ManifestActions, {IAddPage, IMovePage, IUpdatePage, IUpdateTextByObjectPath} from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
 import {remove, cloneDeep} from 'lodash'
@@ -12,7 +12,6 @@ interface IManifestExtened {
     isSaved: boolean
     isBusy?: boolean
     undoableStart?: boolean
-    currentPage?: null
 }
 
 const initialState: IManifestExtened = {
@@ -24,7 +23,7 @@ const initialState: IManifestExtened = {
     undoableStart: false
 }
 
-const setAnyTopLevelProperty = (action: IAction, draft: IManifestExtened) => {
+const setAnyTopLevelProperty = (action: IManifestAction, draft: IManifestExtened) => {
     const keys = Object.keys(action.payload)
     const values = Object.values(action.payload)
 
@@ -36,14 +35,16 @@ const setAnyTopLevelProperty = (action: IAction, draft: IManifestExtened) => {
 const manifestReducer = handleActions<IManifestExtened, any>(
     {
         // a hack to set any value
-        [ManifestActions.SetAnyTopLevelPropertyUndoable]: produce((draft: IManifestExtened, action: IAction) => {
-            setAnyTopLevelProperty(action, draft)
-        }),
-        [ManifestActions.SetAnyTopLevelProperty]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SetAnyTopLevelPropertyUndoable]: produce(
+            (draft: IManifestExtened, action: IManifestAction) => {
+                setAnyTopLevelProperty(action, draft)
+            }
+        ),
+        [ManifestActions.SetAnyTopLevelProperty]: produce((draft: IManifestExtened, action: IManifestAction) => {
             setAnyTopLevelProperty(action, draft)
         }),
 
-        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IManifestAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -52,7 +53,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = false
         }),
 
-        [ManifestActions.loadManifest]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.loadManifest]: produce((draft: IManifestExtened, action: IManifestAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -64,7 +65,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = false
         }),
 
-        [ManifestActions.Login]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.Login]: produce((draft: IManifestExtened, action: IManifestAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -79,7 +80,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isBusy = action.status === APICallStatus.request
         }),
 
-        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.SaveManifest]: produce((draft: IManifestExtened, action: IManifestAction) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
                 draft.error = action.error
@@ -123,8 +124,8 @@ const manifestReducer = handleActions<IManifestExtened, any>(
 
                 obj[path[path.length - 1]] = action.payload.text
 
-                // @ts-ignore
-                draft.currentPage = draft.manifest.pages[pageIndex] as IPage
+                // moved to pages reducer
+                // draft.currentPage = draft.manifest.pages[pageIndex] as IPage
                 draft.isSaved = false
             }
         ),
@@ -153,7 +154,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isSaved = false
         }),
 
-        [ManifestActions.TriggerUndoableStart]: produce((draft: IManifestExtened, action: IAction) => {
+        [ManifestActions.TriggerUndoableStart]: produce((draft: IManifestExtened, action: IManifestAction) => {
             draft.undoableStart = true
         })
     },

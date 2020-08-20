@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions'
-import {Direction, IManifest, IAction, ApiMethods, IPage} from '../../typings'
+import {Direction, IManifest, IManifestAction, ApiMethods, IPage} from '../../typings'
 
 export enum ManifestActions {
     MovePage = 'CHANGE/PAGE/POSITION',
@@ -55,20 +55,20 @@ export const deletePage = createAction(ManifestActions.DeletePage, (pageName: st
 
 export const triggerUndoableStart = createAction(ManifestActions.TriggerUndoableStart, () => ({}))
 
-export const saveManifest = (manifest: IManifest): IAction => ({
+export const saveManifest = (manifest: IManifest): IManifestAction => ({
     type: ManifestActions.SaveManifest,
     payload: {manifest},
     api: ApiRoutes.Save,
     method: ApiMethods.post
 })
 
-export const loadManifest = (): IAction => ({
+export const loadManifest = (): IManifestAction => ({
     type: ManifestActions.loadManifest,
     api: ApiRoutes.load,
     method: ApiMethods.get
 })
 
-export const login = (email: string, pwd: string): IAction => ({
+export const login = (email: string, pwd: string): IManifestAction => ({
     type: ManifestActions.Login,
     api: ApiRoutes.login,
     method: ApiMethods.post,
