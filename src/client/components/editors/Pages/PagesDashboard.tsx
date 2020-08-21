@@ -87,6 +87,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
                     onSectionDelete={(objectPath) => this.deleteSection(objectPath)}
                     page={this.props.currentPage}
                     onPageNameAndPathChange={this.props.updatePage}
+                    imageDirectory={this.props.manifest.repoName}
                 />
             </Router>
         </div>

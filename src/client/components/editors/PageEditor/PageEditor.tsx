@@ -9,6 +9,7 @@ type IProps = {
     onPageNameAndPathChange: (id: number, name: string, path: string) => void
     onSectionChange: (text: string, objectPath: any[]) => void
     onSectionDelete: (objectPath: any[]) => void
+    imageDirectory: string
 } & RouteComponentProps // routable
 
 interface IState {
@@ -77,6 +78,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
                         onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
                         sections={this.props.page.sections}
+                        imageDirectory={this.props.imageDirectory}
                     />
                 )
             }

@@ -99,12 +99,12 @@ router.post('/save-manifest', async (req, res) => {
         console.log('save complete')
 
         /*    console.log('committing changes to git')
-        await commit(repoName,'Static Back Editor 2 - ' + new Date().toDateString(),'manifest.json')
+        await commit(imageDirectory,'Static Back Editor 2 - ' + new Date().toDateString(),'manifest.json')
         console.log('committing changes to git Done!')*/
 
         res.sendStatus(200)
-        // make a publish method for this
-        // await pushToMaster(repoName)
+        // make a publish method for this , and maybe for commit
+        // await pushToMaster(imageDirectory)
     } catch (error) {
         console.log('error===' + error.message)
         res.json({error: ErrorIn + error.message})

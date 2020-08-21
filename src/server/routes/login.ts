@@ -6,6 +6,8 @@ import {cloneRepo} from '../git-util'
 import fs from 'fs'
 import {IManifest} from '../../client/typings'
 import {dumpError, getPageComponentName, getPageComponentPath, startUpPreviewRepo} from './util'
+import path from 'path'
+import {ncp} from 'ncp'
 
 const router = express.Router()
 
@@ -37,9 +39,16 @@ router.post('/login', async (req, res) => {
 
         const repoName = manifest.repoName
         if (!repoName) {
-            console.log('No repoName key found in Manifest, this must be set')
-            throw new Error('No repoName key found in Manifest, this must be set')
+            console.log('No imageDirectory key found in Manifest, this must be set')
+            throw new Error('No imageDirectory key found in Manifest, this must be set')
         }
+        ncp(path.resolve(repoName, 'src', 'images'), path.resolve('dist', repoName), (err) => {
+            if (err) {
+                throw new Error('Could not copy images from ' + repoName + ' to public folder error=' + err.message)
+            }
+            console.log('Copying files complete.')
+        })
+
         const pages = manifest.pages
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i]
@@ -48,12 +57,12 @@ router.post('/login', async (req, res) => {
             const templatePath = getPageComponentPath(getPageComponentName(page.template), repoName)
             console.log('template path=== ' + templatePath)
             // read the file content into template_content const
-            const templateContent = await fs.readFileSync(templatePath, 'utf8')
+            const templateContent = fs.readFileSync(templatePath, 'utf8')
             //  set the  value of templateContent to the value of template_content const
             page.templateContent = templateContent
         }
 
-        // startUpPreviewRepo(repoName)
+        // startUpPreviewRepo(imageDirectory)
 
         res.json(manifest)
     } catch (error) {

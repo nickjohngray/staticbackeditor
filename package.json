@@ -14,7 +14,8 @@
     "repo-install": "npm i --prefix ${arg[0]}",
     "repo-start": "npm start --prefix ${arg[0]}",
     "checkcss": "npx stylelint \"src/**/*.css\" --fix",
-    "checkts": "tslint --project tsconfig.json --config tslint.json --fix"
+    "checkts": "tslint --project tsconfig.json --config tslint.json --fix",
+    "undo-commit": "git reset --soft HEAD~1"
   },
   "author": "Nick Gray",
   "license": "Apache License 2.0",
@@ -38,8 +39,10 @@
     "less-loader": "^6.2.0",
     "lodash": "^4.17.19",
     "mongodb": "^3.5.9",
+    "ncp": "^2.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-lazy-load-image-component": "^1.5.0",
     "react-redux": "^7.0.3",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",

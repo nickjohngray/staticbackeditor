@@ -4,7 +4,7 @@ import ManifestActions, {ManifestActionsActionsThatMakeUIDirty} from './actions/
 import {setIsSaved} from './actions/ui.actions'
 
 // to get in here the action must have the api value set.
-// repoName is not needed as that is defined in the manifest
+// imageDirectory is not needed as that is defined in the manifest
 // nod will extract  that
 const actionMiddleware = ({dispatch, getState}) => {
     const markUnsavedForDirtyActions = (action: IManifestAction) => {
