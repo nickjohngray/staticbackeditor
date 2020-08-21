@@ -5,6 +5,8 @@ import {isEqual} from 'lodash'
 interface IProps {
     value: string
     onUpdate: (text: string) => void
+    onDelete?: () => void
+    isDeleteable?: boolean
     elementPath?: string[]
     placeholder?: string
 }
@@ -74,8 +76,18 @@ class EditableLabel extends React.Component<IProps, IState> {
                         placeholder={this.props.placeholder}
                     />
                 ) : (
-                    <div className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
-                        {this.props.placeholder} : {this.state.value}
+                    <div>
+                        {this.props.isDeleteable && (
+                            <button
+                                className="editable_label_delete_button"
+                                title="delete"
+                                onClick={() => this.props.onDelete()}>
+                                X
+                            </button>
+                        )}
+                        <div className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
+                            {this.props.placeholder && ':'} {this.state.value}
+                        </div>
                     </div>
                 )}
             </>

@@ -9,13 +9,12 @@ import {
     deletePage,
     deleteObjectByObjectPath,
     movePage,
-    saveManifest,
     triggerUndoableStart,
     updatePage,
     updateTextByObjectPath
 } from '../../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
-import Loader from '../../pages/Loader/Loader'
+import Loader from '../../pages/Loaders/OrbLoader/OrbLoader'
 import PageEditor from '../PageEditor/PageEditor'
 import {Pages} from './Pages'
 import {setCurrentPage} from '../../../redux/actions/ui.actions'

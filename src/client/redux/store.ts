@@ -23,33 +23,42 @@ import {APICallStatus} from '../typings'
     }
 }*/
 
-const state = {
-    history: {URL: '/'},
-    manifest: {
-        past: [],
-        present: {
-            error: null,
-            isBusy: false,
-            isSaved: false,
-            manifest: null,
-            requestStage: APICallStatus.NOT_INIT
-        },
-        future: []
-    }
-}
-/*
-
-const state = {
-    history: {URL: '/'},
-    manifest: {
+const defaultManifestState = {
+    past: [],
+    present: {
         error: null,
         isBusy: false,
-        isSaved: false,
         manifest: null,
-        requestStage: 'NOT_INIT'
+        requestStage: APICallStatus.NOT_INIT
+    },
+    future: []
+}
+
+const getJsonFromLocalStored = (key: string) => {
+    try {
+        const data = JSON.parse(localStorage.getItem(key))
+        // ensure the manifest history data was stored correctly
+        if (data && data.present && data.future) {
+            return data
+        }
+        return null
+    } catch (e) {
+        console.error(e)
+        return null
     }
 }
-*/
+
+const manifestStateHistory = getJsonFromLocalStored('manifestStateHistory') || defaultManifestState
+
+const state = {
+    ui: {
+        error: false,
+        currentPage: null,
+        isSaved: true
+    },
+    history: {URL: '/'},
+    manifest: manifestStateHistory
+}
 
 const store = createStore(reducer, state, applyMiddleware(actionMiddleware))
 

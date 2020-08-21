@@ -1,12 +1,27 @@
 .editable_label_in_edit_mode {
     cursor: auto;
     font-size: 20px;
-    width: 50vw;
-    width: -webkit-fill-available;
+    width: auto;
 }
 
 .editable_label_in_view_mode {
     color: #009688;
     cursor: pointer;
     font-size: 20px;
+}
+
+.editable_label_delete_button {
+    background-color: transparent;
+    border: 1px;
+    color: #f44336;
+    cursor: pointer;
+    font-size: 10px;
+    margin: 0;
+    padding: 1px;
+    vertical-align: middle;
+}
+
+.editable_label_delete_button:hover {
+    transform: rotate(360deg);
+    transition-duration: 500ms;
 }

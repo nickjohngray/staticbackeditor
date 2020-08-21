@@ -42,3 +42,7 @@ body {
 .active {
     display: block;
 }
+
+.editable_label_in_view_mode {
+    display: inline;
+}

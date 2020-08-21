@@ -108,12 +108,11 @@ class Tree extends React.Component<IProps, IState> {
 
     buildLeaf = (value: string, elementPath: string[]) => (
         <li className="leaf">
-            <button onClick={() => this.props.onDelete(elementPath)}>X</button>
             <EditableLabel
+                onDelete={() => this.props.onDelete(elementPath)}
+                isDeleteable={true}
                 elementPath={elementPath}
                 onUpdate={(text) => {
-                    console.log('update value ' + text + ' for ')
-                    console.log(elementPath)
                     this.props.onUpdate(text, elementPath)
                 }}
                 value={value}

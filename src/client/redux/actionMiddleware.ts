@@ -7,20 +7,21 @@ import {setIsSaved} from './actions/ui.actions'
 // repoName is not needed as that is defined in the manifest
 // nod will extract  that
 const actionMiddleware = ({dispatch, getState}) => {
+    const markUnsavedForDirtyActions = (action: IManifestAction) => {
+        if (Object.values(ManifestActionsActionsThatMakeUIDirty).some((manifestType) => manifestType === action.type)) {
+            dispatch(setIsSaved(false))
+        }
+    }
+
     return (next) => async (action: IManifestAction) => {
         const {type, api = null, payload = {}, method} = action
 
-        if (!api) {
-            if (
-                Object.values(ManifestActionsActionsThatMakeUIDirty).some(
-                    (manifestType) => manifestType === action.type
-                )
-            ) {
-                dispatch(setIsSaved(false))
-            }
+        markUnsavedForDirtyActions(action)
 
+        if (!api) {
             if (action.type) return next(action)
         }
+        // api actions get fired three times , once for each stage
         // notice there is no API here as we dont need this action to come back in here
         // in a infinitive  loop, it will be dispatched the normal way
         dispatch(makeAction(payload, type, null, APICallStatus.request, null))
@@ -33,6 +34,9 @@ const actionMiddleware = ({dispatch, getState}) => {
 
             if (action.type === ManifestActions.SaveManifest) {
                 dispatch(setIsSaved(true))
+                // update local store
+                const manifestStateHistory = getState('manifest')
+                localStorage.setItem('manifestStateHistory', JSON.stringify(manifestStateHistory.manifest))
             }
         } catch (error) {
             dispatch(makeAction(payload, type, null, APICallStatus.fail, error))

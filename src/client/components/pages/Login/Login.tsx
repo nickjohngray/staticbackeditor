@@ -4,11 +4,11 @@ import {Istore} from '../../../redux/store'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {IManifest} from '../../../typings'
+import './Login.css'
+import Loader from '../Loaders/OrbLoader/OrbLoader'
+import {login} from '../../../redux/actions/manifest.action'
 // @ts-ignore
 import logoImagePath from '../../../images/logo.png'
-import './Login.css'
-import Loader from '../Loader/Loader'
-import {login} from '../../../redux/actions/manifest.action'
 
 /*const salt = await bcrypt.genSalt(20);
 user.password = await bcrypt.hash(user.password, salt);*/
