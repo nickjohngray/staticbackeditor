@@ -4,10 +4,6 @@ ul,
     list-style-type: none;
 }
 
-body {
-    background: red;
-}
-
 /* Remove margins and padding from the parent ul */
 #myUL {
     margin: 0;

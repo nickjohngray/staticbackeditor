@@ -1,18 +1,31 @@
-import React, {lazy} from 'react'
+import React from 'react'
 import './Tree.css'
 import EditableLabel from '../EditableLabel/EditableLabel'
 import {isEqual} from 'lodash'
-import {LazyLoadImage} from 'react-lazy-load-image-component'
+import TreeLeaf from './TreeLeaf/TreeLeaf'
 
 export interface IProps {
     data: object[]
     nodeKeyForObjectsAndArrays: string
-    skipKey: string
+    ignoreKeys: string[]
     onUpdate: (text: string, path: any[]) => void
     onDelete?: (path: any[]) => void
     deletableFields?: string[]
     readonlyPaths?: any[][]
     imagesPaths?: any[][]
+    /* a  json object  that you dont want to build a node for
+    and just build a leaf for its value.
+     eg given this json
+     "image": { > object value
+        "src": "dino_omicevic.png" > primitive value
+     },
+     when imagesPaths is set to [['image']]
+     A node will not be made for image
+     but a leaf will be made for src
+
+    */
+
+    objectToPrimitivePaths?: any[][]
     isDebug?: boolean
     imageDirectory?: string
 }
@@ -61,11 +74,31 @@ class Tree extends React.Component<IProps, IState> {
 
     processObject = (object, currentPath: any[]) =>
         Object.keys(object).map((key, reactKey) => {
-            if (key === this.props.skipKey) {
+            if (this.props.ignoreKeys.some((k) => k === key)) {
+                // cannot return <> here as key must be set
                 return <span key={'skipped_' + key}> </span>
             }
 
+            let nodeToLeaf = null
+            // eg image.src to image, useful for only showing image with no src node
+            if (this.isObjectToPrimitivePath(currentPath)) {
+                nodeToLeaf = Object.values(object)[0]
+            }
+
             const elementPath = currentPath.concat(this.getNodePathKey(key))
+
+            if (nodeToLeaf) {
+                return (
+                    // since we converted the node to a leaf we dont need  <ul className="nested">
+                    <li key={reactKey + key}>
+                        {this.isPrimitive(object[key] || nodeToLeaf)
+                            ? this.buildLeaf(nodeToLeaf || object[key], elementPath)
+                            : this.isArray(object[key])
+                            ? this.loopArray(object[key], elementPath)
+                            : this.startProcessObject(object[key], false, elementPath)}
+                    </li>
+                )
+            }
 
             return (
                 <li key={reactKey + key}>
@@ -132,25 +165,33 @@ class Tree extends React.Component<IProps, IState> {
         </>
     )
 
-    getImage2 = (image: string) => {
-        const path = require('./../../../../../easyecom/src/images/' + image)
-        console.log(path.default)
-        return <img src={'/' + path.default} />
-    }
-    getImage = (image: string) => (
-        <LazyLoadImage height={100} src={'/' + this.props.imageDirectory + '/' + image} width={100} />
-    )
+    getImagePath = (image: string): string => '/' + this.props.imageDirectory + '/' + image
 
     buildLeaf = (value: string, currentPath: string[]) => {
+        const onDelete = this.isDeletable(currentPath) ? () => this.props.onDelete(currentPath) : undefined
+        const imagePath = this.isImagePath(currentPath) ? this.getImagePath(value) : undefined
+
+        return (
+            <TreeLeaf
+                onUpdate={(text) => {
+                    this.props.onUpdate(text, currentPath)
+                }}
+                onDelete={onDelete}
+                imagePath={imagePath}
+                value={value}
+            />
+        )
+    }
+
+    buildLeafOld = (value: string, currentPath: string[]) => {
         if (this.isImagePath(currentPath)) {
-            return this.getImage(value)
+            return
         }
         return (
             <li className="leaf">
                 <EditableLabel
                     onDelete={this.isDeletable(currentPath) ? () => this.props.onDelete(currentPath) : undefined}
                     isDeleteable={this.isDeletable(currentPath)}
-                    elementPath={currentPath}
                     onUpdate={(text) => {
                         this.props.onUpdate(text, currentPath)
                     }}
@@ -165,6 +206,27 @@ class Tree extends React.Component<IProps, IState> {
 
     isPrimitive = (value): boolean => {
         return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+    }
+
+    isObjectToPrimitivePath = (path: any[]): boolean => {
+        let isMergePath = false
+        if (path.toString().indexOf('link') !== -1) {
+            console.log(path + ' ====' + this.props.objectToPrimitivePaths)
+        }
+
+        this.props.objectToPrimitivePaths.forEach((pathIn) => {
+            if (isEqual(path, pathIn)) {
+                isMergePath = true
+            }
+        })
+        const pathAsString = path.toString()
+        this.props.objectToPrimitivePaths.forEach((p) => {
+            if (pathAsString.indexOf(p.toString()) !== -1) {
+                isMergePath = true
+            }
+        })
+
+        return isMergePath
     }
 
     isImagePath = (path: any[]): boolean => {

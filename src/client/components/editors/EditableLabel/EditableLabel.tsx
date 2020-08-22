@@ -7,8 +7,7 @@ interface IProps {
     onUpdate: (text: string) => void
     onDelete?: () => void
     isDeleteable?: boolean
-    elementPath?: string[]
-    placeholder?: string
+    label?: string
 }
 
 interface IState {
@@ -73,10 +72,10 @@ class EditableLabel extends React.Component<IProps, IState> {
                         value={this.state.value}
                         ref={(elm: HTMLInputElement) => (this.realText = elm)}
                         onKeyUp={(event) => this.maybeUpdateValue(event)}
-                        placeholder={this.props.placeholder}
+                        placeholder={this.props.label}
                     />
                 ) : (
-                    <div>
+                    <>
                         {this.props.isDeleteable && (
                             <button
                                 className="editable_label_delete_button"
@@ -85,13 +84,20 @@ class EditableLabel extends React.Component<IProps, IState> {
                                 X
                             </button>
                         )}
-                        <div className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
-                            {this.props.placeholder && ':'} {this.state.value}
-                        </div>
-                    </div>
+                        <span className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
+                            {this.getLabel()}
+                        </span>
+                    </>
                 )}
             </>
         )
+    }
+
+    getLabel = () => {
+        if (this.props.label) {
+            return this.props.label + ':' + this.state.value
+        }
+        return this.state.value
     }
 }
 

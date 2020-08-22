@@ -21,21 +21,17 @@ class SectionEditor extends React.Component<IProps, ISate> {
 
     render = () => (
         <Tree
-            /*  deleteableFields={['header', 'list', 'image', 'link', 'sections']}*/
-            /*
-            <span class="caret node caret-down">src - </span>
-             */
-
             readonlyPaths={[
                 [0, 'sections', 0, 'image', 'src'],
                 ['image', 'src'],
                 [0, 'sections', 0, 'link']
             ]}
-            imagesPaths={[['image', 'src']]}
+            imagesPaths={[['image']]}
+            objectToPrimitivePaths={[['image'], ['header']]}
             imageDirectory={this.props.imageDirectory}
             onUpdate={this.props.onUpdate}
             onDelete={this.props.onDelete}
-            skipKey="opener"
+            ignoreKeys={['opener']}
             nodeKeyForObjectsAndArrays="header"
             data={this.props.sections}
         />

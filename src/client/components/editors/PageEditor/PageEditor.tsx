@@ -3,6 +3,7 @@ import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link} from '@reach/router'
 import EditableLabel from '../EditableLabel/EditableLabel'
+import './PageEditor.css'
 
 type IProps = {
     page: IPage
@@ -41,21 +42,20 @@ class PageEditor extends React.Component<IProps, IState> {
         return (
             <div>
                 <h2>
-                    <Link placeholder={'Back to pages dashboard'} to="/pages" replace>
-                        {'<'}
-                    </Link>{' '}
-                    pages {'/'} {name}
-                </h2>
-                <div className={'path-and-name-container'}>
+                    <Link title={'Back to pages dashboard'} to="/pages" replace>
+                        <span className={'back_link'}>{'< back'}</span>
+                    </Link>
+                    pages {'/'}
                     <EditableLabel
-                        placeholder="Name"
                         value={name}
                         onUpdate={(name) => {
                             this.fireUpdatePath(name)
                         }}
                     />
+                </h2>
+                <div className={'path-and-name-container'}>
                     <EditableLabel
-                        placeholder="Path"
+                        label="Path"
                         value={path}
                         onUpdate={(path) => {
                             this.fireUpdatePath(undefined, path)
