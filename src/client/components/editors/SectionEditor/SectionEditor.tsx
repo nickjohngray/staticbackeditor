@@ -27,7 +27,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
                 [0, 'sections', 0, 'link']
             ]}
             imagesPaths={[['image']]}
-            objectToPrimitivePaths={[['image'], ['header']]}
+            objectToPrimitivePaths={[['image']]}
             imageDirectory={this.props.imageDirectory}
             onUpdate={this.props.onUpdate}
             onDelete={this.props.onDelete}
