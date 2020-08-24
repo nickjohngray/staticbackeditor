@@ -1,22 +1,23 @@
-import {globalHistory, HistoryListenerParameter, Router, Link} from '@reach/router'
+import {globalHistory, HistoryListenerParameter, Router, Link, navigate, LocationProps} from '@reach/router'
 import React from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
-import {IHistory, IManifest} from '../../../typings'
+import {IHistory, IManifest, IPage} from '../../../../shared/typings'
 import {ContentToggler} from '@nickjohngray/blockout'
-import Pages from '../../editors/Pages/PagesDashboard'
+import Pages from '../../editors/PagesDashboard/PagesDashboard'
 import {Home} from '../Home'
 import './Layout.css'
 import {Products} from '../Products'
 import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
-import {Istore} from '../../../redux/store'
+import {IStore} from '../../../redux/store'
 import Login from '../Login/Login'
 import {saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 
 interface IProps {
+    location: LocationProps
     changeURL: (url: IHistory) => void
     currentPageURL: string
     manifest: IManifest
@@ -28,6 +29,8 @@ interface IProps {
     redo: () => void
     isSaved: boolean
     saveManifest: (manifest: IManifest) => void
+    currentPage: IPage
+    isDebug: boolean
 }
 
 interface IState {
@@ -42,8 +45,6 @@ interface ILink {
 class Layout extends React.Component<IProps, IState> {
     constructor(props) {
         super(props)
-
-        this.props.changeURL({URL: globalHistory.location.pathname})
 
         this.state = {
             links: [
@@ -70,6 +71,10 @@ class Layout extends React.Component<IProps, IState> {
         globalHistory.listen((history: HistoryListenerParameter) => {
             this.props.changeURL({URL: history.location.pathname})
         })
+
+        if (!this.props.currentPage && window.location.pathname.indexOf('/pages/edit') !== -1) {
+            navigate('/pages', {replace: true})
+        }
     }
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
         if (this.props.error && this.props.error !== prevProps.error) {
@@ -88,7 +93,7 @@ class Layout extends React.Component<IProps, IState> {
             return <Login />
         }
         return (
-            <>
+            <div>
                 <header>
                     <div className="undo_redo_save_container">
                         <button
@@ -126,7 +131,7 @@ class Layout extends React.Component<IProps, IState> {
                         <p>Help Here</p>
                     </ContentToggler>
                 </footer>
-            </>
+            </div>
         )
     }
 }
@@ -144,13 +149,15 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 })
 
 export default connect(
-    (state: Istore) => ({
+    (state: IStore) => ({
         currentPageURL: state.history.URL,
         manifest: state.manifest.present.manifest,
         isUndoable: state.manifest.past.length > 0,
         isRedoable: state.manifest.future.length > 0,
         error: state.manifest.present.error,
-        isSaved: state.ui.isSaved
+        isSaved: state.ui.isSaved,
+        currentPage: state.ui.currentPage,
+        isDebug: state.ui.isDebug
     }),
     mapDispatchToProps
 )(Layout)

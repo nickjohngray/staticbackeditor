@@ -1,18 +1,20 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {IPage} from '../../typings'
+import {IPage} from '../../../shared/typings'
 import {ISetCurrentPage, ISetIsSaved, UiActions} from '../actions/ui.actions'
 
 interface IUI {
     error: any
     currentPage: IPage
     isSaved: boolean
+    isDebug
 }
 
 const initialState: IUI = {
     error: false,
     currentPage: null,
-    isSaved: true
+    isSaved: true,
+    isDebug: true
 }
 
 const uiReducer = handleActions<IUI, any>(

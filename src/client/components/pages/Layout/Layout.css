@@ -1,3 +1,7 @@
+.manin-container {
+    margin-top: 0;
+}
+
 header {
     align-items: center;
     background: #000000d6;
@@ -6,7 +10,12 @@ header {
     flex-direction: row;
     justify-content: center;
     position: fixed;
+    top: 0;
     width: 100%;
+}
+
+.debug {
+    color: blue !important;
 }
 
 .undo_redo_save_container {

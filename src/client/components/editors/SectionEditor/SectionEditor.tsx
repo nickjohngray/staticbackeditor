@@ -1,13 +1,13 @@
-import {ISection} from '../../../typings'
+import {ISection} from '../../../../shared/typings'
 import * as React from 'react'
-import Tree from '../Tree'
-import {RouteComponentProps} from '@reach/router'
+import Tree from '../../generic/Tree'
 
 interface IProps {
     sections: ISection[]
     onUpdate: (text: string, objectPath: any[]) => void
     onDelete: (objectPath: any[]) => void
     imageDirectory: string
+    projectUploadFolder: string
 }
 
 interface ISate {
@@ -29,6 +29,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
             imagesPaths={[['image']]}
             objectToPrimitivePaths={[['image']]}
             imageDirectory={this.props.imageDirectory}
+            projectUploadFolder={this.props.projectUploadFolder}
             onUpdate={this.props.onUpdate}
             onDelete={this.props.onDelete}
             ignoreKeys={['opener']}

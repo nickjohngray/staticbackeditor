@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions'
-import {IHistory} from '../../typings'
+import {IHistory} from '../../../shared/typings'
 
 export enum HistoryActions {
     CHANGE_URL = 'HISTORY/CHANGE_URL'

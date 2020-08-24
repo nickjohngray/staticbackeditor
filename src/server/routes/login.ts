@@ -1,13 +1,13 @@
-import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage, repoAccount} from '../static'
 import express from 'express'
 import {getUserInfo, openConnection} from '../mongo/openConnection'
 import {cloneRepo} from '../git-util'
 import fs from 'fs'
-import {IManifest} from '../../client/typings'
+import {IManifest} from '../../shared/typings'
 import {dumpError, getPageComponentName, getPageComponentPath, startUpPreviewRepo} from './util'
 import path from 'path'
 import {ncp} from 'ncp'
+import {fieldsOk} from '../../shared/util'
 
 const router = express.Router()
 
@@ -42,11 +42,13 @@ router.post('/login', async (req, res) => {
             console.log('No imageDirectory key found in Manifest, this must be set')
             throw new Error('No imageDirectory key found in Manifest, this must be set')
         }
+
+        console.log('Copying images from ' + repoName + '/src/images to dist/' + repoName)
         ncp(path.resolve(repoName, 'src', 'images'), path.resolve('dist', repoName), (err) => {
             if (err) {
                 throw new Error('Could not copy images from ' + repoName + ' to public folder error=' + err.message)
             }
-            console.log('Copying files complete.')
+            console.log('Copying images complete.')
         })
 
         const pages = manifest.pages
@@ -62,7 +64,7 @@ router.post('/login', async (req, res) => {
             page.templateContent = templateContent
         }
 
-        // startUpPreviewRepo(imageDirectory)
+        startUpPreviewRepo(repoName)
 
         res.json(manifest)
     } catch (error) {

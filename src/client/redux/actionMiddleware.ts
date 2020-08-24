@@ -1,7 +1,8 @@
-import {APICallStatus, ApiMethods, IManifestAction} from '../typings'
+import {APICallStatus, ApiMethods, IManifestAction} from '../../shared/typings'
 import axios from 'axios'
 import ManifestActions, {ManifestActionsActionsThatMakeUIDirty} from './actions/manifest.action'
 import {setIsSaved} from './actions/ui.actions'
+import {Constants, saveStateToLocalStorage} from '../util'
 
 // to get in here the action must have the api value set.
 // imageDirectory is not needed as that is defined in the manifest
@@ -34,9 +35,8 @@ const actionMiddleware = ({dispatch, getState}) => {
 
             if (action.type === ManifestActions.SaveManifest) {
                 dispatch(setIsSaved(true))
-                // update local store
-                const manifestStateHistory = getState('manifest')
-                localStorage.setItem('manifestStateHistory', JSON.stringify(manifestStateHistory.manifest))
+                saveStateToLocalStorage(Constants.manifest, getState)
+                saveStateToLocalStorage(Constants.ui, getState)
             }
         } catch (error) {
             dispatch(makeAction(payload, type, null, APICallStatus.fail, error))

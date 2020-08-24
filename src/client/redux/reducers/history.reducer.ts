@@ -1,6 +1,6 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {IHistory} from '../../typings'
+import {IHistory} from '../../../shared/typings'
 import HistoryActions, {changeHistoryAction} from '../actions/history.action'
 
 export const initialState = {URL: '/'}

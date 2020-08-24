@@ -1,14 +1,14 @@
 import React from 'react'
-import {fieldsOk} from '../../../util'
-import {Istore} from '../../../redux/store'
+import {IStore} from '../../../redux/store'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
-import {IManifest} from '../../../typings'
+import {IManifest} from '../../../../shared/typings'
 import './Login.css'
 import Loader from '../Loaders/OrbLoader/OrbLoader'
 import {login} from '../../../redux/actions/manifest.action'
 // @ts-ignore
-import logoImagePath from '../../../images/logo.png'
+import logoImagePath from '../../../assets/images/logo.png'
+import {fieldsOk} from '../../../../shared/util'
 
 /*const salt = await bcrypt.genSalt(20);
 user.password = await bcrypt.hash(user.password, salt);*/
@@ -85,7 +85,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 })
 
 export default connect(
-    (state: Istore) => ({
+    (state: IStore) => ({
         manifest: state.manifest.present.manifest,
         isBusy: state.manifest.present.isBusy
     }),

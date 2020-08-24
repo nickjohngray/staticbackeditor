@@ -1,5 +1,5 @@
 import {pushToMaster} from '../git-util'
-import {fieldsOk} from '../../client/util'
+import {fieldsOk} from '../../shared/util'
 import {fieldsAreEmptyMessage} from '../static'
 import express from 'express'
 

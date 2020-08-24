@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions'
-import {IPage} from '../../typings'
+import {IPage} from '../../../shared/typings'
 
 export enum UiActions {
     SetCurrentPage = 'SET/CURRENT/PAGE',

@@ -1,7 +1,8 @@
 import multer from 'multer'
 import sharp from 'sharp'
-import {fieldsAreEmptyMessage} from '../static'
 import * as path from 'path'
+import {fieldsOk} from '../../shared/util'
+import {fieldsAreEmptyMessage} from '../static'
 
 const multerStorage = multer.memoryStorage()
 
@@ -19,6 +20,9 @@ const upload = multer({
 })
 
 const uploadFiles = upload.array('images', 10)
+
+const ErrorIn = 'Error in upload-controller.ts '
+
 const uploadImages = (req, res, next) => {
     try {
         uploadFiles(req, res, (err) => {
@@ -28,7 +32,6 @@ const uploadImages = (req, res, next) => {
                 }
             } else if (err) {
                 const x = err
-                console.log('error WTF' + x.message)
                 return res.json({error: +x.message})
             }
 
@@ -41,26 +44,27 @@ const uploadImages = (req, res, next) => {
 }
 
 const resizeImages = async (req, res, next) => {
-    console.log('in resizeImages start  req.files ' + req.files.length)
-    // if (!req.files) return next()
     try {
-        console.log('in resizeImages 1 ')
+        const projectUploadFolder = req.body.projectUploadFolder
+        if (!fieldsOk(projectUploadFolder)) {
+            return res.json({error: +ErrorIn + fieldsAreEmptyMessage})
+        }
+
         req.body.images = []
         await Promise.all(
             req.files.map(async (file) => {
-                console.log('in resizeImages 2 ')
                 try {
                     const filename = file.originalname.replace(/\..+$/, '')
-                    const newFilename = `bezkoder-${filename}-${Date.now()}.jpeg`
-                    console.log('fn:' + newFilename)
-                    console.log('in resizeImages 3')
+                    const newFileName = `${filename}-${Date.now()}.jpeg`
                     await sharp(file.buffer)
-                        /*.resize(640, 320)
+                        .resize(640, 320)
                         .toFormat('jpeg')
-                        .jpeg({quality: 90})*/
-                        .toFile(path.resolve('uploads', newFilename))
+                        .jpeg({quality: 90})
+                        // save the new image to dist folder where react can get it
+                        // on save these images should be copied to repo folder
+                        .toFile(path.resolve('dist', projectUploadFolder, newFileName))
 
-                    req.body.images.push(newFilename)
+                    req.body.images.push(newFileName)
                 } catch (e) {
                     console.log('error in  resizeImages' + e)
                 }
@@ -69,7 +73,6 @@ const resizeImages = async (req, res, next) => {
             console.log('error in resizeImages ' + e)
             return res.json({error: +e.message})
         })
-
         next()
     } catch (e) {
         console.log(e)
@@ -92,7 +95,7 @@ const getResult = async (req, res) => {
         const images = req.body.images.map((image) => '' + image + '').join(' ')
         let i = req.body.images
 
-        return res.json({error: `Images were uploaded:${images}`})
+        return res.json({fileNames: req.body.images})
     } catch (e) {
         console.log(e)
         return res.json({error: +e.message})

@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions'
-import {Direction, IManifest, IManifestAction, ApiMethods, IPage} from '../../typings'
+import {Direction, IManifest, IManifestAction, ApiMethods, IPage} from '../../../shared/typings'
 
 export enum ManifestActionsActionsThatMakeUIDirty {
     MovePage = 'CHANGE/PAGE/POSITION',
@@ -53,7 +53,7 @@ export const updatePage = createAction(ManifestActions.UpdatePage, (id: number, 
     path
 }))
 
-export const updateTextByObjectPath = createAction(
+export const updateObjectByPath = createAction(
     ManifestActions.UpdateTextByObjectPath,
     (page: IPage, text: string, objectPath: any[]) => ({
         page,
@@ -62,7 +62,7 @@ export const updateTextByObjectPath = createAction(
     })
 )
 
-export const deleteObjectByObjectPath = createAction(
+export const deleteObjectByPath = createAction(
     ManifestActions.DeleteObjectByObjectPath,
     (page: IPage, objectPath: any[]) => ({
         page,
@@ -98,9 +98,9 @@ export type IMovePage = ReturnType<typeof movePage>
 export type IAddPage = ReturnType<typeof addPage>
 export type IDeletePage = ReturnType<typeof deletePage>
 export type IUpdatePage = ReturnType<typeof updatePage>
-export type IUpdateTextByObjectPath = ReturnType<typeof updateTextByObjectPath>
+export type IUpdateTextByObjectPath = ReturnType<typeof updateObjectByPath>
 export type ISetAnyTopLevelPropertyUndoable = ReturnType<typeof setAnyTopLevelPropertyUndoable>
 export type ISetAnyTopLevelProperty = ReturnType<typeof setAnyTopLevelProperty>
-export type IDeleteTextByObjectPath = ReturnType<typeof deleteObjectByObjectPath>
+export type IDeleteTextByObjectPath = ReturnType<typeof deleteObjectByPath>
 
 export default ManifestActions

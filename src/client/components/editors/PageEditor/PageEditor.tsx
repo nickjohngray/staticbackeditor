@@ -1,9 +1,10 @@
-import {IPage, ISection, PageContentEditors} from '../../../typings'
+import {IPage, ISection, PageContentEditors} from '../../../../shared/typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
-import {RouteComponentProps, Link} from '@reach/router'
-import EditableLabel from '../EditableLabel/EditableLabel'
+import {RouteComponentProps, Link, navigate} from '@reach/router'
+import EditableLabel from '../../generic/EditableLabel/EditableLabel'
 import './PageEditor.css'
+import Tree from '../../generic/Tree'
 
 type IProps = {
     page: IPage
@@ -11,6 +12,7 @@ type IProps = {
     onSectionChange: (text: string, objectPath: any[]) => void
     onSectionDelete: (objectPath: any[]) => void
     imageDirectory: string
+    projectUploadFolder: string
 } & RouteComponentProps // routable
 
 interface IState {
@@ -22,9 +24,16 @@ interface IState {
 class PageEditor extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props)
+        if (this.props.page) {
+            const {name, path} = props.page
+            this.state = {name, path}
+        }
+    }
 
-        const {name, path} = props.page
-        this.state = {name, path}
+    componentWillMount() {
+        if (!this.props.page) {
+            navigate('/pages')
+        }
     }
 
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
@@ -42,10 +51,10 @@ class PageEditor extends React.Component<IProps, IState> {
         return (
             <div>
                 <h2>
-                    <Link title={'Back to pages dashboard'} to="/pages" replace>
-                        <span className={'back_link'}>{'< back'}</span>
+                    <Link title={'Back to pages'} to="/pages" replace>
+                        <span>pages{'/'}</span>
                     </Link>
-                    pages {'/'}
+
                     <EditableLabel
                         value={name}
                         onUpdate={(name) => {
@@ -79,6 +88,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
                         sections={this.props.page.sections}
                         imageDirectory={this.props.imageDirectory}
+                        projectUploadFolder={this.props.projectUploadFolder}
                     />
                 )
             }

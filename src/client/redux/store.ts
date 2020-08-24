@@ -1,7 +1,8 @@
 import {createStore, applyMiddleware} from 'redux'
 import reducer from './reducers'
 import actionMiddleware from './actionMiddleware'
-import {APICallStatus} from '../typings'
+import {APICallStatus} from '../../shared/typings'
+import {Constants, getJsonFromLocalStorage} from '../util'
 
 // let reduxDevTools = {}
 
@@ -34,28 +35,17 @@ const defaultManifestState = {
     future: []
 }
 
-const getJsonFromLocalStored = (key: string) => {
-    try {
-        const data = JSON.parse(localStorage.getItem(key))
-        // ensure the manifest history data was stored correctly
-        if (data && data.present && data.future) {
-            return data
-        }
-        return null
-    } catch (e) {
-        console.error(e)
-        return null
-    }
+const defaultUIState = {
+    error: false,
+    currentPage: null,
+    isSaved: true
 }
 
-const manifestStateHistory = getJsonFromLocalStored('manifestStateHistory') || defaultManifestState
+const uiState = getJsonFromLocalStorage(Constants.ui) || defaultUIState
+const manifestStateHistory = getJsonFromLocalStorage(Constants.manifest) || defaultManifestState
 
 const state = {
-    ui: {
-        error: false,
-        currentPage: null,
-        isSaved: true
-    },
+    ui: uiState,
     history: {URL: '/'},
     manifest: manifestStateHistory
 }
@@ -64,4 +54,4 @@ const store = createStore(reducer, state, applyMiddleware(actionMiddleware))
 
 export default store
 
-export type Istore = ReturnType<typeof reducer>
+export type IStore = ReturnType<typeof reducer>

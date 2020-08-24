@@ -1,10 +1,11 @@
-import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage} from '../static'
 import express from 'express'
 import fs from 'fs'
-import {IManifest} from './../../client/typings'
+import {IManifest} from '../../shared/typings'
 import path from 'path'
-import {deletePageComponent, getPageComponentName, makePageComponent} from './util' // move this to share dir
+import {deletePageComponent, getPageComponentName, makePageComponent} from './util'
+import {fieldsOk} from '../../shared/util' // move this to share dir
+import {ncp} from 'ncp'
 
 const router = express.Router()
 
@@ -56,6 +57,15 @@ router.post('/save-manifest', async (req, res) => {
 
         await fs.writeFileSync(manifestPath, JSON.stringify(manifest))
         console.log('Done!,  manifest file saved')
+
+        //
+        console.log('Copying images from ' + repoName + ' to dist/' + repoName + '/src/images')
+        ncp(path.resolve('dist', repoName), path.resolve(repoName, 'src', 'images'), (err) => {
+            if (err) {
+                throw new Error('Could not copy images from ' + repoName + ' to public folder error=' + err.message)
+            }
+            console.log('Copying images complete.')
+        })
 
         const pages = (manifest as IManifest).pages
         console.log('making new pages')

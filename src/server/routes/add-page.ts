@@ -1,9 +1,9 @@
-import {fieldsOk} from '../../client/util'
 import {fieldsAreEmptyMessage} from '../static'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import {capitalize} from 'lodash'
+import {fieldsOk} from '../../shared/util'
 
 const router = express.Router()
 const ErrorIn = 'Error in add-page.ts '

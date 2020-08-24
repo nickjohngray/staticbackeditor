@@ -1,6 +1,6 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {APICallStatus, Direction, IManifest, IManifestAction, IPage, UP} from '../../typings'
+import {APICallStatus, Direction, IManifest, IManifestAction, IPage, UP} from '../../../shared/typings'
 import ManifestActions, {
     IAddPage,
     IDeletePage,
