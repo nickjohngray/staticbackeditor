@@ -1,3 +1,7 @@
 .dashboard {
     margin-top: 0;
 }
+
+.page_item_while_dragged {
+    list-style: none;
+}

@@ -2,7 +2,9 @@ import {Direction, DOWN, IManifest, IPage, UP} from '../../../../shared/typings'
 import * as React from 'react'
 import {Link, RouteComponentProps} from '@reach/router'
 import Shapes from '../../generic/Shapes'
+import {SortableContainer, SortableElement, SortEvent, SortEventWithTag} from 'react-sortable-hoc'
 import './PagesEditor.css'
+import PageItem from './PageItem'
 
 interface IState {
     pageName: string
@@ -13,6 +15,7 @@ type IProps = {
     onDeletePage: (pageID: number) => void
     onPageChange: (page: IPage) => void
     onMovePage: (pageID: number, direction: Direction) => void
+    onMovePageTo: (fromIndex: number, toIndex: number) => void
     manifest: IManifest
     onAddPage: (pageName: string, pagePath: string) => void
     isSaved: boolean
@@ -32,38 +35,20 @@ export class PagesEditor extends React.Component<IProps, IState> {
         <div className="dashboard">
             <div className="pages">
                 <h2> Pages </h2>
-                {this.props.manifest.pages.map((page, key) => (
-                    <div className="page-and-button-controls" key={key + page.name}>
-                        <div className={'page-button-movers'}>
-                            <button title="Delete Page" onClick={() => this.props.onDeletePage(page.id)}>
-                                <Shapes.Cross />
-                            </button>
-
-                            {key > 0 ? (
-                                <button
-                                    title="Move Page Up or more left on the menu"
-                                    onClick={() => this.props.onMovePage(page.id, UP)}>
-                                    <Shapes.UpArrow />
-                                </button>
-                            ) : (
-                                <div className={'page-button-movers-placeholder'} />
-                            )}
-                            {key < this.props.manifest.pages.length - 1 ? (
-                                <button
-                                    title="Move Page Down or  more right on the menu"
-                                    onClick={() => this.props.onMovePage(page.id, DOWN)}>
-                                    <Shapes.DownArrow />
-                                </button>
-                            ) : (
-                                <div className={'page-button-movers-placeholder '} />
-                            )}
-                        </div>
-
-                        <Link onClick={() => this.props.onPageChange(page)} to={`edit/${page.path}`}>
-                            {page.name}
-                        </Link>
-                    </div>
-                ))}
+                <SortableList
+                    helperClass={'page_item_while_dragged'}
+                    shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
+                        if ((event as SortEventWithTag).target.tagName === 'DIV') {
+                            return false // the drag handle is defined in a div
+                        }
+                        // cancel this drag event for all other tag elements,
+                        // like span, button and link, these are used for
+                        // other things
+                        return true
+                    }}
+                    items={this.getPageItems()}
+                    onSortEnd={this.onSortEnd}
+                />
             </div>
             <div className="add_page">
                 <h2> New Page </h2>
@@ -106,6 +91,11 @@ export class PagesEditor extends React.Component<IProps, IState> {
         </div>
     )
 
+    getPageItems = () =>
+        this.props.manifest.pages.map((page, key) => <PageItem key={page.id + '-' + key} page={page} {...this.props} />)
+
+    onSortEnd = ({oldIndex, newIndex}) => this.props.onMovePageTo(oldIndex, newIndex)
+
     pageExists = (pageName: string): boolean => {
         const page = this.getPage(pageName)
         return !!page
@@ -128,3 +118,15 @@ export class PagesEditor extends React.Component<IProps, IState> {
     isFormOk = () =>
         this.state.pageName.trim() !== '' && this.state.pagePath.trim() !== '' && !this.pageExists(this.state.pageName)
 }
+
+const SortableItem = SortableElement(({value}) => <li>{value}</li>)
+
+const SortableList = SortableContainer(({items}) => {
+    return (
+        <ul>
+            {items.map((value, index) => (
+                <SortableItem key={'item-' + index + '-' + value} index={index} value={value} />
+            ))}
+        </ul>
+    )
+})

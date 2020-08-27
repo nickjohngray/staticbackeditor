@@ -1,12 +1,13 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {APICallStatus, Direction, IManifest, IManifestAction, IPage, UP} from '../../../shared/typings'
+import {APICallStatus, Direction, DOWN, IManifest, IManifestAction, IPage, UP} from '../../../shared/typings'
 import ManifestActions, {
     IAddObjectByPath,
     IAddPage,
     IDeletePage,
     IDeleteTextByObjectPath,
     IMovePage,
+    IMovePageTo,
     IUpdatePage,
     IUpdateTextByObjectPath
 } from '../actions/manifest.action'
@@ -171,6 +172,14 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             movePage(draft.manifest, action.payload.pageID, action.payload.direction)
         }),
 
+        [ManifestActions.MovePageTo]: produce((draft: IManifestExtened, action: IMovePageTo) => {
+            const pages: IPage[] = draft.manifest.pages
+            const fromObject = pages[action.payload.fromIndex]
+            const toObject = pages[action.payload.toIndex]
+            pages[action.payload.fromIndex] = toObject
+            pages[action.payload.toIndex] = fromObject
+        }),
+
         [ManifestActions.DeletePage]: produce((draft: IManifestExtened, action: IDeletePage) => {
             const pages = draft.manifest.pages
             const pagesRemove = remove(pages, (p) => {
@@ -200,6 +209,30 @@ const findPageIndex = (pages: IPage[], pageID: number): number => {
     return pageIndex
 }
 
+const movePageTo = (manifest: IManifest, fromIndex: number, toIndex: number): IManifest => {
+    const pages: IPage[] = manifest.pages
+    const direction = fromIndex > toIndex ? UP : DOWN
+
+    if (direction === UP) {
+        // at top
+        if (toIndex === 0) {
+            return manifest
+        }
+    } else {
+        // at bottom
+        if (toIndex === pages.length - 1) {
+            return manifest
+        }
+    }
+
+    const dropToPageIndex = direction === UP ? toIndex - 1 : toIndex + 1
+
+    const dropToPage = pages[toIndex]
+    // swap objects
+    pages[dropToPageIndex] = pages[toIndex] // new page goes to where old page way
+    pages[toIndex] = dropToPage
+}
+
 const movePage = (manifest: IManifest, pageID: number, direction: Direction): IManifest => {
     const pages: IPage[] = manifest.pages
     let pageIndex = findPageIndex(pages, pageID)
@@ -216,10 +249,10 @@ const movePage = (manifest: IManifest, pageID: number, direction: Direction): IM
 
     const pageIndexToMove = direction === UP ? pageIndex - 1 : pageIndex + 1
 
-    const pageToMoveUp = pages[pageIndexToMove]
+    const pageToMove = pages[pageIndexToMove]
     // swap objects
     pages[pageIndexToMove] = pages[pageIndex]
-    pages[pageIndex] = pageToMoveUp
+    pages[pageIndex] = pageToMove
 }
 
 const setAnyTopLevelProperty = (action: IManifestAction, draft: IManifestExtened) => {
@@ -252,9 +285,11 @@ export default undoable(manifestReducer, {
         ManifestActions.AddPage,
         ManifestActions.DeletePage,
         ManifestActions.MovePage,
+        ManifestActions.MovePageTo,
         ManifestActions.TriggerUndoableStart,
         ManifestActions.UpdateTextByObjectPath,
         ManifestActions.DeleteObjectByObjectPath,
+        ManifestActions.AddJsonObjectByObjectPath,
         ManifestActions.SetAnyTopLevelPropertyUndoable
     ])
 })

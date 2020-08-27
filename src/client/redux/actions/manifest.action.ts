@@ -23,7 +23,8 @@ export enum ManifestActions {
     TriggerUndoableStart = 'TRIGGER/UNDOABLE/START',
     DeleteObjectByObjectPath = 'DELETE/OBJECT/BY/OBJECT/PATH',
     UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH',
-    AddJsonObjectByObjectPath = 'ADD/JSON/OBJECT/BY/OBJECT/PATH'
+    AddJsonObjectByObjectPath = 'ADD/JSON/OBJECT/BY/OBJECT/PATH',
+    MovePageTo = 'MOVE/PAGE/TO'
 }
 
 enum ApiRoutes {
@@ -41,6 +42,11 @@ export const setAnyTopLevelPropertyUndoable = createAction(
 export const movePage = createAction(ManifestActions.MovePage, (pageID: number, direction: Direction) => ({
     pageID,
     direction
+}))
+
+export const movePageTo = createAction(ManifestActions.MovePageTo, (fromIndex: number, toIndex: number) => ({
+    fromIndex,
+    toIndex
 }))
 
 export const addPage = createAction(
@@ -105,6 +111,7 @@ export const login = (email: string, pwd: string): IManifestAction => ({
 })
 
 export type IMovePage = ReturnType<typeof movePage>
+export type IMovePageTo = ReturnType<typeof movePageTo>
 export type IAddPage = ReturnType<typeof addPage>
 export type IDeletePage = ReturnType<typeof deletePage>
 export type IUpdatePage = ReturnType<typeof updatePage>
