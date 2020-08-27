@@ -9,6 +9,7 @@ import Tree from '../../generic/Tree'
 type IProps = {
     page: IPage
     onPageNameAndPathChange: (id: number, name: string, path: string) => void
+    onSectionAdd: (jsonObject: object, objectPath: any[]) => void
     onSectionChange: (text: string, objectPath: any[]) => void
     onSectionDelete: (objectPath: any[]) => void
     imageDirectory: string
@@ -85,6 +86,7 @@ class PageEditor extends React.Component<IProps, IState> {
                 return (
                     <SectionEditor
                         onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
+                        onAdd={(jsonObject, objectPath) => this.props.onSectionAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
                         sections={this.props.page.sections}
                         imageDirectory={this.props.imageDirectory}

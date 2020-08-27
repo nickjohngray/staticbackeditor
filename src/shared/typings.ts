@@ -11,6 +11,8 @@ export interface IPage {
     id: number
 }
 
+export type IPath = (string | number)[]
+
 export enum PageContentEditors {
     sectionEditor = 'sectionEditor'
 }

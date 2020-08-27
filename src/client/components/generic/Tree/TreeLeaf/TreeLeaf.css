@@ -22,10 +22,17 @@
     color: #00000038;
     content: '+';
     display: inline-block;
-    margin-right: 6px;
+    font-size: 20px;
+    margin-right: 10px;
 }
 
 /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
 .caret-down::after {
     content: '-';
+    font-size: 20px;
+}
+
+/* moves the leaf beside the node for an editable node */
+.caret .leaf {
+    display: inline;
 }

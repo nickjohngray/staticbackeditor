@@ -22,7 +22,8 @@ export enum ManifestActions {
     SetAnyTopLevelPropertyUndoable = 'SET/ANY/TOP/LEVEL/PROPERTY/UNDOABLE',
     TriggerUndoableStart = 'TRIGGER/UNDOABLE/START',
     DeleteObjectByObjectPath = 'DELETE/OBJECT/BY/OBJECT/PATH',
-    UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH'
+    UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH',
+    AddJsonObjectByObjectPath = 'ADD/JSON/OBJECT/BY/OBJECT/PATH'
 }
 
 enum ApiRoutes {
@@ -58,6 +59,15 @@ export const updateObjectByPath = createAction(
     (page: IPage, text: string, objectPath: any[]) => ({
         page,
         text,
+        objectPath
+    })
+)
+
+export const addObjectByPath = createAction(
+    ManifestActions.AddJsonObjectByObjectPath,
+    (page: IPage, jsonObject: object, objectPath: any[]) => ({
+        page,
+        jsonObject,
         objectPath
     })
 )
@@ -102,5 +112,6 @@ export type IUpdateTextByObjectPath = ReturnType<typeof updateObjectByPath>
 export type ISetAnyTopLevelPropertyUndoable = ReturnType<typeof setAnyTopLevelPropertyUndoable>
 export type ISetAnyTopLevelProperty = ReturnType<typeof setAnyTopLevelProperty>
 export type IDeleteTextByObjectPath = ReturnType<typeof deleteObjectByPath>
+export type IAddObjectByPath = ReturnType<typeof addObjectByPath>
 
 export default ManifestActions

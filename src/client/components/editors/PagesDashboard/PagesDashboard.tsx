@@ -11,7 +11,8 @@ import {
     movePage,
     triggerUndoableStart,
     updatePage,
-    updateObjectByPath
+    updateObjectByPath,
+    addObjectByPath
 } from '../../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
 import Loader from '../../pages/Loaders/OrbLoader/OrbLoader'
@@ -33,6 +34,7 @@ type IProps = RouteComponentProps & {
     isBusy: false
     triggerUndoableStart: () => void
     updateObjectByPath: (page: IPage, text: string, objectPath: any[]) => void
+    addObjectByPath: (page: IPage, jsonObject: object, objectPath: any[]) => void
     deleteObjectByPath: (page: IPage, objectPath: any[]) => void
     setCurrentPage: (currentPage: IPage) => void
     currentPage: IPage
@@ -100,7 +102,8 @@ class PagesDashboard extends React.Component<IProps, IState> {
                     {this.props.currentPage && (
                         <PageEditor
                             path="edit/:pageID"
-                            onSectionChange={(value, objectPath) => this.updateSection(value, objectPath)}
+                            onSectionChange={(value: string, objectPath) => this.updateSection(value, objectPath)}
+                            onSectionAdd={(jsonObject: object, objectPath) => this.addSection(jsonObject, objectPath)}
                             onSectionDelete={(objectPath) => this.deleteSection(objectPath)}
                             page={this.props.currentPage}
                             onPageNameAndPathChange={this.props.updatePage}
@@ -122,6 +125,10 @@ class PagesDashboard extends React.Component<IProps, IState> {
         this.props.updateObjectByPath(this.props.currentPage, value, [Constants.sections].concat(objectPath))
     }
 
+    addSection = (jsonObject: object, objectPath: any[]) => {
+        this.props.addObjectByPath(this.props.currentPage, jsonObject, [Constants.sections].concat(objectPath))
+    }
+
     deleteSection = (objectPath: any[]) => {
         this.props.deleteObjectByPath(this.props.currentPage, [Constants.sections].concat(objectPath))
     }
@@ -134,6 +141,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     updatePage: (id: number, name: string, path: string) => dispatch(updatePage(id, name, path)),
     updateObjectByPath: (page: IPage, text: string, objectPath: any[]) =>
         dispatch(updateObjectByPath(page, text, objectPath)),
+    addObjectByPath: (page: IPage, jsonObject: object, objectPath: any[]) =>
+        dispatch(addObjectByPath(page, jsonObject, objectPath)),
     deleteObjectByPath: (page: IPage, objectPath: any[]) => dispatch(deleteObjectByPath(page, objectPath)),
 
     movePage: (pageID: number, direction: Direction) => dispatch(movePage(pageID, direction)),

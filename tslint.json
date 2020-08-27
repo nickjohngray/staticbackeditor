@@ -14,11 +14,12 @@
         ]
     },
     "rules": {
+        "ban-types": [false, ["Object"]],
         "no-shadowed-variable": false,
         "promise-function-async": { "severity": "error" },
         "prefer-for-of" : false,
-        "no-irregular-whitespace": true,
-        "no-trailing-whitespace": true,
+        "no-irregular-whitespace": false,
+        "no-trailing-whitespace":false,
         "align": true,
         "no-consecutive-blank-lines": true,
         "trailing-comma": false,

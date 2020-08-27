@@ -2,6 +2,7 @@ import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {APICallStatus, Direction, IManifest, IManifestAction, IPage, UP} from '../../../shared/typings'
 import ManifestActions, {
+    IAddObjectByPath,
     IAddPage,
     IDeletePage,
     IDeleteTextByObjectPath,
@@ -10,7 +11,7 @@ import ManifestActions, {
     IUpdateTextByObjectPath
 } from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
-import {remove} from 'lodash'
+import {remove, cloneDeep} from 'lodash'
 import {findPageById, getNextPageId} from '../../util'
 
 interface IManifestExtened {
@@ -93,31 +94,65 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.manifest.pages.push(page)
         }),
 
+        [ManifestActions.AddJsonObjectByObjectPath]: produce((draft: IManifestExtened, action: IAddObjectByPath) => {
+            const path = action.payload.objectPath
+
+            const clone = cloneDeep(draft)
+
+            let obj = findSecondLastObjectByPath(
+                findPageById(action.payload.page.id, clone.manifest.pages),
+                action.payload.objectPath
+            )
+            const jsonObjectCloned = cloneDeep(action.payload.jsonObject)
+
+            const lastItem = path[path.length - 1]
+            if (Array.isArray(obj[lastItem])) {
+                obj[lastItem].push(jsonObjectCloned)
+            } else {
+                Object.assign(obj[lastItem], jsonObjectCloned)
+            }
+            return clone
+        }),
+
         [ManifestActions.UpdateTextByObjectPath]: produce(
             (draft: IManifestExtened, action: IUpdateTextByObjectPath) => {
                 const path = action.payload.objectPath
 
-                let obj = findObjectByPath(
+                let obj = findSecondLastObjectByPath(
                     findPageById(action.payload.page.id, draft.manifest.pages),
                     action.payload.objectPath
                 )
-
                 obj[path[path.length - 1]] = action.payload.text
-
-                // moved to pages reducer
-                // draft.currentPage = draft.manifest.pages[pageIndex] as IPage
             }
         ),
 
         [ManifestActions.DeleteObjectByObjectPath]: produce(
             (draft: IManifestExtened, action: IDeleteTextByObjectPath) => {
                 const path = action.payload.objectPath
-                let obj = findObjectByPath(
+                const obj = findSecondLastObjectByPath(
+                    findPageById(action.payload.page.id, draft.manifest.pages),
+                    action.payload.objectPath
+                )
+                // mutate the draft by reference
+                const lastPartOfPath = path[path.length - 1]
+                delete obj[lastPartOfPath]
+                if (Array.isArray(obj)) {
+                    // remove nulls in array, that occurs when using delete operator  on array items
+                    const obj2ItemsWithNoEmptyShit = obj.filter((x) => x !== undefined)
+                    // remove all items
+                    while (obj.length !== 0) {
+                        obj.pop()
+                    }
+                    // add the fixed array back
+                    obj.unshift(...obj2ItemsWithNoEmptyShit)
+                }
+
+                /*  let obj = findObjectByPath(
                     findPageById(action.payload.page.id, draft.manifest.pages),
                     action.payload.objectPath
                 )
 
-                delete obj[path[path.length - 1]]
+                delete obj[path[path.length - 1]]*/
             }
         ),
 
@@ -196,7 +231,7 @@ const setAnyTopLevelProperty = (action: IManifestAction, draft: IManifestExtened
     }
 }
 
-const findObjectByPath = (page: IPage, path: any[]) => {
+const findSecondLastObjectByPath = (page: IPage, path: any[]) => {
     // find the parent object by path and set the value
     // see example-find-object-by-path.html for moore info
     // this path is set on an editable leaf during the tree build process
