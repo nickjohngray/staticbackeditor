@@ -5,18 +5,9 @@ import TreeLeaf from './TreeLeaf/TreeLeaf'
 import StaticBackEditor from '../../../context/StaticBackEditor'
 import {Constants} from '../../../util'
 import {IPath} from '../../../../shared/typings'
+import TreeNode from './TreeNode/TreeNode'
 
-const obj = {
-    link: 'https://strengthpitotara.co.nz',
-    image: {
-        src: 'man.png'
-    },
-    header: 'Click to edit name',
-    list: ['Click to edit list item'],
-    body: 'Click to edit body'
-}
-
-interface IAddablePathConfig {
+export interface IAddablePathConfig {
     path: IPath
     options?: {
         limit?: number
@@ -148,13 +139,13 @@ class Tree extends React.Component<IProps, IState> {
 
             //  dont build a node for skipped or converted nodes
             if (this.props.skipNode === nodeName || nodeToLeaf) {
-                return <li key={reactKey + key}>{this.testThenMake(object, key, elementPath)}</li>
+                return <li key={reactKey + key}>{this.testThenMake(object[key], elementPath)}</li>
             }
 
             // this leaf has been made on an editable node,
             // it can be skipped, we dont want a double up
             if (this.isPrimitive(object[key]) && key === this.props.nodeKeyForObjectsAndArrays) {
-                return <></>
+                return <span key={'skipped_' + key}> </span>
             }
 
             const nodeEditableLeafPath = this.getNodeEditableLeafPath(object[key])
@@ -174,21 +165,10 @@ class Tree extends React.Component<IProps, IState> {
             return (
                 <li key={reactKey + key}>
                     {this.makeNode(nodeName, elementPath, nodeEditableLeafPath, leafValue, object)}
-                    <ul className="nested">{this.testThenMake(object, key, elementPath)}</ul>
+                    <ul className="nested">{this.testThenMake(object[key], elementPath)}</ul>
                 </li>
             )
         })
-
-    testThenMake = (object: any, key: string | number, elementPath: any[]) => {
-        if (this.isPrimitive(object[key])) {
-            return this.makeLeaf(object[key], elementPath)
-        }
-        if (this.isArray(object[key])) {
-            return this.loopArray(object[key], elementPath)
-        }
-
-        return this.startProcessObject(object[key], false, elementPath)
-    }
 
     startProcessObject = (object: {}, parentIsArray: boolean, currentPath: string[]) => {
         const nameName = this.getNodeName(object)
@@ -209,113 +189,53 @@ class Tree extends React.Component<IProps, IState> {
             this.processObject(object, currentPath)
         )
     }
-
     loopArray = (array, elementPath: string[]) =>
-        array.map((value, key) => {
+        array.map((object, key) => {
             if (key === this.props.nodeKeyForObjectsAndArrays) {
                 return <></>
             }
-            return (
-                // todo refactor this
-                <div key={key + value}>
-                    {this.isPrimitive(value)
-                        ? this.makeLeaf(value, elementPath.concat(key))
-                        : this.isArray(value)
-                        ? this.loopArray(value, elementPath.concat(key))
-                        : this.startProcessObject(value, true, elementPath.concat(key))}
-                </div>
-            )
+            const currentPath = elementPath.concat(key)
+            return <div key={key + object}>{this.testThenMake(object, currentPath, true)}</div>
         })
 
-    makeNode = (nodeName: string, currentPath: any[], nodeEditableLeafPath: string, leafValue, nodeJson: Object) => {
-        const makeLeaf = () => this.makeLeaf(leafValue, cloneDeep(currentPath).concat(nodeEditableLeafPath))
-
-        const makeDeleteButton = () => {
-            return (
-                <button
-                    className="editable_label_delete_button"
-                    title="delete"
-                    onClick={() => this.props.onDelete(currentPath)}>
-                    X
-                </button>
-            )
+    testThenMake = (object: any, elementPath: any[], parentIsArray: boolean = false) => {
+        if (this.isPrimitive(object)) {
+            return this.makeLeaf(object, elementPath)
+        }
+        if (this.isArray(object)) {
+            return this.loopArray(object, elementPath)
         }
 
-        const makeAddButton = (userObjectToAddWhenAddIsClicked: {}, onResolvePath: (pathIn: IPath) => IPath) => {
-            return (
-                <button
-                    className="editable_label_add_button"
-                    title="add"
-                    onClick={() => {
-                        this.props.onAdd(
-                            userObjectToAddWhenAddIsClicked,
-                            onResolvePath ? onResolvePath(currentPath) : currentPath
-                        )
-                    }}>
-                    Add
-                </button>
-            )
-        }
+        return this.startProcessObject(object, parentIsArray, elementPath)
+    }
 
-        const makeModifiableFieldsButtons = (configFieldKeys: Object[], currentFieldJsonObjects: Object[]) => {
-            return configFieldKeys.map((field) => {
-                if (currentFieldJsonObjects.some((currentField) => isEqual(currentField, Object.keys(field)[0]))) {
-                    // this property is already in the list
-                    // a button for the user to click on to make this property
-                    // is not needed
-                    return <> </>
-                }
-                return (
-                    // make a button the user can click to add this property
-                    // as this property does not exist as a child of this
-                    // object
-                    <button
-                        className="modifiable_fields_add_button"
-                        title="add"
-                        onClick={() => this.props.onAdd(field, currentPath)}>
-                        +{Object.keys(field)[0]}
-                    </button>
-                )
-            })
-        }
-
-        const config: IAddablePathConfig = this.getConfigForPath(currentPath, this.props.addablePathConfigs)
-        const modifiableFields = config && config.options && config.options.modifiableFields
-        const objectToAdd = config && config.options && config.options.objectToAdd
-        const onResolvePath = config && config.options && config.options.onResolvePath
-
-        let showAddButton: boolean = true
-
-        if (config && config.options && config.options.showAddButton !== undefined) {
-            showAddButton = config.options.showAddButton
-        }
-
-        const currentFields = Object.keys(nodeJson)
-
-        const childrenCount = Object.keys(nodeJson).length
-
+    makeNode = (
+        nodeName: string,
+        currentPath: any[],
+        nodeEditableLeafPath: string,
+        leafValue: string,
+        nodeJson: Object
+    ) => {
         return (
-            <>
-                {this.isDeletable(currentPath) && makeDeleteButton()}
-                {showAddButton &&
-                    this.isOk(currentPath, childrenCount, this.props.addablePathConfigs) &&
-                    makeAddButton(objectToAdd, onResolvePath)}
-                {modifiableFields && makeModifiableFieldsButtons(modifiableFields, currentFields)}
-                <span
-                    className="caret node"
-                    onClick={(e) => {
-                        this.toggle(e)
-                    }}>
-                    {nodeEditableLeafPath ? makeLeaf() : nodeName}
-                    {this.context.isDebug && <span className="debug">'Node PATH=' {currentPath} </span>}
-                </span>
-            </>
+            <TreeNode
+                nodeName={nodeName}
+                currentPath={currentPath}
+                nodeEditableLeafPath={nodeEditableLeafPath}
+                leafValue={leafValue}
+                nodeJson={nodeJson}
+                addablePathConfigs={this.props.addablePathConfigs}
+                onAdd={this.props.onAdd}
+                isDeletable={this.isDeletable(currentPath)}
+                onDelete={this.props.onDelete}
+                toggle={this.toggle}
+                makeLeaf={this.makeLeaf}
+            />
         )
     }
 
     getImagePath = (image: string): string => '/' + this.props.imageDirectory + '/' + image
 
-    makeLeaf = (value: string, currentPath: string[]) => {
+    makeLeaf = (value: string, currentPath: string[], makeLeafWarpper: boolean = true) => {
         const path = cloneDeep(currentPath)
         const onDelete = this.isDeletable(path)
             ? () => {
@@ -331,6 +251,7 @@ class Tree extends React.Component<IProps, IState> {
         return (
             <>
                 <TreeLeaf
+                    makeWrapper={makeLeafWarpper}
                     onUpdate={(text: string) => this.props.onUpdate(text, currentPath)}
                     onDelete={onDelete}
                     imagePath={imagePath}
@@ -448,59 +369,6 @@ class Tree extends React.Component<IProps, IState> {
         }
 
         return false
-    }
-
-    isOk = (currentPath: IPath, childrenCount: number, config: IAddablePathConfig[]): boolean => {
-        if (config === undefined) {
-            return false
-        }
-        // todo refactor this
-        for (let i = 0; i < config.length; i++) {
-            let userPath = cloneDeep(config[i].path)
-            // replace * in user path with actual value from path
-            if (userPath.length === currentPath.length) {
-                for (let j = 0; j < config.length; j++) {
-                    if (userPath[j] === Constants.wildcard) {
-                        userPath[j] = currentPath[j]
-                    }
-                }
-
-                if (!isEqual(currentPath, userPath)) {
-                    continue
-                }
-
-                if (config[i].options && config[i].options.limit && childrenCount > config[i].options.limit) {
-                    continue
-                }
-
-                return true
-            }
-        }
-
-        return false
-    }
-
-    getConfigForPath = (currentPath: IPath, configs: IAddablePathConfig[]): IAddablePathConfig | null => {
-        if (configs === undefined) {
-            return null
-        }
-
-        for (let i = 0; i < configs.length; i++) {
-            let userPath = cloneDeep(configs[i].path)
-            // replace * in user path with actual value from path
-            if (userPath.length === currentPath.length) {
-                for (let j = 0; j < configs.length; j++) {
-                    if (userPath[j] === Constants.wildcard) {
-                        userPath[j] = currentPath[j]
-                    }
-                }
-            }
-            if (isEqual(currentPath, userPath)) {
-                return configs[i]
-            }
-        }
-
-        return null
     }
 
     getNodePathKey = (key: string) => (isNaN(Number(key)) ? key : parseInt(key, 10))

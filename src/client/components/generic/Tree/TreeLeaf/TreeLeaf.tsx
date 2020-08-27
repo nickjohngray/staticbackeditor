@@ -4,6 +4,7 @@ import EditableLabel from '../../EditableLabel/EditableLabel'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import axios, {AxiosRequestConfig} from 'axios'
 import {Constants} from '../../../../util'
+import {Wrapper} from '../../Wrapper'
 
 export interface IProps {
     onUpdate: (value: string) => void
@@ -11,6 +12,7 @@ export interface IProps {
     imagePath: string
     value: string
     uploadFolder: string
+    makeWrapper: boolean
 }
 
 interface IState {
@@ -33,6 +35,63 @@ class TreeLeaf extends React.Component<IProps, IState> {
             isImageUploadable: true,
             viewFullSizeImage: false
         }
+    }
+
+    render = () => {
+        if (this.props.imagePath) {
+            return (
+                <>
+                    {this.state.previewFilesData.length > 0 ? (
+                        <div className={'preview-images'}> {this.getPreviewImages()}</div>
+                    ) : (
+                        <LazyLoadImage
+                            className={'lazy-load-image'}
+                            onClick={() => this.inputOpenFileRef.current.click()}
+                            ttile="Change image"
+                            height={100}
+                            src={this.props.imagePath}
+                            width={100}
+                            title="Click to change image"
+                        />
+                    )}
+                    {this.state.isImageUploadable && (
+                        <form
+                            ref={(form) => {
+                                this.form = form
+                            }}
+                            id={'form'}
+                            onSubmit={(e) => this.setPreviewImageData(e)}
+                            action="/api/upload"
+                            method="POST"
+                            encType="multipart/form-data"
+                            onChange={(e) => this.setPreviewImageData(e)}>
+                            <input
+                                ref={this.inputOpenFileRef}
+                                id="fileUploadButton"
+                                className="file_upload_button"
+                                type="file"
+                                name="images"
+                                multiple
+                            />
+                        </form>
+                    )}
+                </>
+            )
+        }
+        return (
+            <Wrapper wrapper={(children) => <li className="leaf">{children}</li>} condition={this.props.makeWrapper}>
+                <>
+                    <EditableLabel
+                        onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
+                        isDeleteable={!!this.props.onDelete}
+                        onUpdate={(text) => {
+                            this.props.onUpdate(text)
+                        }}
+                        value={this.props.value}
+                    />
+                </>
+            </Wrapper>
+        )
     }
 
     // called when the user confirms the file dialog
@@ -79,61 +138,6 @@ class TreeLeaf extends React.Component<IProps, IState> {
 
     getPreviewImages = () =>
         this.state.previewFilesData.map((imgSrc, key) => <img key={key} className="image" src={imgSrc} />)
-
-    render = () => {
-        if (this.props.imagePath) {
-            return (
-                <>
-                    {this.state.previewFilesData.length > 0 ? (
-                        <div className={'preview-images'}> {this.getPreviewImages()}</div>
-                    ) : (
-                        <LazyLoadImage
-                            className={'lazy-load-image'}
-                            onClick={() => this.inputOpenFileRef.current.click()}
-                            ttile="Change image"
-                            height={100}
-                            src={this.props.imagePath}
-                            width={100}
-                            title="Click to change image"
-                        />
-                    )}
-                    {this.state.isImageUploadable && (
-                        <form
-                            ref={(form) => {
-                                this.form = form
-                            }}
-                            id={'form'}
-                            onSubmit={(e) => this.setPreviewImageData(e)}
-                            action="/api/upload"
-                            method="POST"
-                            encType="multipart/form-data"
-                            onChange={(e) => this.setPreviewImageData(e)}>
-                            <input
-                                ref={this.inputOpenFileRef}
-                                id="fileUploadButton"
-                                className="file_upload_button"
-                                type="file"
-                                name="images"
-                                multiple
-                            />
-                        </form>
-                    )}
-                </>
-            )
-        }
-        return (
-            <li className="leaf">
-                <EditableLabel
-                    onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
-                    isDeleteable={!!this.props.onDelete}
-                    onUpdate={(text) => {
-                        this.props.onUpdate(text)
-                    }}
-                    value={this.props.value}
-                />
-            </li>
-        )
-    }
 }
 
 export default TreeLeaf
