@@ -1,11 +1,10 @@
-import React, {RefObject} from 'react'
+import React from 'react'
 import './TreeLeaf.css'
 import EditableLabel from '../../EditableLabel/EditableLabel'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
-import axios, {AxiosRequestConfig} from 'axios'
-import {Constants} from '../../../../util'
-import {Wrapper} from '../../Wrapper'
 import {DragHandle} from '../../Drag/Drag'
+import FileUploader from '../../FileUploader/FileUploader'
+import {Something} from '../../Something'
 
 export interface IProps {
     onUpdate: (value: string) => void
@@ -13,28 +12,22 @@ export interface IProps {
     imagePath: string
     value: string
     uploadFolder: string
-    makeWrapper: boolean
+    makeDragHandle: boolean
 }
 
 interface IState {
-    isDirty: boolean
-    previewFilesData: any[]
+    previewFile: any
     isImageUploadable: boolean
-    viewFullSizeImage: boolean
+    showFileUploaderDialog: boolean
 }
 
 class TreeLeaf extends React.Component<IProps, IState> {
-    private readonly inputOpenFileRef: RefObject<HTMLInputElement>
-    private form: HTMLFormElement
-
     constructor(props) {
         super(props)
-        this.inputOpenFileRef = React.createRef()
         this.state = {
-            previewFilesData: [],
-            isDirty: false,
+            previewFile: null,
             isImageUploadable: true,
-            viewFullSizeImage: false
+            showFileUploaderDialog: false
         }
     }
 
@@ -42,47 +35,35 @@ class TreeLeaf extends React.Component<IProps, IState> {
         if (this.props.imagePath) {
             return (
                 <>
-                    {this.state.previewFilesData.length > 0 ? (
-                        <div className={'preview-images'}> {this.getPreviewImages()}</div>
-                    ) : (
-                        <LazyLoadImage
-                            className={'lazy-load-image'}
-                            onClick={() => this.inputOpenFileRef.current.click()}
-                            ttile="Change image"
-                            height={100}
-                            src={this.props.imagePath}
-                            width={100}
-                            title="Click to change image"
-                        />
-                    )}
+                    <LazyLoadImage
+                        className={'lazy-load-image'}
+                        onClick={() => this.setState({showFileUploaderDialog: true})}
+                        ttile="Change image"
+                        height={100}
+                        src={this.state.previewFile ? this.state.previewFile : this.props.imagePath}
+                        width={100}
+                        title="Click to change image"
+                    />
                     {this.state.isImageUploadable && (
-                        <form
-                            ref={(form) => {
-                                this.form = form
+                        <FileUploader
+                            onPreviewReady={(previewFilesData) => this.setState({previewFile: previewFilesData[0]})}
+                            activate={this.state.showFileUploaderDialog}
+                            onUpload={(fileNameSetAtBackend) => {
+                                this.setState({showFileUploaderDialog: false})
+                                this.props.onUpdate(fileNameSetAtBackend)
                             }}
-                            id={'form'}
-                            onSubmit={(e) => this.setPreviewImageData(e)}
-                            action="/api/upload"
-                            method="POST"
-                            encType="multipart/form-data"
-                            onChange={(e) => this.setPreviewImageData(e)}>
-                            <input
-                                ref={this.inputOpenFileRef}
-                                id="fileUploadButton"
-                                className="file_upload_button"
-                                type="file"
-                                name="images"
-                                multiple
-                            />
-                        </form>
+                            uploadFolder={this.props.uploadFolder}
+                        />
                     )}
                 </>
             )
         }
         return (
-            <Wrapper wrapper={(children) => <li className="leaf">{children}</li>} condition={this.props.makeWrapper}>
+            <Something
+                content={(children) => <li className="leaf">{children}</li>}
+                warpInParent={this.props.makeDragHandle}>
                 <>
-                    <DragHandle />
+                    {this.props.makeDragHandle && <DragHandle />}
                     <EditableLabel
                         onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
                         isDeleteable={!!this.props.onDelete}
@@ -92,15 +73,15 @@ class TreeLeaf extends React.Component<IProps, IState> {
                         value={this.props.value}
                     />
                 </>
-            </Wrapper>
+            </Something>
         )
     }
 
-    // called when the user confirms the file dialog
+    /* // called when the user confirms the file dialog
     setPreviewImageData = (event) => {
         const previewFiles = event.target.files
 
-        let previewFilesData = []
+        let previewFiles = []
 
         for (let i = 0; i < previewFiles.length; i++) {
             const reader = new FileReader()
@@ -109,17 +90,17 @@ class TreeLeaf extends React.Component<IProps, IState> {
 
             reader.onload = (event: ProgressEvent<FileReader>) => {
                 // @ts-ignore
-                previewFilesData.push(event.target.result)
-                if (previewFilesData.length === previewFiles.length) {
-                    this.setState({previewFilesData})
+                previewFiles.push(event.target.result)
+                if (previewFiles.length === previewFiles.length) {
+                    this.setState({previewFiles})
                     console.log('All files data is ready for preview')
                     this.upload()
                 }
             }
         }
-    }
+    }*/
 
-    upload = async (e = null) => {
+    /*upload = async (e = null) => {
         if (e) {
             e.preventDefault()
         }
@@ -135,11 +116,8 @@ class TreeLeaf extends React.Component<IProps, IState> {
         this.props.onUpdate(response.data.fileNames[0])
         // we are done with this the image has been uploaded
 
-        this.setState({previewFilesData: []})
-    }
-
-    getPreviewImages = () =>
-        this.state.previewFilesData.map((imgSrc, key) => <img key={key} className="image" src={imgSrc} />)
+        this.setState({previewFiles: []})
+    }*/
 }
 
 export default TreeLeaf

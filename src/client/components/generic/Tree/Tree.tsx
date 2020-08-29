@@ -288,7 +288,7 @@ class Tree extends React.Component<IProps, IState> {
         )
     }
 
-    makeLeaf = (value: string, currentPath: string[], makeLeafWarpper: boolean = true) => {
+    makeLeaf = (value: string, currentPath: string[], makeDragHandle: boolean = true) => {
         const path = cloneDeep(currentPath)
         const onDelete = this.isDeletable(path)
             ? () => {
@@ -304,7 +304,7 @@ class Tree extends React.Component<IProps, IState> {
         return (
             <>
                 <TreeLeaf
-                    makeWrapper={makeLeafWarpper}
+                    makeDragHandle={makeDragHandle}
                     onUpdate={(text: string) => this.props.onUpdate(text, currentPath)}
                     onDelete={onDelete}
                     imagePath={imagePath}
