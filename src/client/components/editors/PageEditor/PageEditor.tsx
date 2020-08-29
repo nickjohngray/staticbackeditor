@@ -38,7 +38,7 @@ class PageEditor extends React.Component<IProps, IState> {
         }
     }
 
-    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+    UNSAFE_componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
         if (!nextProps.page) {
             return
         }

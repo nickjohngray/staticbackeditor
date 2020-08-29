@@ -65,11 +65,9 @@ const sortKeysWithSortDefinition = (sortOrders: IDefaultFieldOrder[]) => (a, b) 
     let sortOrderA = sortOrders.find((sortOrder) => sortOrder.name === a)
     let sortOrderB = sortOrders.find((sortOrder) => sortOrder.name === b)
     if (sortOrderA.order > sortOrderB.order) {
-        console.log('sortOrderA > sortOrderB')
         return 0
     }
     if (sortOrderA.order < sortOrderB.order) {
-        console.log('sortOrderA < sortOrderB')
         return -1
     }
     return 0

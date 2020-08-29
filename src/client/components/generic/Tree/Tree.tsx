@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import './Tree.css'
 import {isEqual, cloneDeep} from 'lodash'
 import TreeLeaf from './TreeLeaf/TreeLeaf'
@@ -90,11 +90,7 @@ class Tree extends React.Component<IProps, IState> {
     }
 
     render = () => {
-        return (
-            <div>
-                <ul id="myUL">{this.makeTree(this.props.data, [])}</ul>
-            </div>
-        )
+        return <div>{this.makeTree(this.props.data, [])}</div>
     }
 
     getOrderedKeys = (object: any) => {
@@ -160,9 +156,7 @@ class Tree extends React.Component<IProps, IState> {
 
     getNodeOrLeaf = (object: any, currentPath: any[], key: string, reactKey: number) => {
         if (this.props.ignoreKeys && this.props.ignoreKeys.some((k) => k === key)) {
-            // cannot return <> here as key must be set
-            // return <span key={'skipped_' + key}> </span>
-            return <> </>
+            return <Fragment key={'skipped_' + reactKey}> </Fragment>
         }
 
         let nodeToLeaf = null
@@ -178,15 +172,13 @@ class Tree extends React.Component<IProps, IState> {
 
         //  dont build a node for skipped or converted nodes
         if (this.props.skipNode === nodeName || nodeToLeaf) {
-            return <li key={reactKey + key}>{this.testThenMake(object[key], elementPath)}</li>
+            return <li key={reactKey + key}>{this.testThenMake(object[key], elementPath, undefined, reactKey)}</li>
         }
 
         // this leaf has been made on an editable node,
         // it can be skipped, we dont want a double up
         if (this.isPrimitive(object[key]) && key === this.props.nodeKeyForObjectsAndArrays) {
-            // return <span key={'skipped_' + key}> </span>
-            // this will kill drag above
-            return <> </>
+            return <Fragment key={'skipped_' + key}> </Fragment>
         }
 
         const nodeEditableLeafPath = this.getNodeEditableLeafPath(object[key])
@@ -201,28 +193,28 @@ class Tree extends React.Component<IProps, IState> {
         // only show the add button if the child limit has not been reached
         // children are also needed if the options allow a child to be added
         // to the node
-        const children = Object.values(object)
 
         return (
-            <li key={reactKey + key}>
-                {this.makeNode(nodeName, elementPath, nodeEditableLeafPath, leafValue, object)}
-                <ul className="nested">{this.testThenMake(object[key], elementPath)}</ul>
-            </li>
+            /*NOTE Drag will make an li here , if no drag replace <> with <li>*/
+            <>
+                {this.makeNode(nodeName, elementPath, nodeEditableLeafPath, leafValue, object, reactKey)}
+                <ul className="nested">{this.testThenMake(object[key], elementPath, undefined, reactKey)}</ul>
+            </>
         )
     }
 
-    testThenMake = (object: any, elementPath: any[], parentIsArray: boolean = false) => {
+    testThenMake = (object: any, elementPath: any[], parentIsArray: boolean = false, reactKey) => {
         if (this.isPrimitive(object)) {
             return this.makeLeaf(object, elementPath)
         }
         if (this.isArray(object)) {
-            return this.loopArray(object, elementPath)
+            return this.loopArray(object, elementPath, reactKey)
         }
 
-        return this.startProcessObject(object, parentIsArray, elementPath)
+        return this.startProcessObject(object, parentIsArray, elementPath, reactKey)
     }
 
-    startProcessObject = (object: {}, parentIsArray: boolean, currentPath: string[]) => {
+    startProcessObject = (object: {}, parentIsArray: boolean, currentPath: string[], reactKey: string | number) => {
         const nameName = this.getNodeName(object)
         const nodeEditableLeafPath = this.getNodeEditableLeafPath(object)
         let leafValue: string = null
@@ -233,7 +225,7 @@ class Tree extends React.Component<IProps, IState> {
         return parentIsArray ? (
             <li>
                 {' '}
-                {this.makeNode(nameName, currentPath, nodeEditableLeafPath, leafValue, object)}
+                {this.makeNode(nameName, currentPath, nodeEditableLeafPath, leafValue, object, reactKey)}
                 {/*if  "nested active" here it will be expanded on make*/}
                 <ul className="nested">
                     <li>{this.getNodesOrLeaves(object, currentPath)}</li>
@@ -244,7 +236,7 @@ class Tree extends React.Component<IProps, IState> {
         )
     }
 
-    loopArray = (array, elementPath: string[]) => (
+    loopArray = (array, elementPath: string[], reactKey: string | number) => (
         <DragList
             helperClass="drag_handle"
             shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
@@ -259,20 +251,13 @@ class Tree extends React.Component<IProps, IState> {
             items={array.map((object, key) => {
                 // console.log('object=[' + object + '] key= [' + key + ']')
                 if (key === this.props.nodeKeyForObjectsAndArrays) {
-                    return <> </>
+                    return <Fragment key={'skipped_' + reactKey + '-' + key} />
                 }
                 const currentPath = elementPath.concat(key)
-                return <div key={key + object}>{this.testThenMake(object, currentPath, true)}</div>
+                return <div key={key + reactKey}>{this.testThenMake(object, currentPath, true, reactKey)}</div>
             })}
-            onSortEnd={({oldIndex: fromInex, newIndex: toIndex}) => {
-                // we need to know what fucken property it is
-                // because current view nodes may display different ,
-                // according to tree config, user can add and remove proeprties
-                // some nodes may be hidden or merged HOW MO FO?
-                // this fucken drag object must know what element was clicked ond
-                // and what element mouse up occured on. the Info is there
-
-                this.props.onMoveNodeOrLeafTo(fromInex, toIndex, elementPath)
+            onSortEnd={({oldIndex: fromIndex, newIndex: toIndex}) => {
+                this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, elementPath)
             }}
         />
     )
@@ -282,10 +267,12 @@ class Tree extends React.Component<IProps, IState> {
         currentPath: any[],
         nodeEditableLeafPath: string,
         leafValue: string,
-        nodeJson: Object
+        nodeJson: Object,
+        reactKey: string | number
     ) => {
         return (
             <TreeNode
+                reactKey={reactKey}
                 nodeName={nodeName}
                 currentPath={currentPath}
                 nodeEditableLeafPath={nodeEditableLeafPath}
@@ -477,7 +464,7 @@ class Tree extends React.Component<IProps, IState> {
 
 const DragList = SortableContainer(({items}) => {
     return (
-        <ul>
+        <ul id="myUL" className="DragList">
             {items.map((value, index) => {
                 return <DragListItem key={'item-' + index + '-' + value} index={index} value={value} />
             })}

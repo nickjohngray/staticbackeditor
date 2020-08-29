@@ -1,9 +1,9 @@
-import React, {RefObject} from 'react'
+import React, {Fragment, RefObject} from 'react'
 import './TreeNode.css'
 import {IObjectPath} from '../../../../../shared/typings'
 import {IAddablePathConfig} from '../Tree'
 import {getConfigForPath, isOk} from '../treeUtil'
-import {cloneDeep, isEqual} from 'lodash'
+import {isEqual} from 'lodash'
 import {DragHandle} from '../../Drag/Drag'
 
 export interface IProps {
@@ -18,6 +18,7 @@ export interface IProps {
     makeLeaf: (value: string, currentPath: IObjectPath, makeWrapper: boolean) => void
     onDelete?: (path: any[]) => void
     onAdd?: (jsonObject: object, path: IObjectPath[]) => void
+    reactKey: string | number
 }
 
 class TreeNode extends React.Component<IProps> {
@@ -35,7 +36,8 @@ class TreeNode extends React.Component<IProps> {
             nodeEditableLeafPath,
             addablePathConfigs,
             nodeJson,
-            isDeletable
+            isDeletable,
+            reactKey
         } = this.props
 
         const config: IAddablePathConfig = getConfigForPath(currentPath, addablePathConfigs)
@@ -54,7 +56,7 @@ class TreeNode extends React.Component<IProps> {
         const childrenCount = Object.keys(nodeJson).length
 
         return (
-            <>
+            <Fragment key={'tree-node-' + reactKey}>
                 <DragHandle />
                 {isDeletable && this.makeDeleteButton(currentPath)}
                 {showAddButton &&
@@ -72,13 +74,14 @@ class TreeNode extends React.Component<IProps> {
                         : nodeName}
                     {this.context.isDebug && <span className="debug">'Node PATH=' {currentPath} </span>}
                 </span>
-            </>
+            </Fragment>
         )
     }
 
     makeDeleteButton = (currentPath: IObjectPath) => {
         return (
             <button
+                key={'tree-node-del-but' + this.props.reactKey}
                 className="editable_label_delete_button"
                 title="delete"
                 onClick={() => this.props.onDelete(currentPath)}>
@@ -94,6 +97,7 @@ class TreeNode extends React.Component<IProps> {
     ) => {
         return (
             <button
+                key={'tree-node-add-but' + this.props.reactKey}
                 className="editable_label_add_button"
                 title="add"
                 onClick={() => {
@@ -117,13 +121,14 @@ class TreeNode extends React.Component<IProps> {
                 // this property is already in the list
                 // a button for the user to click on to make this property
                 // is not needed
-                return <> </>
+                return <Fragment key={'skipped_' + Object.keys(field)[0] + '-' + this.props.reactKey}> </Fragment>
             }
             return (
                 // make a button the user can click to add this property
                 // as this property does not exist as a child of this
                 // object
                 <button
+                    // key={'tree-node-add-prop-' + this.props.reactKey}
                     className="modifiable_fields_add_button"
                     title="add"
                     onClick={() => this.props.onAdd(field, currentPath)}>
