@@ -1,9 +1,13 @@
-import {IPath} from '../../../../shared/typings'
+import {IDefaultFieldOrder, IObjectPath} from '../../../../shared/typings'
+
 import {cloneDeep, isEqual} from 'lodash'
 import {Constants} from '../../../util'
 import {IAddablePathConfig} from './Tree'
 
-export const getConfigForPath = (currentPath: IPath, configs: IAddablePathConfig[]): IAddablePathConfig | null => {
+export const getConfigForPath = (
+    currentPath: IObjectPath,
+    configs: IAddablePathConfig[]
+): IAddablePathConfig | null => {
     if (configs === undefined) {
         return null
     }
@@ -26,7 +30,7 @@ export const getConfigForPath = (currentPath: IPath, configs: IAddablePathConfig
     return null
 }
 
-export const isOk = (currentPath: IPath, childrenCount: number, config: IAddablePathConfig[]): boolean => {
+export const isOk = (currentPath: IObjectPath, childrenCount: number, config: IAddablePathConfig[]): boolean => {
     if (config === undefined) {
         return false
     }
@@ -54,4 +58,34 @@ export const isOk = (currentPath: IPath, childrenCount: number, config: IAddable
     }
 
     return false
+}
+
+// todo write test for this
+const sortKeysWithSortDefinition = (sortOrders: IDefaultFieldOrder[]) => (a, b) => {
+    let sortOrderA = sortOrders.find((sortOrder) => sortOrder.name === a)
+    let sortOrderB = sortOrders.find((sortOrder) => sortOrder.name === b)
+    if (sortOrderA.order > sortOrderB.order) {
+        console.log('sortOrderA > sortOrderB')
+        return 0
+    }
+    if (sortOrderA.order < sortOrderB.order) {
+        console.log('sortOrderA < sortOrderB')
+        return -1
+    }
+    return 0
+}
+
+// todo write test for this
+export const sortKeys = (data: string[], sortDef: IDefaultFieldOrder[]) => {
+    const dataToSort = []
+    const dataUnsorted = []
+    for (let i = 0; i < data.length; i++) {
+        const found = sortDef.find((o) => o.name === data[i])
+        if (found) {
+            dataToSort.push(data[i])
+        } else {
+            dataUnsorted.push(data[i])
+        }
+    }
+    return [...dataToSort.sort(sortKeysWithSortDefinition(sortDef)), ...dataUnsorted]
 }

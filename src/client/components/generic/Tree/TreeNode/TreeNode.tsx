@@ -1,22 +1,23 @@
 import React, {RefObject} from 'react'
 import './TreeNode.css'
-import {IPath} from '../../../../../shared/typings'
+import {IObjectPath} from '../../../../../shared/typings'
 import {IAddablePathConfig} from '../Tree'
 import {getConfigForPath, isOk} from '../treeUtil'
 import {cloneDeep, isEqual} from 'lodash'
+import {DragHandle} from '../../Drag/Drag'
 
 export interface IProps {
     nodeName: string
-    currentPath: IPath
+    currentPath: IObjectPath
     nodeEditableLeafPath: string
     leafValue: string
     nodeJson: Object
     addablePathConfigs: IAddablePathConfig[]
     isDeletable: boolean
     toggle: (event) => void
-    makeLeaf: (value: string, currentPath: IPath, makeWrapper: boolean) => void
+    makeLeaf: (value: string, currentPath: IObjectPath, makeWrapper: boolean) => void
     onDelete?: (path: any[]) => void
-    onAdd?: (jsonObject: object, path: IPath[]) => void
+    onAdd?: (jsonObject: object, path: IObjectPath[]) => void
 }
 
 class TreeNode extends React.Component<IProps> {
@@ -54,6 +55,7 @@ class TreeNode extends React.Component<IProps> {
 
         return (
             <>
+                <DragHandle />
                 {isDeletable && this.makeDeleteButton(currentPath)}
                 {showAddButton &&
                     isOk(currentPath, childrenCount, this.props.addablePathConfigs) &&
@@ -74,7 +76,7 @@ class TreeNode extends React.Component<IProps> {
         )
     }
 
-    makeDeleteButton = (currentPath: IPath) => {
+    makeDeleteButton = (currentPath: IObjectPath) => {
         return (
             <button
                 className="editable_label_delete_button"
@@ -87,7 +89,7 @@ class TreeNode extends React.Component<IProps> {
     // todo get rid of the any
     makeAddButton = (
         userObjectToAddWhenAddIsClicked: {},
-        onResolvePath: (pathIn: IPath) => IPath,
+        onResolvePath: (pathIn: IObjectPath) => IObjectPath,
         currentPath: any[]
     ) => {
         return (

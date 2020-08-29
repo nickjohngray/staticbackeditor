@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script>
+        const sortOrderData = [
+            {
+                name: 'link',
+                order: 444
+            },
+            {
+                name: 'body',
+                order: 55
+            },
+            {
+                name: 'list',
+                order: 5
+            },
+            {
+                name: 'image',
+                order: 1
+            },
+            {
+                name: 'not_here',
+                order: 4
+            },
+
+        ];
+
+        data = ['ss', 'xyz', 'image', 'x', 'y', 'link', 's', 'body', 'list', 'abc'];
+
+
+        const startSort = (sortOrders) =>
+            (a, b) => {
+                let sortOrderA =  sortOrders.find((sortOrder) => sortOrder.name === a);
+                let sortOrderB =  sortOrders.find((sortOrder) => sortOrder.name === b);
+                if(sortOrderA.order > sortOrderB.order) {
+                    console.log('sortOrderA > sortOrderB')
+                    return 0;
+                }
+                if(sortOrderA.order < sortOrderB.order) {
+                    console.log('sortOrderA < sortOrderB')
+                    return -1;
+                }
+                return 0;
+            };
+
+
+        const sortAll = (data, sortDef) => {
+            const dataToSort = []
+            const dataUnsorted = []
+            for(let i=0; i< data.length; i++) {
+                const found = sortDef.find( (o) => o.name === data[i] )
+                if(found) {
+                    dataToSort.push(data[i])
+                } else {
+                    dataUnsorted.push(data[i])
+                }
+            }
+            const x = dataToSort.sort(startSort(sortDef))
+
+            const arr = [...dataToSort, ...dataUnsorted]
+            return arr
+        }
+        const arr = sortAll(data,sortOrderData)
+        console.log(arr)
+
+    </script>
+
+
+</head>
+<body>
+
+
+</body>
+</html>

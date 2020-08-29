@@ -3,6 +3,7 @@ import {Direction, DOWN, IPage, UP} from '../../../../../shared/typings'
 import {Link} from '@reach/router'
 import * as React from 'react'
 import './PageItem.css'
+import {DragHandle} from '../../../generic/Drag/Drag'
 
 interface IProps {
     page: IPage
@@ -19,9 +20,7 @@ class PageItem extends React.Component<IProps> {
         return (
             <div className="page-and-button-controls">
                 <div className={'page-buttons'}>
-                    <div title="Click to drag page to new location" className="drag_handle">
-                        |||{' '}
-                    </div>
+                    <DragHandle />
                     <button title="Delete Page" onClick={() => this.props.onDeletePage(id)}>
                         <Shapes.Cross />
                     </button>

@@ -11,10 +11,15 @@ export interface IPage {
     id: number
 }
 
-export type IPath = (string | number)[]
+export type IObjectPath = (string | number)[]
 
 export enum PageContentEditors {
     sectionEditor = 'sectionEditor'
+}
+
+export interface IDefaultFieldOrder {
+    name: string
+    order: number | string
 }
 
 export interface ISection {
@@ -25,6 +30,7 @@ export interface ISection {
     list?: string[]
     link?: string
     opener?: ISectionOpener
+    defaultFieldOrder: IDefaultFieldOrder[]
 }
 
 export interface ISectionOpener {
@@ -157,3 +163,22 @@ export interface IState {
     shop: IShop
     history: IHistory
 }
+
+// method definitions
+
+export type IMoveNodeOrLeafToMethod = (
+    fromIndex: number,
+    toIndex: number,
+    objectPath: any[],
+    fromField?: string,
+    toField?: string
+) => void
+
+export type IMoveNodeOrLeafToMethodWithPageId = (
+    fromIndex: number,
+    toIndex: number,
+    objectPath: any[],
+    pageID: number,
+    fromField?: string,
+    toField?: string
+) => void

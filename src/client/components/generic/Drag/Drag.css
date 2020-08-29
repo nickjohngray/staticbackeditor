@@ -1,0 +1,10 @@
+.drag_handle {
+    color: red;
+    cursor: grab;
+    display: inline;
+    list-style: none;
+}
+
+.drag_handle:hover {
+    cursor: grab;
+}

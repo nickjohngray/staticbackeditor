@@ -1,4 +1,4 @@
-import {IPage, ISection, PageContentEditors} from '../../../../shared/typings'
+import {IPage, IObjectPath, ISection, PageContentEditors, IMoveNodeOrLeafToMethod} from '../../../../shared/typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link, navigate} from '@reach/router'
@@ -12,6 +12,7 @@ type IProps = {
     onSectionAdd: (jsonObject: object, objectPath: any[]) => void
     onSectionChange: (text: string, objectPath: any[]) => void
     onSectionDelete: (objectPath: any[]) => void
+    onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
     imageDirectory: string
     projectUploadFolder: string
 } & RouteComponentProps // routable
@@ -91,6 +92,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         sections={this.props.page.sections}
                         imageDirectory={this.props.imageDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
+                        onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
                     />
                 )
             }

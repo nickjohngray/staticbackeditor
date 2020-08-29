@@ -1,4 +1,4 @@
-import {Direction, DOWN, IManifest, IPage, UP} from '../../../../shared/typings'
+import {Direction, DOWN, IManifest, IPage, IObjectPath, UP} from '../../../../shared/typings'
 import * as React from 'react'
 import {Link, RouteComponentProps} from '@reach/router'
 import Shapes from '../../generic/Shapes'

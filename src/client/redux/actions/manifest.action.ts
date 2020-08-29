@@ -1,5 +1,13 @@
 import {createAction} from 'redux-actions'
-import {Direction, IManifest, IManifestAction, ApiMethods, IPage} from '../../../shared/typings'
+import {
+    Direction,
+    IManifest,
+    IManifestAction,
+    ApiMethods,
+    IPage,
+    IObjectPath,
+    APICallStatus
+} from '../../../shared/typings'
 
 export enum ManifestActionsActionsThatMakeUIDirty {
     MovePage = 'CHANGE/PAGE/POSITION',
@@ -24,7 +32,8 @@ export enum ManifestActions {
     DeleteObjectByObjectPath = 'DELETE/OBJECT/BY/OBJECT/PATH',
     UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH',
     AddJsonObjectByObjectPath = 'ADD/JSON/OBJECT/BY/OBJECT/PATH',
-    MovePageTo = 'MOVE/PAGE/TO'
+    MovePageTo = 'MOVE/PAGE/TO',
+    swapObjectsByPath = 'SWAP/OBJECTS/By/PATH'
 }
 
 enum ApiRoutes {
@@ -48,6 +57,49 @@ export const movePageTo = createAction(ManifestActions.MovePageTo, (fromIndex: n
     fromIndex,
     toIndex
 }))
+
+export const swapObjectsByPath = (
+    fromIndex: number,
+    toIndex: number,
+    objectPath: IObjectPath,
+    pageID: number,
+    fromField?: string,
+    toField?: string
+): ISwapObjectsByPath => ({
+    type: ManifestActions.swapObjectsByPath,
+    payload: {fromIndex, toIndex, fromField, toField, objectPath, pageID}
+})
+
+export interface ISwapObjectsByPath {
+    type: ManifestActions.swapObjectsByPath
+    payload: {
+        fromIndex: number
+        toIndex: number
+        objectPath: IObjectPath
+        pageID: number
+        fromField?: string
+        toField?: string
+    }
+}
+
+/*
+export const swapObjectsByPath = createAction(
+    ManifestActions.swapObjectsByPath,
+    (
+        fromIndex: number,
+        toIndex: number,
+        fromField: string,
+        toField: string,
+        objectPath: IObjectPath,
+        pageID: number
+    ) => ({
+        fromIndex,
+        toIndex,
+        fromField,
+        toField,
+        pageID
+    })
+)*/
 
 export const addPage = createAction(
     ManifestActions.AddPage,

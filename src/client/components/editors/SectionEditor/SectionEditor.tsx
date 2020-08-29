@@ -1,6 +1,7 @@
-import {IPath, ISection} from '../../../../shared/typings'
+import {IMoveNodeOrLeafToMethod, IObjectPath, ISection} from '../../../../shared/typings'
 import * as React from 'react'
 import Tree from '../../generic/Tree'
+import {Constants} from '../../../util'
 
 interface IProps {
     sections: ISection[]
@@ -9,6 +10,8 @@ interface IProps {
     onDelete: (objectPath: any[]) => void
     imageDirectory: string
     projectUploadFolder: string
+    skipNode?: string
+    onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
 }
 
 interface ISate {
@@ -34,7 +37,29 @@ const section: ISection = {
     },
     header: 'Header Text here',
     list: ['List items here'],
-    body: 'body here'
+    body: 'body here',
+    defaultFieldOrder: [
+        {
+            name: 'header',
+            order: 0
+        },
+        {
+            name: 'image',
+            order: 1
+        },
+        {
+            name: 'link',
+            order: 2
+        },
+        {
+            name: 'list',
+            order: 3
+        },
+        {
+            name: 'body',
+            order: 4
+        }
+    ]
 }
 
 const list = {list: ['Click to edit list item']}
@@ -54,7 +79,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
                     path: ['*'], // any sections key
                     options: {
                         objectToAdd: section, // use this object for this path
-                        onResolvePath: (path: IPath) => {
+                        onResolvePath: (path: IObjectPath) => {
                             // this path needs sections appended to it so the object
                             // gets added in the right right place
                             return path.concat(['sections'])
@@ -71,7 +96,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
                 },
                 // all lists in first level categories
                 {
-                    path: [0, 'sections', '*', 'list'],
+                    path: ['*', 'sections', '*', 'list'],
                     options: {
                         limit: 10,
                         objectToAdd: 'Click to edit list item' // use this object for this path
@@ -84,13 +109,23 @@ class SectionEditor extends React.Component<IProps, ISate> {
             onUpdate={this.props.onUpdate}
             onDelete={this.props.onDelete}
             onAdd={this.props.onAdd}
+            onMoveNodeOrLeafTo={(fromIndex, toIndex, objectPath, fromField, toField) =>
+                this.props.onMoveNodeOrLeafTo(
+                    fromIndex,
+                    toIndex,
+                    [Constants.sections].concat(objectPath),
+                    fromField,
+                    toField
+                )
+            }
             objectToPrimitivePaths={[['image']]}
             // we dont want the tree to make this or any of its children
             // "opener": {"type": "tab","open": true},
-            ignoreKeys={['opener']}
+            ignoreKeys={['opener', 'defaultFieldOrder']}
             nodeKeyForObjectsAndArrays="header"
             data={this.props.sections}
             skipNode="sections"
+            orderKey="defaultFieldOrder"
         />
     )
 }

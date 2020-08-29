@@ -5,6 +5,7 @@ import {LazyLoadImage} from 'react-lazy-load-image-component'
 import axios, {AxiosRequestConfig} from 'axios'
 import {Constants} from '../../../../util'
 import {Wrapper} from '../../Wrapper'
+import {DragHandle} from '../../Drag/Drag'
 
 export interface IProps {
     onUpdate: (value: string) => void
@@ -81,6 +82,7 @@ class TreeLeaf extends React.Component<IProps, IState> {
         return (
             <Wrapper wrapper={(children) => <li className="leaf">{children}</li>} condition={this.props.makeWrapper}>
                 <>
+                    <DragHandle />
                     <EditableLabel
                         onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
                         isDeleteable={!!this.props.onDelete}

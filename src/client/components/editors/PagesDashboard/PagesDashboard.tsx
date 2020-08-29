@@ -1,6 +1,13 @@
 import * as React from 'react'
 import {LocationProps, navigate, redirectTo, RouteComponentProps, Router} from '@reach/router'
-import {Direction, IManifest, IPage} from '../../../../shared/typings'
+import {
+    Direction,
+    IManifest,
+    IPage,
+    IObjectPath,
+    IMoveNodeOrLeafToMethod,
+    IMoveNodeOrLeafToMethodWithPageId
+} from '../../../../shared/typings'
 import './PagesDashboard.css'
 import {Dispatch} from 'redux'
 import {IStore} from '../../../redux/store'
@@ -13,7 +20,8 @@ import {
     updatePage,
     updateObjectByPath,
     addObjectByPath,
-    movePageTo
+    movePageTo,
+    swapObjectsByPath
 } from '../../../redux/actions/manifest.action'
 import {connect} from 'react-redux'
 import Loader from '../../pages/Loaders/OrbLoader/OrbLoader'
@@ -28,6 +36,7 @@ type IProps = RouteComponentProps & {
     manifest: IManifest
     movePage: (pageID: number, direction: Direction) => void
     movePageTo: (fromIndex: number, toIndex: number) => void
+    swapObjectsByPath: IMoveNodeOrLeafToMethodWithPageId
     addPage: (pageName: string, pagePath: string) => void
     deletePage: (pageID: number) => void
     updatePage: (id: number, name: string, path: string) => void
@@ -112,6 +121,16 @@ class PagesDashboard extends React.Component<IProps, IState> {
                             onPageNameAndPathChange={this.props.updatePage}
                             imageDirectory={this.props.manifest.repoName}
                             projectUploadFolder={this.props.manifest.repoName}
+                            onMoveNodeOrLeafTo={(fromIndex, toIndex, objectPath, fromField, toField) =>
+                                this.props.swapObjectsByPath(
+                                    fromIndex,
+                                    toIndex,
+                                    objectPath,
+                                    this.props.currentPage.id,
+                                    fromField,
+                                    toField
+                                )
+                            }
                         />
                     )}
                 </Router>
@@ -150,6 +169,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
     movePage: (pageID: number, direction: Direction) => dispatch(movePage(pageID, direction)),
     movePageTo: (fromIndex: number, toIndex: number) => dispatch(movePageTo(fromIndex, toIndex)),
+    swapObjectsByPath: (
+        fromIndex: number,
+        toIndex: number,
+        objectPath: IObjectPath,
+        pageID: number,
+        fromField: string,
+        toField: string
+    ) => dispatch(swapObjectsByPath(fromIndex, toIndex, objectPath, pageID, fromField, toField)),
     addPage: (pageName: string, pagePath: string) => dispatch(addPage(pageName, pagePath, getPageTemplate(pageName))),
     deletePage: (pageID: number) => dispatch(deletePage(pageID)),
     triggerUndoableStart: () => dispatch(triggerUndoableStart()),

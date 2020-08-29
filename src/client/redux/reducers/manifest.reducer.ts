@@ -1,6 +1,16 @@
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
-import {APICallStatus, Direction, DOWN, IManifest, IManifestAction, IPage, UP} from '../../../shared/typings'
+import {
+    APICallStatus,
+    Direction,
+    DOWN,
+    IDefaultFieldOrder,
+    IManifest,
+    IManifestAction,
+    IPage,
+    ISection,
+    UP
+} from '../../../shared/typings'
 import ManifestActions, {
     IAddObjectByPath,
     IAddPage,
@@ -8,11 +18,13 @@ import ManifestActions, {
     IDeleteTextByObjectPath,
     IMovePage,
     IMovePageTo,
+    ISwapObjectsByPath,
+    // ISwapObjectsByPath,
     IUpdatePage,
     IUpdateTextByObjectPath
 } from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
-import {remove, cloneDeep} from 'lodash'
+import {cloneDeep, remove} from 'lodash'
 import {findPageById, getNextPageId} from '../../util'
 
 interface IManifestExtened {
@@ -147,13 +159,6 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                     // add the fixed array back
                     obj.unshift(...obj2ItemsWithNoEmptyShit)
                 }
-
-                /*  let obj = findObjectByPath(
-                    findPageById(action.payload.page.id, draft.manifest.pages),
-                    action.payload.objectPath
-                )
-
-                delete obj[path[path.length - 1]]*/
             }
         ),
 
@@ -178,6 +183,77 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             const toObject = pages[action.payload.toIndex]
             pages[action.payload.fromIndex] = toObject
             pages[action.payload.toIndex] = fromObject
+        }),
+
+        [ManifestActions.swapObjectsByPath]: produce((draft: IManifestExtened, action: ISwapObjectsByPath) => {
+            const clone = cloneDeep(draft)
+            const page: IPage = findPageById(action.payload.pageID, clone.manifest.pages)
+
+            // const pathArrays = action.payload.objectPath.reduce((p) => [p])
+            // @ts-ignore
+            /*   export const getNextPageId = (pages: IPage[]) => {
+                const nextID = pages.reduce((max, page) => {
+                    return page.id > max ? page.id : max
+                }, 0)
+                return nextID + 1
+            }*/
+
+            const maybeArray = findObjectByPath(
+                findPageById(action.payload.pageID, clone.manifest.pages),
+                action.payload.objectPath
+            )
+
+            if (Array.isArray(maybeArray)) {
+                const fromObject = maybeArray[action.payload.fromIndex]
+                const toObject = maybeArray[action.payload.toIndex]
+                maybeArray[action.payload.fromIndex] = toObject
+                maybeArray[action.payload.toIndex] = fromObject
+            } else {
+                let keys = Object.keys(maybeArray)
+                let fromKey = action.payload.fromField
+                let toKey = action.payload.toField
+
+                console.log(
+                    'from=' + fromKey + '-' + action.payload.fromIndex + '  To=' + toKey + '-' + action.payload.toIndex
+                )
+
+                //   let toIndexFixed = toIndex
+
+                /* while (toKey === 'header' || toKey === 'defaultFieldOrder') {
+                    toKey = keys[toIndexFixed]
+                    toIndexFixed++
+                    if (toIndexFixed > keys.length) {
+                        console.error('could not find key from ' + toIndexFixed)
+                    }
+                }*/
+
+                const section: ISection = maybeArray
+
+                const defaultFieldOrderTo = section.defaultFieldOrder.find(
+                    (order: IDefaultFieldOrder) => order.name === toKey
+                )
+                const defaultFieldOrderFrom = section.defaultFieldOrder.find(
+                    (order: IDefaultFieldOrder) => order.name === fromKey
+                )
+                // const oldTo = defaultFieldOrderTo.order
+                defaultFieldOrderTo.order = action.payload.fromIndex
+                defaultFieldOrderFrom.order = action.payload.toIndex
+
+                console.log(
+                    'from=' +
+                        defaultFieldOrderFrom.name +
+                        '-' +
+                        defaultFieldOrderFrom.order +
+                        '  To=' +
+                        defaultFieldOrderTo.name +
+                        '-' +
+                        defaultFieldOrderTo.order
+                )
+                console.log('section.defaultFieldOrder')
+                console.log(section.defaultFieldOrder)
+            }
+
+            return clone
         }),
 
         [ManifestActions.DeletePage]: produce((draft: IManifestExtened, action: IDeletePage) => {
@@ -277,6 +353,16 @@ const findSecondLastObjectByPath = (page: IPage, path: any[]) => {
     return obj
 }
 
+const findObjectByPath = (page: IPage, path: any[]): any => {
+    let obj = page
+    for (let i = 0; i <= path.length - 1; i++) {
+        const item = path[i]
+        // keep going up to the next parent
+        obj = obj[item] // this is by reference
+    }
+    return obj
+}
+
 // allow user to undo/redo their changes
 export default undoable(manifestReducer, {
     ignoreInitialState: true,
@@ -290,6 +376,7 @@ export default undoable(manifestReducer, {
         ManifestActions.UpdateTextByObjectPath,
         ManifestActions.DeleteObjectByObjectPath,
         ManifestActions.AddJsonObjectByObjectPath,
-        ManifestActions.SetAnyTopLevelPropertyUndoable
+        ManifestActions.SetAnyTopLevelPropertyUndoable,
+        ManifestActions.swapObjectsByPath
     ])
 })

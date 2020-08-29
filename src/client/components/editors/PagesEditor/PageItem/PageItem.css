@@ -1,8 +1,3 @@
-.drag_handle {
-    cursor: grab;
-    display: inline;
-}
-
-.drag_handle:hover {
-    cursor: grab;
+.x {
+    color: red;
 }
