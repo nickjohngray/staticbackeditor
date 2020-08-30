@@ -113,6 +113,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
 
                     {this.props.currentPage && (
                         <PageEditor
+                            products={this.props.manifest.products}
                             path="edit/:pageID"
                             onSectionChange={(value: string, objectPath) => this.updateSection(value, objectPath)}
                             onSectionAdd={(jsonObject: object, objectPath) => this.addSection(jsonObject, objectPath)}

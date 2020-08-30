@@ -1,13 +1,22 @@
-import {IPage, IObjectPath, ISection, PageContentEditors, IMoveNodeOrLeafToMethod} from '../../../../shared/typings'
+import {
+    IPage,
+    IObjectPath,
+    ISection,
+    PageContentEditors,
+    IMoveNodeOrLeafToMethod,
+    IProduct
+} from '../../../../shared/typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link, navigate} from '@reach/router'
 import EditableLabel from '../../generic/EditableLabel/EditableLabel'
 import './PageEditor.css'
 import Tree from '../../generic/Tree'
+import ProductEditor from '../ProductEditor/ProductEditor'
 
 type IProps = {
     page: IPage
+    products: IProduct[]
     onPageNameAndPathChange: (id: number, name: string, path: string) => void
     onSectionAdd: (jsonObject: object, objectPath: any[]) => void
     onSectionChange: (text: string, objectPath: any[]) => void
@@ -90,6 +99,19 @@ class PageEditor extends React.Component<IProps, IState> {
                         onAdd={(jsonObject, objectPath) => this.props.onSectionAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
                         sections={this.props.page.sections}
+                        imageDirectory={this.props.imageDirectory}
+                        projectUploadFolder={this.props.projectUploadFolder}
+                        onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
+                    />
+                )
+            }
+            case PageContentEditors.productEditor: {
+                return (
+                    <ProductEditor
+                        onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
+                        onAdd={(jsonObject, objectPath) => this.props.onSectionAdd(jsonObject, objectPath)}
+                        onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
+                        products={this.props.products}
                         imageDirectory={this.props.imageDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
                         onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}

@@ -14,7 +14,8 @@ export interface IPage {
 export type IObjectPath = (string | number)[]
 
 export enum PageContentEditors {
-    sectionEditor = 'sectionEditor'
+    sectionEditor = 'sectionEditor',
+    productEditor = 'productEditor'
 }
 
 export interface IDefaultFieldOrder {

@@ -35,7 +35,7 @@ const y: IAddablePathConfig[] = [
 ]*/
 
 export interface IProps {
-    addablePathConfigs: IAddablePathConfig[]
+    addablePathConfigs?: IAddablePathConfig[]
     readonlyPaths?: any[][]
     imagesPaths?: any[][]
     data: object[]
@@ -62,7 +62,7 @@ export interface IProps {
     imageDirectory?: string
     skipNode?: string
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
-    orderKey: string
+    orderKey?: string
 }
 
 interface IState {
@@ -95,7 +95,11 @@ class Tree extends React.Component<IProps, IState> {
 
     getOrderedKeys = (object: any) => {
         const keys = Object.keys(object)
-        const fieldOrder: IDefaultFieldOrder[] = object[this.props.orderKey]
+        const {orderKey} = this.props
+        if (!orderKey) {
+            return keys
+        }
+        const fieldOrder: IDefaultFieldOrder[] = object[orderKey]
         if (fieldOrder) {
             return sortKeys(keys, fieldOrder)
         }
@@ -346,10 +350,11 @@ class Tree extends React.Component<IProps, IState> {
 
     isObjectToPrimitivePath = (path: any[]): boolean => {
         let isMergePath = false
-        if (path.toString().indexOf('link') !== -1) {
-            console.log(path + ' ====' + this.props.objectToPrimitivePaths)
-        }
+        const objectToPrimitivePaths = this.props.objectToPrimitivePaths
 
+        if (!objectToPrimitivePaths) {
+            return false
+        }
         this.props.objectToPrimitivePaths.forEach((pathIn) => {
             if (isEqual(path, pathIn)) {
                 isMergePath = true
@@ -396,13 +401,18 @@ class Tree extends React.Component<IProps, IState> {
             canDelete = true
         }
 
-        this.props.readonlyPaths.forEach((pathIn) => {
+        const readonlyPaths = this.props.readonlyPaths
+        if (!readonlyPaths) {
+            return false
+        }
+
+        readonlyPaths.forEach((pathIn) => {
             if (isEqual(path, pathIn)) {
                 canDelete = false
             }
         })
         const pathAsString = path.toString()
-        this.props.readonlyPaths.forEach((p) => {
+        readonlyPaths.forEach((p) => {
             if (pathAsString.indexOf(p.toString()) !== -1) {
                 canDelete = false
             }
