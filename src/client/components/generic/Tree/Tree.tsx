@@ -14,7 +14,7 @@ import {
     SortStart,
     SortStartHandler
 } from 'react-sortable-hoc'
-import {isOk, sortKeys} from './treeUtil'
+import {getConfigForPath, isOk, sortKeys} from './treeUtil'
 
 export interface IAddablePathConfig {
     path: IObjectPath
@@ -34,7 +34,7 @@ export interface IDeletablePathConfig {
 
 export interface IDataTypePathConfigs {
     path: IObjectPath
-    options?: {dataType: string | number}
+    options?: {dataType: 'string' | 'number'}
 }
 
 /*Example of config
@@ -47,6 +47,7 @@ const y: IAddablePathConfig[] = [
 export interface IProps {
     addablePathConfigs?: IAddablePathConfig[]
     deletablePaths?: IDeletablePathConfig[]
+    dataTypePathConfigs?: IDataTypePathConfigs[]
     imagesPaths?: any[][]
     data: object[]
     nodeKeyForObjectsAndArrays?: string
@@ -337,7 +338,10 @@ class Tree extends React.Component<IProps, IState> {
 
     makeLeaf = (value: string, currentPath: string[], makeDragHandle: boolean = true) => {
         const path = cloneDeep(currentPath)
-        const canDelete = isOk(path, undefined, this.props.deletablePaths)
+        const canDelete = this.props.onDelete && isOk(path, undefined, this.props.deletablePaths)
+        const imagePath = this.isImagePath(path) ? this.getImagePath(value) : undefined
+        const dataTypePathConfig = getConfigForPath(currentPath, this.props.dataTypePathConfigs)
+        const leafType = dataTypePathConfig ? (dataTypePathConfig as IDataTypePathConfigs).options.dataType : undefined
         const onDelete = canDelete
             ? () => {
                   if (this.context.isDebug) {
@@ -347,11 +351,10 @@ class Tree extends React.Component<IProps, IState> {
               }
             : undefined
 
-        const imagePath = this.isImagePath(path) ? this.getImagePath(value) : undefined
-
         return (
             <>
                 <TreeLeaf
+                    type={leafType}
                     makeDragHandle={makeDragHandle}
                     onUpdate={(text: string) => this.props.onUpdate(text, currentPath)}
                     onDelete={onDelete}

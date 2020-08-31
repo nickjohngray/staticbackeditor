@@ -2,13 +2,13 @@ import {IDefaultFieldOrder, IObjectPath} from '../../../../shared/typings'
 
 import {cloneDeep, isEqual} from 'lodash'
 import {Constants} from '../../../util'
-import {IAddablePathConfig} from './Tree'
+import {IAddablePathConfig, IDataTypePathConfigs} from './Tree'
 
 // todo write test for this
 export const getConfigForPath = (
     currentPath: IObjectPath,
-    configs: IAddablePathConfig[]
-): IAddablePathConfig | null => {
+    configs: IAddablePathConfig[] | IDataTypePathConfigs[]
+): IAddablePathConfig | IDataTypePathConfigs => {
     if (configs === undefined) {
         return null
     }

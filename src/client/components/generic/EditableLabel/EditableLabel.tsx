@@ -1,12 +1,14 @@
 import * as React from 'react'
 import './EditableLabel.css'
 import {isEqual} from 'lodash'
+import {Constants} from '../../../util'
 
 interface IProps {
     value: string
     onUpdate: (text: string) => void
     onDelete?: () => void
     label?: string
+    type?: 'string' | 'number'
 }
 
 interface IState {
@@ -25,7 +27,9 @@ class EditableLabel extends React.Component<IProps, IState> {
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
         if (!prevState.isEditMode && this.state.isEditMode) {
             this.realText.focus()
-            this.realText.setSelectionRange(0, this.props.value.length)
+            if (this.realText.type === 'text') {
+                this.realText.setSelectionRange(0, this.props.value.length)
+            }
         }
     }
 
@@ -65,6 +69,7 @@ class EditableLabel extends React.Component<IProps, IState> {
             <>
                 {this.state.isEditMode ? (
                     <input
+                        type={this.props.type === Constants.string ? 'text' : 'number'}
                         className="editable_label_in_edit_mode"
                         onBlur={() => this.stopEdit()}
                         onChange={(event) => this.updateValueAfterTextChange(event)}

@@ -4,5 +4,7 @@ export enum Constants {
     projectUploadFolder = 'projectUploadFolder',
     sections = 'sections',
     wildcard = '*',
-    products = 'products'
+    products = 'products',
+    string = 'string',
+    number = 'number'
 }

@@ -166,6 +166,15 @@ class ProductEditor extends React.Component<IProps> {
                         options: {modifiableFields: variations, showAddButton: false, limit: 1}
                     }
                 ]}
+                dataTypePathConfigs={[
+                    {
+                        // all top level objects that happen to be products
+                        path: [Constants.wildcard, 'price'],
+                        // define product fields that can be add/removed for a product
+                        // in this case variations
+                        options: {dataType: Constants.number}
+                    }
+                ]}
             />
         </div>
     )

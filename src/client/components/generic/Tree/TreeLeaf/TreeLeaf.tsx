@@ -13,6 +13,7 @@ export interface IProps {
     value: string
     uploadFolder: string
     makeDragHandle: boolean
+    type?: 'string' | 'number'
 }
 
 interface IState {
@@ -65,6 +66,7 @@ class TreeLeaf extends React.Component<IProps, IState> {
                 <>
                     {this.props.makeDragHandle && <DragHandle />}
                     <EditableLabel
+                        type={this.props.type}
                         onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
                         onUpdate={(text) => {
                             this.props.onUpdate(text)
