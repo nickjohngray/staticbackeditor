@@ -109,7 +109,7 @@ export interface IProduct {
     description: string
     image: string
     type: string
-    variations: IVariation[]
+    variations?: IVariation[]
     price?: number
 }
 

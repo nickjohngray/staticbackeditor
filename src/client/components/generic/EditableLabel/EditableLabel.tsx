@@ -6,7 +6,6 @@ interface IProps {
     value: string
     onUpdate: (text: string) => void
     onDelete?: () => void
-    isDeleteable?: boolean
     label?: string
 }
 
@@ -76,7 +75,7 @@ class EditableLabel extends React.Component<IProps, IState> {
                     />
                 ) : (
                     <>
-                        {this.props.isDeleteable && (
+                        {this.props.onDelete && (
                             <button
                                 className="editable_label_delete_button"
                                 title="delete"

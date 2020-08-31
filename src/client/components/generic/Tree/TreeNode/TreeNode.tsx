@@ -1,7 +1,7 @@
 import React, {Fragment, RefObject} from 'react'
 import './TreeNode.css'
 import {IObjectPath} from '../../../../../shared/typings'
-import {IAddablePathConfig} from '../Tree'
+import {IAddablePathConfig, IDeletablePathConfig} from '../Tree'
 import {getConfigForPath, isOk} from '../treeUtil'
 import {isEqual} from 'lodash'
 import {DragHandle} from '../../Drag/Drag'
@@ -11,13 +11,13 @@ export interface IProps {
     currentPath: IObjectPath
     nodeEditableLeafPath: string
     leafValue: string
-    nodeJson: Object
+    childKeys: (string | object)[]
     addablePathConfigs: IAddablePathConfig[]
-    isDeletable: boolean
+    deletablePaths?: IDeletablePathConfig[]
     toggle: (event) => void
     makeLeaf: (value: string, currentPath: IObjectPath, makeWrapper: boolean) => void
-    onDelete?: (path: any[]) => void
-    onAdd?: (jsonObject: object, path: IObjectPath[]) => void
+    onDelete?: (path: IObjectPath) => void
+    onAdd?: (jsonObject: object, path: IObjectPath) => void
     reactKey: string | number
 }
 
@@ -35,12 +35,14 @@ class TreeNode extends React.Component<IProps> {
             currentPath,
             nodeEditableLeafPath,
             addablePathConfigs,
-            nodeJson,
-            isDeletable,
-            reactKey
+            childKeys,
+            reactKey,
+            onDelete
         } = this.props
 
-        const config: IAddablePathConfig = getConfigForPath(currentPath, addablePathConfigs)
+        const x = getConfigForPath(currentPath, addablePathConfigs)
+
+        const config = x as IAddablePathConfig
         const modifiableFields = config && config.options && config.options.modifiableFields
         const objectToAdd = config && config.options && config.options.objectToAdd
         const onResolvePath = config && config.options && config.options.onResolvePath
@@ -51,18 +53,16 @@ class TreeNode extends React.Component<IProps> {
             showAddButton = config.options.showAddButton
         }
 
-        const currentFields = Object.keys(nodeJson)
-
-        const childrenCount = Object.keys(nodeJson).length
-
         return (
             <Fragment key={'tree-node-' + reactKey}>
                 <DragHandle />
-                {isDeletable && this.makeDeleteButton(currentPath)}
+                {onDelete &&
+                    isOk(currentPath, undefined, this.props.deletablePaths) &&
+                    this.makeDeleteButton(currentPath)}
                 {showAddButton &&
-                    isOk(currentPath, childrenCount, this.props.addablePathConfigs) &&
+                    isOk(currentPath, childKeys.length, this.props.addablePathConfigs) &&
                     this.makeAddButton(objectToAdd, onResolvePath, currentPath)}
-                {modifiableFields && this.makeModifiableFieldsButtons(modifiableFields, currentFields, currentPath)}
+                {modifiableFields && this.makeModifiableFieldsButtons(modifiableFields, childKeys, currentPath)}
                 <span
                     className="caret node"
                     onClick={(e) => {
@@ -99,14 +99,14 @@ class TreeNode extends React.Component<IProps> {
             <button
                 key={'tree-node-add-but' + this.props.reactKey}
                 className="editable_label_add_button"
-                title="add"
+                title="New"
                 onClick={() => {
                     this.props.onAdd(
                         userObjectToAddWhenAddIsClicked,
                         onResolvePath ? onResolvePath(currentPath) : currentPath
                     )
                 }}>
-                Add
+                +
             </button>
         )
     }
@@ -117,6 +117,10 @@ class TreeNode extends React.Component<IProps> {
         currentPath: any[]
     ) => {
         return configFieldKeys.map((field) => {
+            currentFieldJsonObjects.map((currentField) =>
+                console.log('currentField=[' + currentField + '][Object.keys(field)[0]=' + Object.keys(field)[0] + ']')
+            )
+
             if (currentFieldJsonObjects.some((currentField) => isEqual(currentField, Object.keys(field)[0]))) {
                 // this property is already in the list
                 // a button for the user to click on to make this property

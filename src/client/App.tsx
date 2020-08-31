@@ -8,7 +8,7 @@ import StaticBackEditor from './context/StaticBackEditor'
 function App() {
     return (
         <Provider store={store}>
-            <StaticBackEditor.Provider value={{isDebug: false}}>
+            <StaticBackEditor.Provider value={{isDebug: true}}>
                 <div className="App">
                     <Layout />
                 </div>

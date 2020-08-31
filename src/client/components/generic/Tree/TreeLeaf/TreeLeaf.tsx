@@ -66,7 +66,6 @@ class TreeLeaf extends React.Component<IProps, IState> {
                     {this.props.makeDragHandle && <DragHandle />}
                     <EditableLabel
                         onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
-                        isDeleteable={!!this.props.onDelete}
                         onUpdate={(text) => {
                             this.props.onUpdate(text)
                         }}

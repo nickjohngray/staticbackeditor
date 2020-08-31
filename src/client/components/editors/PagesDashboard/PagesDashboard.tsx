@@ -144,16 +144,16 @@ class PagesDashboard extends React.Component<IProps, IState> {
         return !!page
     }
 
-    updateSection = (value: string, objectPath: any[]) => {
-        this.props.updateObjectByPath(this.props.currentPage, value, [Constants.sections].concat(objectPath))
+    updateSection = (value: string, objectPath: IObjectPath) => {
+        this.props.updateObjectByPath(this.props.currentPage, value, objectPath)
     }
 
-    addSection = (jsonObject: object, objectPath: any[]) => {
-        this.props.addObjectByPath(this.props.currentPage, jsonObject, [Constants.sections].concat(objectPath))
+    addSection = (jsonObject: object, objectPath: IObjectPath) => {
+        this.props.addObjectByPath(this.props.currentPage, jsonObject, objectPath)
     }
 
-    deleteSection = (objectPath: any[]) => {
-        this.props.deleteObjectByPath(this.props.currentPage, [Constants.sections].concat(objectPath))
+    deleteSection = (objectPath: IObjectPath) => {
+        this.props.deleteObjectByPath(this.props.currentPage, objectPath)
     }
 
     getPage = (pageName: string) =>

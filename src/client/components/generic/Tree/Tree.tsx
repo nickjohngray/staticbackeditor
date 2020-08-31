@@ -14,7 +14,7 @@ import {
     SortStart,
     SortStartHandler
 } from 'react-sortable-hoc'
-import {sortKeys} from './treeUtil'
+import {isOk, sortKeys} from './treeUtil'
 
 export interface IAddablePathConfig {
     path: IObjectPath
@@ -27,6 +27,16 @@ export interface IAddablePathConfig {
     }
 }
 
+export interface IDeletablePathConfig {
+    path: IObjectPath
+    options?: {}
+}
+
+export interface IDataTypePathConfigs {
+    path: IObjectPath
+    options?: {dataType: string | number}
+}
+
 /*Example of config
 const x: IAddablePathConfig = {path: ['link'], options: {unique: true}}
 const y: IAddablePathConfig[] = [
@@ -36,14 +46,14 @@ const y: IAddablePathConfig[] = [
 
 export interface IProps {
     addablePathConfigs?: IAddablePathConfig[]
-    readonlyPaths?: any[][]
+    deletablePaths?: IDeletablePathConfig[]
     imagesPaths?: any[][]
     data: object[]
     nodeKeyForObjectsAndArrays?: string
     ignoreKeys?: string[]
-    onUpdate: (text: string, objectPath: any[]) => void
-    onAdd?: (jsonObject: object, path: IObjectPath[]) => void
-    onDelete?: (path: any[]) => void
+    onUpdate: (text: string, objectPath: IObjectPath) => void
+    onAdd?: (jsonObject: object, path: IObjectPath) => void
+    onDelete?: (path: IObjectPath) => void
 
     projectUploadFolder: string
     /* a  json object  that you dont want to build a node for
@@ -84,6 +94,7 @@ interface IState {
 
 class Tree extends React.Component<IProps, IState> {
     static contextType = StaticBackEditor
+
     constructor(props) {
         super(props)
         this.state = {isDirty: false}
@@ -201,7 +212,14 @@ class Tree extends React.Component<IProps, IState> {
         return (
             /*NOTE Drag will make an li here , if no drag replace <> with <li>*/
             <>
-                {this.makeNode(nodeName, elementPath, nodeEditableLeafPath, leafValue, object, reactKey)}
+                {this.makeNode(
+                    nodeName,
+                    elementPath,
+                    nodeEditableLeafPath,
+                    leafValue,
+                    this.getNodeChildrenKeys(object, nodeName),
+                    reactKey
+                )}
                 <ul className="nested">{this.testThenMake(object[key], elementPath, undefined, reactKey)}</ul>
             </>
         )
@@ -218,8 +236,13 @@ class Tree extends React.Component<IProps, IState> {
         return this.startProcessObject(object, parentIsArray, elementPath, reactKey)
     }
 
-    startProcessObject = (object: {}, parentIsArray: boolean, currentPath: string[], reactKey: string | number) => {
-        const nameName = this.getNodeName(object)
+    startProcessObject = (
+        object: [] | object,
+        parentIsArray: boolean,
+        currentPath: string[],
+        reactKey: string | number
+    ) => {
+        const nodeName = this.getNodeName(object)
         const nodeEditableLeafPath = this.getNodeEditableLeafPath(object)
         let leafValue: string = null
         if (nodeEditableLeafPath) {
@@ -229,7 +252,14 @@ class Tree extends React.Component<IProps, IState> {
         return parentIsArray ? (
             <li>
                 {' '}
-                {this.makeNode(nameName, currentPath, nodeEditableLeafPath, leafValue, object, reactKey)}
+                {this.makeNode(
+                    nodeName,
+                    currentPath,
+                    nodeEditableLeafPath,
+                    leafValue,
+                    this.getNodeChildrenKeys(object, nodeName),
+                    reactKey
+                )}
                 {/*if  "nested active" here it will be expanded on make*/}
                 <ul className="nested">
                     <li>{this.getNodesOrLeaves(object, currentPath)}</li>
@@ -238,6 +268,19 @@ class Tree extends React.Component<IProps, IState> {
         ) : (
             this.getNodesOrLeaves(object, currentPath)
         )
+    }
+
+    getNodeChildrenKeys = (object: [] | object, nameName: string) => {
+        if (this.context.isDebug) {
+            if (Array.isArray(object) && !this.props.nodeKeyForObjectsAndArrays) {
+                console.error(
+                    'Invalid tree config, when using addablePathConfigs when object is an array  nodeKeyForObjectsAndArrays must be set, it is null'
+                )
+            }
+        }
+        return Array.isArray(object)
+            ? Object.keys(object.find((obj) => obj[this.props.nodeKeyForObjectsAndArrays] === nameName))
+            : Object.keys(object)
     }
 
     loopArray = (array, elementPath: string[], reactKey: string | number) => (
@@ -271,7 +314,7 @@ class Tree extends React.Component<IProps, IState> {
         currentPath: any[],
         nodeEditableLeafPath: string,
         leafValue: string,
-        nodeJson: Object,
+        childKeys: (string | object)[],
         reactKey: string | number
     ) => {
         return (
@@ -281,10 +324,10 @@ class Tree extends React.Component<IProps, IState> {
                 currentPath={currentPath}
                 nodeEditableLeafPath={nodeEditableLeafPath}
                 leafValue={leafValue}
-                nodeJson={nodeJson}
+                childKeys={childKeys}
                 addablePathConfigs={this.props.addablePathConfigs}
+                deletablePaths={this.props.deletablePaths}
                 onAdd={this.props.onAdd}
-                isDeletable={this.isDeletable(currentPath)}
                 onDelete={this.props.onDelete}
                 toggle={this.toggle}
                 makeLeaf={this.makeLeaf}
@@ -294,7 +337,8 @@ class Tree extends React.Component<IProps, IState> {
 
     makeLeaf = (value: string, currentPath: string[], makeDragHandle: boolean = true) => {
         const path = cloneDeep(currentPath)
-        const onDelete = this.isDeletable(path)
+        const canDelete = isOk(path, undefined, this.props.deletablePaths)
+        const onDelete = canDelete
             ? () => {
                   if (this.context.isDebug) {
                       alert('currentPath is ' + currentPath)
@@ -391,35 +435,42 @@ class Tree extends React.Component<IProps, IState> {
         return isImagePath
     }
 
-    isDeletable = (path: any[]): boolean => {
-        let canDelete = true
-        if (this.props.onDelete === undefined) {
-            canDelete = false
-        }
-        // first level of sections can be deleted
-        if (path.length === 1) {
-            canDelete = true
-        }
-
-        const readonlyPaths = this.props.readonlyPaths
-        if (!readonlyPaths) {
+    /*
+    isDeletable = (currentPath: IObjectPath, childrenCount: number): boolean => {
+        if (this.props.addablePathConfigs === undefined) {
             return false
         }
 
-        readonlyPaths.forEach((pathIn) => {
-            if (isEqual(path, pathIn)) {
-                canDelete = false
-            }
-        })
-        const pathAsString = path.toString()
-        readonlyPaths.forEach((p) => {
-            if (pathAsString.indexOf(p.toString()) !== -1) {
-                canDelete = false
-            }
-        })
+        for (let i = 0; i < this.props.addablePathConfigs.length; i++) {
+            let userPath = cloneDeep(this.props.addablePathConfigs[i].path)
+            // replace * in user path with actual value from path
+            if (userPath.length === currentPath.length) {
+                for (let j = 0; j < this.props.addablePathConfigs.length; j++) {
+                    if (userPath[j] === Constants.wildcard) {
+                        userPath[j] = currentPath[j]
+                    }
+                }
 
-        return canDelete
+                if (!isEqual(currentPath, userPath)) {
+                    continue
+                }
+
+                if (
+                    this.props.addablePathConfigs[i].options &&
+                    this.props.addablePathConfigs[i].options.limit &&
+                    childrenCount > this.props.addablePathConfigs[i].options.limit
+                ) {
+                    continue
+                }
+
+                return true
+            }
+        }
+
+        return false
     }
+
+    */
 
     // TODO make other path methods like this
     isAddable = (currentPath: IObjectPath, childrenCount: number): boolean => {
@@ -467,7 +518,11 @@ class Tree extends React.Component<IProps, IState> {
     }
 
     toggle = (event) => {
-        event.target.parentElement.querySelector('.nested').classList.toggle('active')
+        const nested = event.target.parentElement.querySelector('.nested')
+        if (nested) {
+            nested.classList.toggle('active')
+        }
+
         event.target.classList.toggle('caret-down')
     }
 }

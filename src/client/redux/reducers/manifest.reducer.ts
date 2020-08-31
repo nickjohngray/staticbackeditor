@@ -7,7 +7,9 @@ import {
     IDefaultFieldOrder,
     IManifest,
     IManifestAction,
+    IObjectPath,
     IPage,
+    IProduct,
     ISection,
     UP
 } from '../../../shared/typings'
@@ -25,7 +27,7 @@ import ManifestActions, {
 } from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
 import {cloneDeep, remove} from 'lodash'
-import {findPageById, getNextPageId} from '../../util'
+import {Constants, findPageById, getNextPageId} from '../../util'
 
 interface IManifestExtened {
     requestStage: APICallStatus
@@ -107,58 +109,80 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.manifest.pages.push(page)
         }),
 
+        // allows any object to be added , like page and product
         [ManifestActions.AddJsonObjectByObjectPath]: produce((draft: IManifestExtened, action: IAddObjectByPath) => {
-            const path = action.payload.objectPath
-
             const clone = cloneDeep(draft)
+            if (action.payload.objectPath[0] !== Constants.products) {
+                const path = action.payload.objectPath
+                const target: [] | Object = findSecondLastObjectByPath(
+                    findPageById(action.payload.page.id, clone.manifest.pages),
+                    action.payload.objectPath
+                )
 
-            let obj = findSecondLastObjectByPath(
-                findPageById(action.payload.page.id, clone.manifest.pages),
-                action.payload.objectPath
-            )
-            const jsonObjectCloned = cloneDeep(action.payload.jsonObject)
+                const jsonObjectCloned = cloneDeep(action.payload.jsonObject)
 
-            const lastItem = path[path.length - 1]
-            if (Array.isArray(obj[lastItem])) {
-                obj[lastItem].push(jsonObjectCloned)
-            } else {
-                Object.assign(obj[lastItem], jsonObjectCloned)
+                addItem(path, target, jsonObjectCloned)
+                return clone
             }
+            // adding new product path like [product]
+            if (action.payload.objectPath.length === 1) {
+                clone.manifest.products.push(cloneDeep(action.payload.jsonObject) as IProduct)
+                return clone
+            }
+            // adding a property to a product path like [product,0]
+            if (action.payload.objectPath.length === 2) {
+                Object.assign(
+                    clone.manifest.products[action.payload.objectPath[1]],
+                    cloneDeep(action.payload.jsonObject)
+                )
+                // clone.manifest.products[action.payload.objectPath[1]].push(cloneDeep(action.payload.jsonObject) as IProduct)
+                return clone
+            }
+
+            let target = findSecondLastObjectByPath(clone.manifest.products, action.payload.objectPath)
+            addItem(action.payload.objectPath, target, cloneDeep(action.payload.jsonObject))
             return clone
         }),
 
+        // allows any object's text value to be updated
         [ManifestActions.UpdateTextByObjectPath]: produce(
             (draft: IManifestExtened, action: IUpdateTextByObjectPath) => {
+                const clone = cloneDeep(draft)
                 const path = action.payload.objectPath
-
-                let obj = findSecondLastObjectByPath(
-                    findPageById(action.payload.page.id, draft.manifest.pages),
-                    action.payload.objectPath
-                )
-                obj[path[path.length - 1]] = action.payload.text
+                const page: IPage = findPageById(action.payload.page.id, clone.manifest.pages)
+                if (action.payload.objectPath[0] !== Constants.products) {
+                    const target: [] | Object = findSecondLastObjectByPath(page, action.payload.objectPath)
+                    target[path[path.length - 1]] = action.payload.text
+                    return clone
+                }
+                // product update
+                let pathWithoutProductKey: IObjectPath = [...action.payload.objectPath]
+                pathWithoutProductKey.splice(0, 1)
+                const target: [] | Object = findSecondLastObjectByPath(clone.manifest.products, pathWithoutProductKey)
+                target[path[path.length - 1]] = action.payload.text
+                return clone
             }
         ),
 
+        // allows any object to be deleted like image of a section or a product etc.
         [ManifestActions.DeleteObjectByObjectPath]: produce(
             (draft: IManifestExtened, action: IDeleteTextByObjectPath) => {
+                const clone = cloneDeep(draft)
                 const path = action.payload.objectPath
-                const obj = findSecondLastObjectByPath(
-                    findPageById(action.payload.page.id, draft.manifest.pages),
-                    action.payload.objectPath
-                )
-                // mutate the draft by reference
-                const lastPartOfPath = path[path.length - 1]
-                delete obj[lastPartOfPath]
-                if (Array.isArray(obj)) {
-                    // remove nulls in array, that occurs when using delete operator  on array items
-                    const obj2ItemsWithNoEmptyShit = obj.filter((x) => x !== undefined)
-                    // remove all items
-                    while (obj.length !== 0) {
-                        obj.pop()
-                    }
-                    // add the fixed array back
-                    obj.unshift(...obj2ItemsWithNoEmptyShit)
+                if (action.payload.objectPath[0] !== Constants.products) {
+                    const target: [] | Object = findSecondLastObjectByPath(
+                        findPageById(action.payload.page.id, clone.manifest.pages),
+                        action.payload.objectPath
+                    )
+                    deleteItem(target, path)
+                    return clone
                 }
+                // product
+                let pathWithoutProductKey: IObjectPath = [...action.payload.objectPath]
+                pathWithoutProductKey.splice(0, 1)
+                const target: [] | Object = findSecondLastObjectByPath(clone.manifest.products, pathWithoutProductKey)
+                deleteItem(target, path)
+                return clone
             }
         ),
 
@@ -189,15 +213,6 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             const clone = cloneDeep(draft)
             const page: IPage = findPageById(action.payload.pageID, clone.manifest.pages)
 
-            // const pathArrays = action.payload.objectPath.reduce((p) => [p])
-            // @ts-ignore
-            /*   export const getNextPageId = (pages: IPage[]) => {
-                const nextID = pages.reduce((max, page) => {
-                    return page.id > max ? page.id : max
-                }, 0)
-                return nextID + 1
-            }*/
-
             const maybeArray = findObjectByPath(
                 findPageById(action.payload.pageID, clone.manifest.pages),
                 action.payload.objectPath
@@ -209,23 +224,13 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 maybeArray[action.payload.fromIndex] = toObject
                 maybeArray[action.payload.toIndex] = fromObject
             } else {
-                let keys = Object.keys(maybeArray)
                 let fromKey = action.payload.fromField
                 let toKey = action.payload.toField
-
-                console.log(
-                    'from=' + fromKey + '-' + action.payload.fromIndex + '  To=' + toKey + '-' + action.payload.toIndex
-                )
-
-                //   let toIndexFixed = toIndex
-
-                /* while (toKey === 'header' || toKey === 'defaultFieldOrder') {
-                    toKey = keys[toIndexFixed]
-                    toIndexFixed++
-                    if (toIndexFixed > keys.length) {
-                        console.error('could not find key from ' + toIndexFixed)
-                    }
-                }*/
+                if (!fromKey || !toKey) {
+                    throw new Error(`object is not an array but a object in this case 
+                     fromKey[${fromKey}] and toKey[${toKey}] 
+                     must be give but they are undefined`)
+                }
 
                 const section: ISection = maybeArray
 
@@ -235,22 +240,8 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 const defaultFieldOrderFrom = section.defaultFieldOrder.find(
                     (order: IDefaultFieldOrder) => order.name === fromKey
                 )
-                // const oldTo = defaultFieldOrderTo.order
                 defaultFieldOrderTo.order = action.payload.fromIndex
                 defaultFieldOrderFrom.order = action.payload.toIndex
-
-                console.log(
-                    'from=' +
-                        defaultFieldOrderFrom.name +
-                        '-' +
-                        defaultFieldOrderFrom.order +
-                        '  To=' +
-                        defaultFieldOrderTo.name +
-                        '-' +
-                        defaultFieldOrderTo.order
-                )
-                console.log('section.defaultFieldOrder')
-                console.log(section.defaultFieldOrder)
             }
 
             return clone
@@ -340,11 +331,11 @@ const setAnyTopLevelProperty = (action: IManifestAction, draft: IManifestExtened
     }
 }
 
-const findSecondLastObjectByPath = (page: IPage, path: any[]) => {
+const findSecondLastObjectByPath = (objIn: IPage | IProduct[], path: IObjectPath): any => {
     // find the parent object by path and set the value
     // see example-find-object-by-path.html for moore info
     // this path is set on an editable leaf during the tree build process
-    let obj = page
+    let obj = objIn
     for (let i = 0; i < path.length - 1; i++) {
         const item = path[i]
         // keep going up to the next parent
@@ -361,6 +352,30 @@ const findObjectByPath = (page: IPage, path: any[]): any => {
         obj = obj[item] // this is by reference
     }
     return obj
+}
+
+const deleteItem = (target: [] | Object, path: IObjectPath) => {
+    const lastPartOfPath = path[path.length - 1]
+    delete target[lastPartOfPath]
+    if (Array.isArray(target)) {
+        // remove nulls in array, that occurs when using delete operator  on array items
+        const obj2ItemsWithNoEmptyShit = target.filter((x) => x !== undefined)
+        // remove all items
+        while (target.length !== 0) {
+            target.pop()
+        }
+        // add the fixed array back
+        target.unshift(...obj2ItemsWithNoEmptyShit)
+    }
+}
+
+const addItem = (path: IObjectPath, target: [] | Object, jsonObjectCloned: [] | Object) => {
+    const lastKey = path.length === 1 ? path[0] : path[path.length - 1]
+    if (Array.isArray(target[lastKey])) {
+        target[lastKey].push(jsonObjectCloned)
+    } else {
+        Object.assign(target[lastKey], jsonObjectCloned)
+    }
 }
 
 // allow user to undo/redo their changes

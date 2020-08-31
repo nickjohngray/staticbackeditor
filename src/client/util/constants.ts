@@ -3,5 +3,6 @@ export enum Constants {
     ui = 'ui',
     projectUploadFolder = 'projectUploadFolder',
     sections = 'sections',
-    wildcard = '*'
+    wildcard = '*',
+    products = 'products'
 }

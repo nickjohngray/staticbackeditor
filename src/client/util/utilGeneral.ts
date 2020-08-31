@@ -1,4 +1,4 @@
-import {IPage} from '../../shared/typings'
+import {IObjectPath, IPage} from '../../shared/typings'
 
 export const findPageById = (id: number, pages: IPage[]) => pages.find((p) => p.id === id)
 
@@ -14,4 +14,8 @@ export const getNextPageId = (pages: IPage[]) => {
         return page.id > max ? page.id : max
     }, 0)
     return nextID + 1
+}
+
+export const prependKeyToObjectPath = (path: IObjectPath, key: string): IObjectPath => {
+    return [key, ...path]
 }

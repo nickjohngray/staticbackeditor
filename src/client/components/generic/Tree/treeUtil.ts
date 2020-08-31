@@ -4,6 +4,7 @@ import {cloneDeep, isEqual} from 'lodash'
 import {Constants} from '../../../util'
 import {IAddablePathConfig} from './Tree'
 
+// todo write test for this
 export const getConfigForPath = (
     currentPath: IObjectPath,
     configs: IAddablePathConfig[]
@@ -30,7 +31,30 @@ export const getConfigForPath = (
     return null
 }
 
-export const isOk = (currentPath: IObjectPath, childrenCount: number, config: IAddablePathConfig[]): boolean => {
+export const doesPathMatch = (currentPath: IObjectPath[], configPath: IObjectPath): boolean => {
+    if (currentPath === undefined || configPath === undefined) {
+        return false
+    }
+
+    for (let i = 0; i < configPath.length; i++) {
+        // replace * in user path with actual value from path
+        const pathWithWildcardsReplaced = cloneDeep(configPath)
+        if (configPath.length === currentPath.length) {
+            for (let j = 0; j < configPath.length; j++) {
+                if (configPath[i][j] === Constants.wildcard) {
+                    pathWithWildcardsReplaced[i][j] = currentPath[j]
+                }
+            }
+        }
+        if (isEqual(currentPath, pathWithWildcardsReplaced[i])) {
+            return true
+        }
+    }
+
+    return null
+}
+
+export const isOk = (currentPath: IObjectPath, childrenCount: number = 0, config: IAddablePathConfig[]): boolean => {
     if (config === undefined) {
         return false
     }
