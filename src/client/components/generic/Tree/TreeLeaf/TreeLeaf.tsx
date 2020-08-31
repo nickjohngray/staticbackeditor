@@ -64,6 +64,7 @@ class TreeLeaf extends React.Component<IProps, IState> {
                 content={(children) => <li className="leaf">{children}</li>}
                 warpInParent={this.props.makeDragHandle}>
                 <>
+                    {/* drag will m ake the li*/}
                     {this.props.makeDragHandle && <DragHandle />}
                     <EditableLabel
                         type={this.props.type}

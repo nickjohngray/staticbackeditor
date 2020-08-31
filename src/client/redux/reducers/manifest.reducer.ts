@@ -124,6 +124,8 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 addItem(path, target, jsonObjectCloned)
                 return clone
             }
+            // todo improve below code
+
             // adding new product path like [product]
             if (action.payload.objectPath.length === 1) {
                 clone.manifest.products.push(cloneDeep(action.payload.jsonObject) as IProduct)
@@ -213,10 +215,14 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             const clone = cloneDeep(draft)
             const page: IPage = findPageById(action.payload.pageID, clone.manifest.pages)
 
-            const maybeArray = findObjectByPath(
-                findPageById(action.payload.pageID, clone.manifest.pages),
-                action.payload.objectPath
-            )
+            const maybeArray =
+                action.payload.objectPath[0] !== Constants.products
+                    ? findObjectByPath(page, action.payload.objectPath)
+                    : clone.manifest.products
+
+            if (!maybeArray) {
+                throw new Error('could not get target object to update')
+            }
 
             if (Array.isArray(maybeArray)) {
                 const fromObject = maybeArray[action.payload.fromIndex]
@@ -224,15 +230,20 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 maybeArray[action.payload.fromIndex] = toObject
                 maybeArray[action.payload.toIndex] = fromObject
             } else {
+                // plan object like {x:1}
                 let fromKey = action.payload.fromField
                 let toKey = action.payload.toField
                 if (!fromKey || !toKey) {
-                    throw new Error(`object is not an array but a object in this case 
+                    throw new Error(`object is not an array but an object in this case 
                      fromKey[${fromKey}] and toKey[${toKey}] 
-                     must be give but they are undefined`)
+                     must be given but they are undefined`)
                 }
 
                 const section: ISection = maybeArray
+
+                if (!section.defaultFieldOrder || !Array.isArray(section.defaultFieldOrder)) {
+                    throw new Error('object is a object and defaultFieldOrder key in not in the object, or its not an array, this must be set')
+                }
 
                 const defaultFieldOrderTo = section.defaultFieldOrder.find(
                     (order: IDefaultFieldOrder) => order.name === toKey

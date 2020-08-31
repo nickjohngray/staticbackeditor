@@ -15,10 +15,12 @@ export interface IProps {
     addablePathConfigs: IAddablePathConfig[]
     deletablePaths?: IDeletablePathConfig[]
     toggle: (event) => void
-    makeLeaf: (value: string, currentPath: IObjectPath, makeWrapper: boolean) => void
+    makeLeaf: (value: string, currentPath: IObjectPath, makeDragHandle: boolean) => void
+    // makeLeaf2:  (value: string, currentPath: string[], makeDragHandle: boolean) => void
     onDelete?: (path: IObjectPath) => void
     onAdd?: (jsonObject: object, path: IObjectPath) => void
     reactKey: string | number
+    makeDragHandle: boolean
 }
 
 class TreeNode extends React.Component<IProps> {
@@ -37,7 +39,8 @@ class TreeNode extends React.Component<IProps> {
             addablePathConfigs,
             childKeys,
             reactKey,
-            onDelete
+            onDelete,
+            makeDragHandle
         } = this.props
 
         const x = getConfigForPath(currentPath, addablePathConfigs)
@@ -55,7 +58,7 @@ class TreeNode extends React.Component<IProps> {
 
         return (
             <Fragment key={'tree-node-' + reactKey}>
-                <DragHandle />
+                {makeDragHandle && <DragHandle />}
                 {onDelete &&
                     isOk(currentPath, undefined, this.props.deletablePaths) &&
                     this.makeDeleteButton(currentPath)}

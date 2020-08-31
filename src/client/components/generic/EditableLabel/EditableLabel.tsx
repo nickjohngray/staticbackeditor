@@ -69,7 +69,7 @@ class EditableLabel extends React.Component<IProps, IState> {
             <>
                 {this.state.isEditMode ? (
                     <input
-                        type={this.props.type === Constants.string ? 'text' : 'number'}
+                        type={this.props.type === Constants.number ? 'number' : 'text'}
                         className="editable_label_in_edit_mode"
                         onBlur={() => this.stopEdit()}
                         onChange={(event) => this.updateValueAfterTextChange(event)}

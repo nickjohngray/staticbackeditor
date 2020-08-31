@@ -32,7 +32,12 @@ export interface IDeletablePathConfig {
     options?: {}
 }
 
-export interface IDataTypePathConfigs {
+export interface INonDragPathConfig {
+    path: IObjectPath
+    options?: {}
+}
+
+export interface IDataTypePathConfig {
     path: IObjectPath
     options?: {dataType: 'string' | 'number'}
 }
@@ -47,7 +52,10 @@ const y: IAddablePathConfig[] = [
 export interface IProps {
     addablePathConfigs?: IAddablePathConfig[]
     deletablePaths?: IDeletablePathConfig[]
-    dataTypePathConfigs?: IDataTypePathConfigs[]
+    dataTypePathConfigs?: IDataTypePathConfig[]
+    // if not given all nodes and leaves are draggable,
+    // when given drag is only turned //off/on according to this config
+    nonDragPathConfigs?: INonDragPathConfig[]
     imagesPaths?: any[][]
     data: object[]
     nodeKeyForObjectsAndArrays?: string
@@ -120,15 +128,18 @@ class Tree extends React.Component<IProps, IState> {
 
     makeTree = (object: any, currentPath: any[]) => this.getNodesOrLeaves(object, currentPath)
 
-    getNodesOrLeaves = (object: any, currentPath: any[]) => {
-        // let propertyFrom
+    getNodesOrLeaves = (object: [] | object, currentPath: IObjectPath) => {
+        const isDraggablePath = this.getIsDraggablePath(currentPath)
+        // if not draggable
+        if (!isDraggablePath) {
+            return this.getOrderedKeys(object).map((key, reactKey) => (
+                // todo is li needed here, dont think so tested it has no effect on view
+                <li>{this.getNodeOrLeaf(object, currentPath, key, reactKey)}</li>
+            ))
+        }
         return (
             <DragList
                 helperClass="drag_handle"
-                onSortStart={(sort: SortStart, event: SortEvent) => {
-                    // @ts-ignore
-                    // propertyFrom = event.target.parentNode.childNodes[2].lastChild.data
-                }}
                 shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
                     if ((event as SortEventWithTag).target.tagName === 'DIV') {
                         return false
@@ -147,7 +158,15 @@ class Tree extends React.Component<IProps, IState> {
                         console.log('from=' + from.innerText + '-' + fromInex + '  To=' + to.innerText + '-' + toIndex)
                         this.props.onMoveNodeOrLeafTo(fromInex, toIndex, currentPath, from.innerText, to.innerText)
                     } else {
-                        console.error('wtf')
+                        throw new Error((
+                            'could not get span.caret.node of nodes[' +
+                            fromInex +
+                            '] nodes[' +
+                            fromInex +
+                            ']  or  + nodes[' +
+                            toIndex +
+                            ']'
+                        ))
                     }
                 }}
             />
@@ -252,7 +271,6 @@ class Tree extends React.Component<IProps, IState> {
 
         return parentIsArray ? (
             <li>
-                {' '}
                 {this.makeNode(
                     nodeName,
                     currentPath,
@@ -284,35 +302,66 @@ class Tree extends React.Component<IProps, IState> {
             : Object.keys(object)
     }
 
-    loopArray = (array, elementPath: string[], reactKey: string | number) => (
-        <DragList
-            helperClass="drag_handle"
-            shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
-                if ((event as SortEventWithTag).target.tagName === 'DIV') {
-                    return false // the drag handle is defined in a div
-                }
-                // cancel this drag event for all other tag elements,
-                // like span, button and link, these are used for
-                // other things
-                return true
-            }}
-            items={array.map((object, key) => {
-                // console.log('object=[' + object + '] key= [' + key + ']')
+    getIsDraggablePath = (currentPath: IObjectPath): boolean => {
+        let isDraggablePath: boolean = true
+        if (getConfigForPath(currentPath, this.props.nonDragPathConfigs)) {
+            isDraggablePath = false
+        }
+        return isDraggablePath
+    }
+
+    loopArray = (array, currentPath: string[], reactKey: string | number) => {
+        if (!this.getIsDraggablePath(currentPath)) {
+            return array.map((object, key) => {
                 if (key === this.props.nodeKeyForObjectsAndArrays) {
                     return <Fragment key={'skipped_' + reactKey + '-' + key} />
                 }
-                const currentPath = elementPath.concat(key)
-                return <div key={key + reactKey}>{this.testThenMake(object, currentPath, true, reactKey)}</div>
-            })}
-            onSortEnd={({oldIndex: fromIndex, newIndex: toIndex}) => {
-                this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, elementPath)
-            }}
-        />
-    )
+                const currentPathWithArrayIndexAppended = currentPath.concat(key)
+                // li below is needed here to show items in vertical list
+                // if drag is true the drag will make this li
+                return (
+                    <li>
+                        <div key={key + reactKey}>
+                            {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
+                        </div>
+                    </li>
+                )
+            })
+        }
+
+        return (
+            <DragList
+                helperClass="drag_handle"
+                shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
+                    if ((event as SortEventWithTag).target.tagName === 'DIV') {
+                        return false // the drag handle is defined in a div
+                    }
+                    // cancel this drag event for all other tag elements,
+                    // like span, button and link, these are used for
+                    // other things
+                    return true
+                }}
+                items={array.map((object, key) => {
+                    if (key === this.props.nodeKeyForObjectsAndArrays) {
+                        return <Fragment key={'skipped_' + reactKey + '-' + key} />
+                    }
+                    const currentPathWithArrayIndexAppended = currentPath.concat(key)
+                    return (
+                        <div key={key + reactKey}>
+                            {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
+                        </div>
+                    )
+                })}
+                onSortEnd={({oldIndex: fromIndex, newIndex: toIndex}) => {
+                    this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, currentPath)
+                }}
+            />
+        )
+    }
 
     makeNode = (
         nodeName: string,
-        currentPath: any[],
+        currentPath: IObjectPath,
         nodeEditableLeafPath: string,
         leafValue: string,
         childKeys: (string | object)[],
@@ -332,16 +381,22 @@ class Tree extends React.Component<IProps, IState> {
                 onDelete={this.props.onDelete}
                 toggle={this.toggle}
                 makeLeaf={this.makeLeaf}
+                makeDragHandle={this.getIsDraggablePath(currentPath)}
             />
         )
     }
 
-    makeLeaf = (value: string, currentPath: string[], makeDragHandle: boolean = true) => {
+    makeLeaf = (
+        value: string,
+        currentPath: string[],
+        makeDragHandle: boolean = this.getIsDraggablePath(currentPath)
+    ) => {
         const path = cloneDeep(currentPath)
         const canDelete = this.props.onDelete && isOk(path, undefined, this.props.deletablePaths)
         const imagePath = this.isImagePath(path) ? this.getImagePath(value) : undefined
         const dataTypePathConfig = getConfigForPath(currentPath, this.props.dataTypePathConfigs)
-        const leafType = dataTypePathConfig ? (dataTypePathConfig as IDataTypePathConfigs).options.dataType : undefined
+        const leafType = dataTypePathConfig ? (dataTypePathConfig as IDataTypePathConfig).options.dataType : undefined
+
         const onDelete = canDelete
             ? () => {
                   if (this.context.isDebug) {

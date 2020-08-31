@@ -175,6 +175,23 @@ class ProductEditor extends React.Component<IProps> {
                         options: {dataType: Constants.number}
                     }
                 ]}
+                nonDragPathConfigs={[
+                    {
+                        path: [Constants.wildcard, 'type']
+                    },
+                    {
+                        path: [Constants.wildcard, 'description']
+                    },
+                    {
+                        path: [Constants.wildcard, 'price']
+                    },
+                    {
+                        path: [Constants.wildcard, 'image']
+                    },
+                    {
+                        path: [Constants.wildcard, 'variations']
+                    }
+                ]}
             />
         </div>
     )

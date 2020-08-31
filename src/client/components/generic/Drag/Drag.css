@@ -1,8 +1,10 @@
 .drag_handle {
-    color: red;
     cursor: grab;
     display: inline;
     list-style: none;
+    margin: 0;
+    opacity: 50;
+    padding: 0;
 }
 
 .drag_handle:hover {
