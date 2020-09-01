@@ -6,5 +6,6 @@ export enum Constants {
     wildcard = '*',
     products = 'products',
     string = 'string',
-    number = 'number'
+    number = 'number',
+    readonly = 'readonly'
 }

@@ -13,7 +13,7 @@ export interface IProps {
     value: string
     uploadFolder: string
     makeDragHandle: boolean
-    type?: 'string' | 'number'
+    type?: 'string' | 'number' | 'readonly'
 }
 
 interface IState {
@@ -59,6 +59,7 @@ class TreeLeaf extends React.Component<IProps, IState> {
                 </>
             )
         }
+
         return (
             <Something
                 content={(children) => <li className="leaf">{children}</li>}

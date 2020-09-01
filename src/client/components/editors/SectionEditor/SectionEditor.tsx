@@ -145,7 +145,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
                     // we dont want the tree to make this or any of its children
                     // "opener": {"type": "tab","open": true},
                     ignoreKeys={['opener', 'defaultFieldOrder']}
-                    nodeKeyForObjectsAndArrays={'header'}
+                    nodeKeyForObjectsAndArrays={['header']}
                     data={this.props.sections}
                     skipNode="sections"
                     orderKey="defaultFieldOrder"

@@ -2,85 +2,62 @@ import {IDefaultFieldOrder, IObjectPath} from '../../../../shared/typings'
 
 import {cloneDeep, isEqual} from 'lodash'
 import {Constants} from '../../../util'
-import {IAddablePathConfig, IDataTypePathConfig, INonDragPathConfig} from './Tree'
+import {IAddablePathConfig, IFieldTypePathConfig, INonDragPathConfig} from './Tree'
 
 // todo write test for this
 export const getConfigForPath = (
     currentPath: IObjectPath,
-    configs: IAddablePathConfig[] | IDataTypePathConfig[] | INonDragPathConfig[]
-): IAddablePathConfig | IDataTypePathConfig | INonDragPathConfig | null => {
+    configs: IAddablePathConfig[] | IFieldTypePathConfig[] | INonDragPathConfig[]
+): IAddablePathConfig | IFieldTypePathConfig | INonDragPathConfig | null => {
     if (configs === undefined) {
         return null
     }
-
     for (let i = 0; i < configs.length; i++) {
-        let userPath = cloneDeep(configs[i].path)
+        let configPath = [...configs[i].path]
         // replace * in user path with actual value from path
-        if (userPath.length === currentPath.length) {
-            for (let j = 0; j < configs.length; j++) {
-                if (userPath[j] === Constants.wildcard) {
-                    userPath[j] = currentPath[j]
+        // if this user path has the sane amount of items or more
+        if (configPath.length >= currentPath.length - 1) {
+            for (let j = 0; j < configPath.length; j++) {
+                if (configPath[j] === Constants.wildcard) {
+                    configPath[j] = currentPath[j]
                 }
             }
         }
-        if (isEqual(currentPath, userPath)) {
+        if (isEqual(currentPath, configPath)) {
             return configs[i]
         }
     }
-
     return null
 }
 
-export const doesPathMatch = (currentPath: IObjectPath[], configPath: IObjectPath): boolean => {
-    if (currentPath === undefined || configPath === undefined) {
-        return false
-    }
-
-    for (let i = 0; i < configPath.length; i++) {
-        // replace * in user path with actual value from path
-        const pathWithWildcardsReplaced = cloneDeep(configPath)
-        if (configPath.length === currentPath.length) {
-            for (let j = 0; j < configPath.length; j++) {
-                if (configPath[i][j] === Constants.wildcard) {
-                    pathWithWildcardsReplaced[i][j] = currentPath[j]
-                }
-            }
-        }
-        if (isEqual(currentPath, pathWithWildcardsReplaced[i])) {
-            return true
-        }
-    }
-
-    return null
-}
-
-export const isOk = (currentPath: IObjectPath, childrenCount: number = 0, config: IAddablePathConfig[]): boolean => {
+export const isCurrentPathOkForConfig = (
+    currentPath: IObjectPath,
+    childrenCount: number = 0,
+    config: IAddablePathConfig[]
+): boolean => {
     if (config === undefined) {
         return false
     }
     // todo refactor this
     for (let i = 0; i < config.length; i++) {
-        let userPath = cloneDeep(config[i].path)
+        let configPath = [...config[i].path]
         // replace * in user path with actual value from path
-        if (userPath.length === currentPath.length) {
-            for (let j = 0; j < config.length; j++) {
-                if (userPath[j] === Constants.wildcard) {
-                    userPath[j] = currentPath[j]
+        // if this user path has the sane amount of items or more
+        if (configPath.length >= currentPath.length) {
+            for (let j = 0; j < configPath.length; j++) {
+                if (configPath[j] === Constants.wildcard) {
+                    configPath[j] = currentPath[j]
                 }
             }
-
-            if (!isEqual(currentPath, userPath)) {
+            if (!isEqual(currentPath, configPath)) {
                 continue
             }
-
             if (config[i].options && config[i].options.limit && childrenCount > config[i].options.limit) {
                 continue
             }
-
             return true
         }
     }
-
     return false
 }
 

@@ -14,7 +14,7 @@ import {
     SortStart,
     SortStartHandler
 } from 'react-sortable-hoc'
-import {getConfigForPath, isOk, sortKeys} from './treeUtil'
+import {getConfigForPath, isCurrentPathOkForConfig, sortKeys} from './treeUtil'
 
 export interface IAddablePathConfig {
     path: IObjectPath
@@ -37,9 +37,9 @@ export interface INonDragPathConfig {
     options?: {}
 }
 
-export interface IDataTypePathConfig {
+export interface IFieldTypePathConfig {
     path: IObjectPath
-    options?: {dataType: 'string' | 'number'}
+    options?: {fieldType: 'string' | 'number' | 'readonly'}
 }
 
 /*Example of config
@@ -52,13 +52,13 @@ const y: IAddablePathConfig[] = [
 export interface IProps {
     addablePathConfigs?: IAddablePathConfig[]
     deletablePaths?: IDeletablePathConfig[]
-    dataTypePathConfigs?: IDataTypePathConfig[]
+    fieldTypePathConfigs?: IFieldTypePathConfig[]
     // if not given all nodes and leaves are draggable,
     // when given drag is only turned //off/on according to this config
     nonDragPathConfigs?: INonDragPathConfig[]
     imagesPaths?: any[][]
     data: object[]
-    nodeKeyForObjectsAndArrays?: string
+    nodeKeyForObjectsAndArrays?: string[]
     ignoreKeys?: string[]
     onUpdate: (text: string, objectPath: IObjectPath) => void
     onAdd?: (jsonObject: object, path: IObjectPath) => void
@@ -158,15 +158,15 @@ class Tree extends React.Component<IProps, IState> {
                         console.log('from=' + from.innerText + '-' + fromInex + '  To=' + to.innerText + '-' + toIndex)
                         this.props.onMoveNodeOrLeafTo(fromInex, toIndex, currentPath, from.innerText, to.innerText)
                     } else {
-                        throw new Error((
+                        throw new Error(
                             'could not get span.caret.node of nodes[' +
-                            fromInex +
-                            '] nodes[' +
-                            fromInex +
-                            ']  or  + nodes[' +
-                            toIndex +
-                            ']'
-                        ))
+                                fromInex +
+                                '] nodes[' +
+                                fromInex +
+                                ']  or  + nodes[' +
+                                toIndex +
+                                ']'
+                        )
                     }
                 }}
             />
@@ -210,9 +210,10 @@ class Tree extends React.Component<IProps, IState> {
             return <li key={reactKey + key}>{this.testThenMake(object[key], elementPath, undefined, reactKey)}</li>
         }
 
+        const nodeKeyForObjectsAndArrays = this.props.nodeKeyForObjectsAndArrays
         // this leaf has been made on an editable node,
         // it can be skipped, we dont want a double up
-        if (this.isPrimitive(object[key]) && key === this.props.nodeKeyForObjectsAndArrays) {
+        if (this.isPrimitive(object[key]) && this.isKeyOneOfNodeKeysForObjectsAndArrays(key)) {
             return <Fragment key={'skipped_' + key}> </Fragment>
         }
 
@@ -237,7 +238,7 @@ class Tree extends React.Component<IProps, IState> {
                     elementPath,
                     nodeEditableLeafPath,
                     leafValue,
-                    this.getNodeChildrenKeys(object, nodeName),
+                    this.getNodeChildrenKeys(object, key),
                     reactKey
                 )}
                 <ul className="nested">{this.testThenMake(object[key], elementPath, undefined, reactKey)}</ul>
@@ -245,21 +246,21 @@ class Tree extends React.Component<IProps, IState> {
         )
     }
 
-    testThenMake = (object: any, elementPath: any[], parentIsArray: boolean = false, reactKey) => {
+    testThenMake = (object: any, currentPath: IObjectPath, parentIsArray: boolean = false, reactKey) => {
         if (this.isPrimitive(object)) {
-            return this.makeLeaf(object, elementPath)
+            return this.makeLeaf(object, currentPath)
         }
         if (this.isArray(object)) {
-            return this.loopArray(object, elementPath, reactKey)
+            return this.loopArray(object, currentPath, reactKey)
         }
 
-        return this.startProcessObject(object, parentIsArray, elementPath, reactKey)
+        return this.startProcessObject(object, parentIsArray, currentPath, reactKey)
     }
 
     startProcessObject = (
         object: [] | object,
         parentIsArray: boolean,
-        currentPath: string[],
+        currentPath: IObjectPath,
         reactKey: string | number
     ) => {
         const nodeName = this.getNodeName(object)
@@ -289,17 +290,12 @@ class Tree extends React.Component<IProps, IState> {
         )
     }
 
-    getNodeChildrenKeys = (object: [] | object, nameName: string) => {
-        if (this.context.isDebug) {
-            if (Array.isArray(object) && !this.props.nodeKeyForObjectsAndArrays) {
-                console.error(
-                    'Invalid tree config, when using addablePathConfigs when object is an array  nodeKeyForObjectsAndArrays must be set, it is null'
-                )
-            }
+    getNodeChildrenKeys = (object: [] | object, key: string | number) => {
+        if (!Array.isArray(object)) {
+            return Object.keys(object)
         }
-        return Array.isArray(object)
-            ? Object.keys(object.find((obj) => obj[this.props.nodeKeyForObjectsAndArrays] === nameName))
-            : Object.keys(object)
+        const objectInArray = (object as any[])[key]
+        return Object.keys(objectInArray)
     }
 
     getIsDraggablePath = (currentPath: IObjectPath): boolean => {
@@ -310,10 +306,13 @@ class Tree extends React.Component<IProps, IState> {
         return isDraggablePath
     }
 
-    loopArray = (array, currentPath: string[], reactKey: string | number) => {
+    isKeyOneOfNodeKeysForObjectsAndArrays = (key: string) =>
+        this.props.nodeKeyForObjectsAndArrays && this.props.nodeKeyForObjectsAndArrays.some((k) => k === key)
+
+    loopArray = (array, currentPath: IObjectPath, reactKey: string | number) => {
         if (!this.getIsDraggablePath(currentPath)) {
-            return array.map((object, key) => {
-                if (key === this.props.nodeKeyForObjectsAndArrays) {
+            return array.map((object, key: string | number) => {
+                if (this.props.nodeKeyForObjectsAndArrays.some((k) => k === key)) {
                     return <Fragment key={'skipped_' + reactKey + '-' + key} />
                 }
                 const currentPathWithArrayIndexAppended = currentPath.concat(key)
@@ -321,7 +320,7 @@ class Tree extends React.Component<IProps, IState> {
                 // if drag is true the drag will make this li
                 return (
                     <li>
-                        <div key={key + reactKey}>
+                        <div key={(key as string) + reactKey}>
                             {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
                         </div>
                     </li>
@@ -342,7 +341,7 @@ class Tree extends React.Component<IProps, IState> {
                     return true
                 }}
                 items={array.map((object, key) => {
-                    if (key === this.props.nodeKeyForObjectsAndArrays) {
+                    if (this.props.nodeKeyForObjectsAndArrays.some((k) => k === key)) {
                         return <Fragment key={'skipped_' + reactKey + '-' + key} />
                     }
                     const currentPathWithArrayIndexAppended = currentPath.concat(key)
@@ -388,14 +387,18 @@ class Tree extends React.Component<IProps, IState> {
 
     makeLeaf = (
         value: string,
-        currentPath: string[],
+        currentPath: IObjectPath,
         makeDragHandle: boolean = this.getIsDraggablePath(currentPath)
     ) => {
-        const path = cloneDeep(currentPath)
-        const canDelete = this.props.onDelete && isOk(path, undefined, this.props.deletablePaths)
+        const path = [...currentPath]
+        const canDelete = this.props.onDelete && isCurrentPathOkForConfig(path, undefined, this.props.deletablePaths)
         const imagePath = this.isImagePath(path) ? this.getImagePath(value) : undefined
-        const dataTypePathConfig = getConfigForPath(currentPath, this.props.dataTypePathConfigs)
-        const leafType = dataTypePathConfig ? (dataTypePathConfig as IDataTypePathConfig).options.dataType : undefined
+        const dataTypePathConfig = getConfigForPath(currentPath, this.props.fieldTypePathConfigs)
+        const leafType = dataTypePathConfig ? (dataTypePathConfig as IFieldTypePathConfig).options.fieldType : undefined
+
+        if (leafType && leafType === 'readonly') {
+            console.log('readonly path found for path ' + currentPath)
+        }
 
         const onDelete = canDelete
             ? () => {
@@ -425,23 +428,21 @@ class Tree extends React.Component<IProps, IState> {
     getImagePath = (image: string): string => '/' + this.props.imageDirectory + '/' + image
 
     getNodeName = (object, alternativeName = 'opener') => {
-        if (object[this.props.nodeKeyForObjectsAndArrays]) {
-            return object[this.props.nodeKeyForObjectsAndArrays]
+        const propertyOfObject = this.getNodeEditableLeafPath(object)
+        if (propertyOfObject) {
+            return propertyOfObject
         } else {
             return alternativeName
         }
     }
 
-    isNodeEditableType = (object) => {
-        if (object[this.props.nodeKeyForObjectsAndArrays]) {
-            return true
-        }
-    }
+    isNodeEditableType = (object: any): boolean => this.getNodeEditableLeafPath(object) !== null
 
-    getNodeEditableLeafPath = (object) => {
-        if (object[this.props.nodeKeyForObjectsAndArrays]) {
-            return this.props.nodeKeyForObjectsAndArrays
+    getNodeEditableLeafPath = (object: any): string | null => {
+        if (!this.props.nodeKeyForObjectsAndArrays) {
+            return null
         }
+        return this.props.nodeKeyForObjectsAndArrays.find((key) => object[key] !== undefined)
     }
 
     isArray = (value) => Array.isArray(value)
@@ -568,7 +569,8 @@ class Tree extends React.Component<IProps, IState> {
     getNodePathKey = (key: string) => (isNaN(Number(key)) ? key : parseInt(key, 10))
 
     doesHaveNodeKeyForObjectsAndArrays = (object) => {
-        if (object[this.props.nodeKeyForObjectsAndArrays]) {
+        const propertyOfObject = this.getNodeEditableLeafPath(object)
+        if (propertyOfObject) {
             return true
         } else {
             return false

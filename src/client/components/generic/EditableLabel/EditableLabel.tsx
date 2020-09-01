@@ -8,7 +8,7 @@ interface IProps {
     onUpdate: (text: string) => void
     onDelete?: () => void
     label?: string
-    type?: 'string' | 'number'
+    type?: 'string' | 'number' | 'readonly'
 }
 
 interface IState {
@@ -67,7 +67,7 @@ class EditableLabel extends React.Component<IProps, IState> {
     render = () => {
         return (
             <>
-                {this.state.isEditMode ? (
+                {this.props.type !== 'readonly' && this.state.isEditMode ? (
                     <input
                         type={this.props.type === Constants.number ? 'number' : 'text'}
                         className="editable_label_in_edit_mode"
@@ -88,7 +88,13 @@ class EditableLabel extends React.Component<IProps, IState> {
                                 X
                             </button>
                         )}
-                        <span className="editable_label_in_view_mode" onClick={() => this.toggleEditMode()}>
+                        <span
+                            className={
+                                this.props.type === 'readonly'
+                                    ? 'editable_label_in_readonly_mode'
+                                    : 'editable_label_in_view_mode'
+                            }
+                            onClick={() => this.props.type !== 'readonly' && this.toggleEditMode()}>
                             {this.getLabel()}
                         </span>
                     </>

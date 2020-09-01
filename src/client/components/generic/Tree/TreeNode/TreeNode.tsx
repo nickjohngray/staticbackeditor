@@ -2,7 +2,7 @@ import React, {Fragment, RefObject} from 'react'
 import './TreeNode.css'
 import {IObjectPath} from '../../../../../shared/typings'
 import {IAddablePathConfig, IDeletablePathConfig} from '../Tree'
-import {getConfigForPath, isOk} from '../treeUtil'
+import {getConfigForPath, isCurrentPathOkForConfig} from '../treeUtil'
 import {isEqual} from 'lodash'
 import {DragHandle} from '../../Drag/Drag'
 
@@ -60,10 +60,10 @@ class TreeNode extends React.Component<IProps> {
             <Fragment key={'tree-node-' + reactKey}>
                 {makeDragHandle && <DragHandle />}
                 {onDelete &&
-                    isOk(currentPath, undefined, this.props.deletablePaths) &&
+                    isCurrentPathOkForConfig(currentPath, undefined, this.props.deletablePaths) &&
                     this.makeDeleteButton(currentPath)}
                 {showAddButton &&
-                    isOk(currentPath, childKeys.length, this.props.addablePathConfigs) &&
+                    isCurrentPathOkForConfig(currentPath, childKeys.length, this.props.addablePathConfigs) &&
                     this.makeAddButton(objectToAdd, onResolvePath, currentPath)}
                 {modifiableFields && this.makeModifiableFieldsButtons(modifiableFields, childKeys, currentPath)}
                 <span

@@ -58,7 +58,12 @@ const variationsModifiable = [
         ]
     }
 ]
-
+//  * =          any prod
+// variations =  variations
+// * =          any variation
+// item =      item
+//
+//  ['*', 'variations', '*', 'item', 0, 'optionValue']
 const variations = [
     {
         variations: [
@@ -153,7 +158,9 @@ class ProductEditor extends React.Component<IProps> {
                 onMoveNodeOrLeafTo={(fromIndex, toIndex, objectPath, fromField, toField) =>
                     this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, fixPath(objectPath), fromField, toField)
                 }
-                nodeKeyForObjectsAndArrays={'title'}
+                // use products title key  for node names and
+                //  variations  optionValue key for node names
+                nodeKeyForObjectsAndArrays={['title', 'optionValue']}
                 data={this.props.products}
                 // allow delete of top level product object
                 deletablePaths={[{path: [Constants.wildcard]}, {path: [Constants.wildcard, 'variations']}]}
@@ -166,32 +173,43 @@ class ProductEditor extends React.Component<IProps> {
                         options: {modifiableFields: variations, showAddButton: false, limit: 1}
                     }
                 ]}
-                dataTypePathConfigs={[
+                fieldTypePathConfigs={[
                     {
                         // all top level objects that happen to be products
                         path: [Constants.wildcard, 'price'],
                         // define product fields that can be add/removed for a product
                         // in this case variations
-                        options: {dataType: Constants.number}
+                        options: {fieldType: Constants.number}
+                    },
+
+                    {
+                        path: ['*', 'variations', '*', 'item', '*', 'optionValue'],
+                        options: {fieldType: Constants.readonly}
                     }
                 ]}
                 nonDragPathConfigs={[
                     {
-                        path: [Constants.wildcard, 'type']
+                        // all product fields
+                        path: ['*', '*']
                     },
+                    // title
                     {
-                        path: [Constants.wildcard, 'description']
+                        path: ['*', '*', '*']
                     },
+                    // item
                     {
-                        path: [Constants.wildcard, 'price']
+                        path: ['*', '*', '*', '*']
                     },
+                    // opener
                     {
-                        path: [Constants.wildcard, 'image']
+                        path: ['*', '*', '*', '*', '*']
                     },
+                    // option value and price
                     {
-                        path: [Constants.wildcard, 'variations']
+                        path: ['*', '*', '*', '*', '*', '*']
                     }
                 ]}
+                // objectToPrimitivePaths={[['opener']]}
             />
         </div>
     )

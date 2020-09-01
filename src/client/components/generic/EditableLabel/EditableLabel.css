@@ -1,13 +1,19 @@
 .editable_label_in_edit_mode {
     cursor: auto;
-    font-size: 20px;
+    font-size: 18px;
     width: auto;
 }
 
 .editable_label_in_view_mode {
     color: #009688;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 18px;
+}
+
+.editable_label_in_readonly_mode {
+    color: #646464;
+    cursor: pointer;
+    font-size: 18px;
 }
 
 .editable_label_delete_button {
