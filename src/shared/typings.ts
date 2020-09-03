@@ -131,6 +131,7 @@ export interface ISingleVariation {
 }
 
 export interface IVariation {
+    type: 'image' | 'price' | 'generic'
     title: string
     item: IVariationItem[]
 }

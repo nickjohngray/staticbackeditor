@@ -9,7 +9,6 @@ const router = express.Router()
 const ErrorIn = 'Error in add-page.ts '
 
 router.post('/add-page', async (req, res) => {
-    console.log('in save-manifest')
     const pageName: string = req.body.pageName
     const pagePath: string = req.body.pagePath
     const repoName: string = req.body.repoName

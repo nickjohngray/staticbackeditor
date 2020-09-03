@@ -105,7 +105,13 @@ class EditableLabel extends React.Component<IProps, IState> {
 
     getLabel = () => {
         if (this.props.label) {
-            return this.props.label + ':' + this.state.value
+            return (
+                <>
+                    <span className="editable_label_label">{this.props.label}</span>
+                    <span className="editable_label_spacer"> : </span>
+                    <span className="editable_label_value"> {this.state.value} </span>
+                </>
+            )
         }
         return this.state.value
     }

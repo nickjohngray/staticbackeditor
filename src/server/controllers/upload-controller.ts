@@ -90,7 +90,7 @@ const getResult = async (req, res) => {
         if (req.body.images.length <= 0) {
             return res.json({error: 'pick an image'})
         }
-        console.log('in getResult')
+        // console.log('in getResult')
 
         const images = req.body.images.map((image) => '' + image + '').join(' ')
         let i = req.body.images

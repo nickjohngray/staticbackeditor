@@ -46,3 +46,14 @@ nav a:hover {
     bottom: 0;
     position: fixed;
 }
+
+button:hover {
+    background-color: black;
+    color: white;
+    opacity: 1;
+}
+
+button:active {
+    background-color: #ff0423;
+    color: black;
+}

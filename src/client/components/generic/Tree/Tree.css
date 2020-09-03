@@ -1,21 +1,27 @@
 /* Remove default bullets */
 ul,
-#myUL {
+.tree_group {
     list-style-type: none;
-}
-
-/* Remove margins and padding from the parent ul */
-#myUL {
     margin: 0;
     padding: 0;
 }
 
-/* Hide the nested list */
+.nested .tree_group {
+    border: 1px;
+    border-left: 1px solid #e4e4e4;
+    font-size: 18px;
+    margin: 0;
+    padding-bottom: 5px;
+    padding-left: 30px;
+    padding-top: 5px;
+}
+
+/* hides the nested list */
 .nested {
     display: none;
 }
 
-/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+/* Show the nested list */
 .active {
     display: block;
 }

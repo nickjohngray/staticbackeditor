@@ -9,7 +9,6 @@ const router = express.Router()
 const ErrorIn = 'Error in delete-page.ts '
 
 router.post('/delete-page', async (req, res) => {
-    console.log('in save-manifest')
     const pageName: string = req.body.pageName
     const repoName: string = req.body.repoName
 

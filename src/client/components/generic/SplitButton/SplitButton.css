@@ -1,0 +1,58 @@
+.split_button {
+    border: none;
+    font-size: initial;
+}
+
+.btn {
+    border: none;
+    font-size: initial;
+    outline: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    /* position: absolute; */
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    min-width: 160px;
+    position: absolute;
+    z-index: 1;
+}
+
+.dropdown-content button {
+    align-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+/* this will make the + buttons line up */
+.dropdown-content button :nth-child(2) {
+    flex-grow: 1;
+}
+
+/* Change color of dropdown links on hover */
+
+/* .dropdown-content button:hover {
+    background-color: black;
+    color: white;
+} */
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+
+/*
+ .dropdown:hover .btn  {
+    background-color: black;
+    color: white;
+}
+*/

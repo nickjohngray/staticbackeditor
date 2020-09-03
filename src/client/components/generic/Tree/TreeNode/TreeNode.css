@@ -1,42 +1,27 @@
 .node {
-    font-size: 18px;
-}
-
-.image {
-    height: 100px;
-    width: 100px;
-}
-
-.file_upload_button {
-    display: none;
-}
-
-.lazy-load-image {
-    cursor: pointer;
-}
-
-/* Style the caret/arrow */
-.caret {
     cursor: pointer;
     user-select: none; /* Prevent text selection */
 }
 
-/* Create the caret/arrow with a unicode, and style it */
-.caret::after {
-    color: #00000038;
+.node::after {
+    color: #d41515;
     content: '+';
     display: inline-block;
     font-size: 20px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
-/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
-.caret-down::after {
+.node::after:hover {
+    color: green;
+}
+
+.node-down::after {
     content: '-';
     font-size: 20px;
 }
 
 /* moves the leaf beside the node for an editable node */
-.caret .leaf {
+.node .leaf {
     display: inline;
 }

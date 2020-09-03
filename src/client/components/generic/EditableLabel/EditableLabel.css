@@ -8,6 +8,16 @@
     color: #009688;
     cursor: pointer;
     font-size: 18px;
+    text-transform: capitalize;
+}
+
+.editable_label_spacer {
+    color: black;
+}
+
+.editable_label_label {
+    font-size: smaller;
+    text-transform: uppercase;
 }
 
 .editable_label_in_readonly_mode {
@@ -19,15 +29,19 @@
 .editable_label_delete_button {
     background-color: transparent;
     border: 1px;
-    color: #f44336;
+    color: #b83b33;
     cursor: pointer;
     font-size: 10px;
     margin: 0;
+    margin-right: 5px;
     padding: 1px;
     vertical-align: middle;
 }
 
 .editable_label_delete_button:hover {
-    transform: rotate(360deg);
-    transition-duration: 500ms;
+    color: #f51806;
+
+    /* transform: rotate(360deg);
+    transition-duration: 500ms; */
+    transition-duration: 100ms;
 }

@@ -5,6 +5,9 @@ import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {DragHandle} from '../../Drag/Drag'
 import FileUploader from '../../FileUploader/FileUploader'
 import {Something} from '../../Something'
+import {IDeletablePathConfig} from '../Tree'
+import {getConfigForPath} from '../treeUtil'
+import {IObjectPath} from '../../../../../shared/typings'
 
 export interface IProps {
     onUpdate: (value: string) => void
@@ -14,6 +17,7 @@ export interface IProps {
     uploadFolder: string
     makeDragHandle: boolean
     type?: 'string' | 'number' | 'readonly'
+    label: string
 }
 
 interface IState {
@@ -37,13 +41,13 @@ class TreeLeaf extends React.Component<IProps, IState> {
             return (
                 <>
                     <LazyLoadImage
-                        className={'lazy-load-image'}
+                        className={'lazy-load-imageVariationItem'}
                         onClick={() => this.setState({showFileUploaderDialog: true})}
-                        ttile="Change image"
+                        ttile="Change imageVariationItem"
                         height={100}
                         src={this.state.previewFile ? this.state.previewFile : this.props.imagePath}
                         width={100}
-                        title="Click to change image"
+                        title="Click to change imageVariationItem"
                     />
                     {this.state.isImageUploadable && (
                         <FileUploader
@@ -69,11 +73,18 @@ class TreeLeaf extends React.Component<IProps, IState> {
                     {this.props.makeDragHandle && <DragHandle />}
                     <EditableLabel
                         type={this.props.type}
-                        onDelete={this.props.onDelete ? () => this.props.onDelete() : undefined}
+                        onDelete={
+                            this.props.onDelete
+                                ? () => {
+                                      this.props.onDelete()
+                                  }
+                                : undefined
+                        }
                         onUpdate={(text) => {
                             this.props.onUpdate(text)
                         }}
                         value={this.props.value}
+                        label={this.props.label}
                     />
                 </>
             </Something>
@@ -114,10 +125,10 @@ class TreeLeaf extends React.Component<IProps, IState> {
         formData.append(Constants.projectUploadFolder, this.props.uploadFolder)
         let response = await axios.post('/api/upload', formData, config)
         if (!response.data.fileNames) {
-            throw new Error('Backend did not return new file name for uploaded image')
+            throw new Error('Backend did not return new file name for uploaded imageVariationItem')
         }
         this.props.onUpdate(response.data.fileNames[0])
-        // we are done with this the image has been uploaded
+        // we are done with this the imageVariationItem has been uploaded
 
         this.setState({previewFiles: []})
     }*/

@@ -2,6 +2,17 @@ import {IMoveNodeOrLeafToMethod, IObjectPath, IProduct, ISection} from '../../..
 import * as React from 'react'
 import Tree from '../../generic/Tree'
 import {Constants, prependKeyToObjectPath} from '../../../util'
+import {IObjectsToAdd} from '../../generic/Tree/Tree'
+import './ProductEditor.css'
+import {cloneDeep} from 'lodash'
+import {
+    genericVariation,
+    genericVariationItem,
+    imageVariationItem,
+    imageWithFirstItem,
+    priceVariation,
+    priceVariationItem
+} from './productSetupData'
 
 interface IProps {
     products: IProduct[]
@@ -13,127 +24,26 @@ interface IProps {
     onMoveNodeOrLeafTo?: IMoveNodeOrLeafToMethod
 }
 
-const product: IProduct = {
-    type: 'dummy',
-    title: 'dummy prod',
-    description: 'Adummy',
-    price: 1,
-    image: 'strength_pit_black_training_tshirt.jpg'
+const variations = {
+    generic: genericVariationItem,
+    price: priceVariationItem,
+    image: imageVariationItem
 }
 
-const variationsModifiable = [
-    {title: 'Size'},
-    {
-        item: [
-            {
-                optionValue: 'Pick 1...'
-            },
-            {
-                optionValue: 'Small'
-            },
-            {
-                optionValue: 'Medium'
-            },
-            {
-                optionValue: 'Large'
-            },
-            {
-                optionValue: 'XL'
-            },
-            {
-                optionValue: '2XL'
-            },
-            {
-                optionValue: '3XL'
-            },
-            {
-                optionValue: '4XL'
-            },
-            {
-                optionValue: '5XL'
-            },
-            {
-                optionValue: '6XL'
-            }
-        ]
-    }
-]
-//  * =          any prod
-// variations =  variations
-// * =          any variation
-// item =      item
-//
-//  ['*', 'variations', '*', 'item', 0, 'optionValue']
-const variations = [
-    {
-        variations: [
-            {
-                title: 'Size',
-                item: [
-                    {
-                        optionValue: 'Pick 1...'
-                    },
-                    {
-                        optionValue: 'Small'
-                    },
-                    {
-                        optionValue: 'Medium'
-                    },
-                    {
-                        optionValue: 'Large'
-                    },
-                    {
-                        optionValue: 'XL'
-                    },
-                    {
-                        optionValue: '2XL'
-                    },
-                    {
-                        optionValue: '3XL'
-                    },
-                    {
-                        optionValue: '4XL'
-                    },
-                    {
-                        optionValue: '5XL'
-                    },
-                    {
-                        optionValue: '6XL'
-                    }
-                ]
-            },
-            {
-                title: 'Color',
-                item: [
-                    {
-                        optionValue: 'Pick 1...',
-                        image: 'strength_pit_black_tshirt.jpg'
-                    },
-                    {
-                        optionValue: 'Black',
-                        image: 'strength_pit_black_tshirt.jpg'
-                    },
-                    {
-                        optionValue: 'Red',
-                        image: 'strength_pit_red_tshirt.png'
-                    },
-                    {
-                        optionValue: 'White',
-                        image: 'strength_pit_white_tshirt.png'
-                    },
-                    {
-                        optionValue: 'Navy',
-                        image: 'strength_pit_navy_tshirt.png'
-                    },
-                    {
-                        optionValue: 'Chacoal',
-                        image: 'strength_pit_charcoal_tshirt.png'
-                    }
-                ]
-            }
-        ]
-    }
-]
+const variationsWithFirstOption = {
+    generic: genericVariation,
+    price: priceVariation,
+    image: imageWithFirstItem
+}
+
+const product: IProduct = {
+    type: 'New type',
+    title: 'New .. Product',
+    description: 'A very cool New Product',
+    price: 1,
+    image: 'man.png',
+    variations: []
+}
 
 class ProductEditor extends React.Component<IProps> {
     constructor(props: IProps) {
@@ -143,7 +53,7 @@ class ProductEditor extends React.Component<IProps> {
     render = () => (
         <div className="sectionEditor">
             <button className="new_button" title="New" onClick={() => this.props.onAdd(product, [Constants.products])}>
-                +
+                Products +
             </button>
 
             <Tree
@@ -160,34 +70,123 @@ class ProductEditor extends React.Component<IProps> {
                 }
                 // use products title key  for node names and
                 //  variations  optionValue key for node names
-                nodeKeyForObjectsAndArrays={['title', 'optionValue']}
+                /*  nodeKeyForObjectsAndArrays={['title', 'optionValue']}*/
+                nodeKeyForObjectsAndArrays={['title', 'optionValue']} // imageVariationItem
+                // convert these simple product objects to leaves
+                collapse={[
+                    {path: ['*', 'description']},
+                    {path: ['*', 'type']},
+                    {path: ['*', 'price']},
+                    {path: ['*', 'image']},
+                    {path: ['*', 'title']},
+                    /* any variations item value */
+                    {path: ['*', 'variations', '*', 'item', '*', 'optionValue']},
+                    {path: ['*', 'variations', '*', 'item', '*', 'image']}
+                    /* {path: ['*', 'variations', '*', 'item', '*']}*/
+                ]}
+                // remove the default  opener key from object and collapse it
+                collapseSingle={true}
+                /* 3variations0item0 */
+                ignoreKeys={[
+                    // dont show variation  Pick 1... option
+                    {path: ['*', 'variations', '*', 'item', 0]},
+                    // dont show variation type
+                    {path: ['*', 'variations', '*', 'type']}
+                ]}
                 data={this.props.products}
                 // allow delete of top level product object
-                deletablePaths={[{path: [Constants.wildcard]}, {path: [Constants.wildcard, 'variations']}]}
-                addablePathConfigs={[
+                deletable={[
+                    {path: ['*']},
+                    // allow deletion of any variation
+                    {path: ['*', 'variations', '*']},
+                    //    2variations0item1optionValue
+                    // allow deletion of any variation's item value
                     {
+                        path: ['*', 'variations', '*', 'item', '*', 'optionValue'],
+                        options: {
+                            onResolvePath: (path: IObjectPath) => {
+                                // this path needs optionValue removed before going
+                                // to reducer
+                                path.pop()
+                                return [...path]
+                            }
+                        }
+                    }
+                ]}
+                addable={[
+                    // todo make variationss optional in static back
+                    /* {
                         // all top level objects that happen to be products
-                        path: [Constants.wildcard],
+                        path: ['*'],
                         // define product fields that can be add/removed for a product
                         // in this case variations
                         options: {modifiableFields: variations, showAddButton: false, limit: 1}
+                    },*/
+                    {
+                        path: ['*', 'variations', '*', 'item'],
+                        options: {
+                            /*object: {
+                                optionValue: 'Pick 1...'
+                            }*/
+                            object: (path: IObjectPath) => {
+                                // find the current varaition in the parent path
+                                // this must be done as the user can add
+                                // different vstions types.
+                                // then return it
+                                /*return {
+                                    type: 'genericVariationItem',
+                                    title: 'New...',
+                                    item: [
+                                        {
+                                            optionValue: 'Pick 1...'
+                                        },
+                                        {
+                                            optionValue: 'New...'
+                                        }
+                                    ]
+                                }*/
+                                const prodIdx = path[0]
+                                const variationIndex = path[2]
+                                // find the product
+                                const prod: IProduct = this.props.products[prodIdx]
+                                const variation = prod.variations[variationIndex]
+                                return cloneDeep(variations[variation.type])
+                                const values = Object.values(variations)
+                                const keys = Object.keys(variations)
+                                const idx = keys.indexOf(variation.type)
+                                return values[idx]
+                            }
+                        }
+                    },
+                    {
+                        // make a split button that allows user to add
+                        // all variation types
+                        path: ['*', 'variations'],
+                        options: {
+                            object: [
+                                {name: '', object: cloneDeep(variationsWithFirstOption.generic)},
+                                {name: 'Price Variation', object: cloneDeep(variationsWithFirstOption.price)},
+                                {name: 'Image Variation', object: cloneDeep(variationsWithFirstOption.image)}
+                            ] as IObjectsToAdd[]
+                        }
                     }
                 ]}
-                fieldTypePathConfigs={[
+                typeable={[
                     {
                         // all top level objects that happen to be products
-                        path: [Constants.wildcard, 'price'],
+                        path: ['*', 'price'],
                         // define product fields that can be add/removed for a product
                         // in this case variations
                         options: {fieldType: Constants.number}
-                    },
-
-                    {
-                        path: ['*', 'variations', '*', 'item', '*', 'optionValue'],
-                        options: {fieldType: Constants.readonly}
                     }
+
+                    /* {
+                        //all variations PICK 1... option
+                        path: ['*', 'variations', '*', 'item', 0, '*'],
+                        options: {fieldType: Constants.readonly}
+                    }*/
                 ]}
-                nonDragPathConfigs={[
+                nonDragable={[
                     {
                         // all product fields
                         path: ['*', '*']
@@ -204,12 +203,12 @@ class ProductEditor extends React.Component<IProps> {
                     {
                         path: ['*', '*', '*', '*', '*']
                     },
-                    // option value and price
+                    // option value and priceVariationItem
                     {
                         path: ['*', '*', '*', '*', '*', '*']
                     }
                 ]}
-                // objectToPrimitivePaths={[['opener']]}
+                objectToPrimitivePaths={[{path: ['*', 'type']}]}
             />
         </div>
     )

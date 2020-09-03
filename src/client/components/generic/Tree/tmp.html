@@ -19,7 +19,7 @@
                 order: 5
             },
             {
-                name: 'image',
+                name: 'imageVariationItem',
                 order: 1
             },
             {
@@ -29,7 +29,7 @@
 
         ];
 
-        data = ['ss', 'xyz', 'image', 'x', 'y', 'link', 's', 'body', 'list', 'abc'];
+        data = ['ss', 'xyz', 'imageVariationItem', 'x', 'y', 'link', 's', 'body', 'list', 'abc'];
 
 
         const startSort = (sortOrders) =>
@@ -37,11 +37,11 @@
                 let sortOrderA =  sortOrders.find((sortOrder) => sortOrder.name === a);
                 let sortOrderB =  sortOrders.find((sortOrder) => sortOrder.name === b);
                 if(sortOrderA.order > sortOrderB.order) {
-                    console.log('sortOrderA > sortOrderB')
+                    //console.log('sortOrderA > sortOrderB')
                     return 0;
                 }
                 if(sortOrderA.order < sortOrderB.order) {
-                    console.log('sortOrderA < sortOrderB')
+                    //console.log('sortOrderA < sortOrderB')
                     return -1;
                 }
                 return 0;

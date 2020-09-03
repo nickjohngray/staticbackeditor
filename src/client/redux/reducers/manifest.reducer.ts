@@ -140,9 +140,10 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 // clone.manifest.products[action.payload.objectPath[1]].push(cloneDeep(action.payload.jsonObject) as IProduct)
                 return clone
             }
-
-            let target = findSecondLastObjectByPath(clone.manifest.products, action.payload.objectPath)
-            addItem(action.payload.objectPath, target, cloneDeep(action.payload.jsonObject))
+            let pathWithoutProduct = [...action.payload.objectPath]
+            pathWithoutProduct.splice(0, 1)
+            let target = findSecondLastObjectByPath(clone.manifest.products, pathWithoutProduct)
+            addItem(pathWithoutProduct, target, cloneDeep(action.payload.jsonObject))
             return clone
         }),
 
@@ -242,7 +243,9 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 const section: ISection = maybeArray
 
                 if (!section.defaultFieldOrder || !Array.isArray(section.defaultFieldOrder)) {
-                    throw new Error('object is a object and defaultFieldOrder key in not in the object, or its not an array, this must be set')
+                    throw new Error(
+                        'object is a object and defaultFieldOrder key in not in the object, or its not an array, this must be set'
+                    )
                 }
 
                 const defaultFieldOrderTo = section.defaultFieldOrder.find(

@@ -57,7 +57,7 @@ class FileUploader extends React.Component<IProps> {
                 if (previewFilesData.length === previewFiles.length) {
                     this.props.onPreviewReady(previewFilesData)
                     if (this.context.isDebug) {
-                        console.log('All files data is ready for preview')
+                        // console.log('All files data is ready for preview')
                     }
 
                     this.upload()
