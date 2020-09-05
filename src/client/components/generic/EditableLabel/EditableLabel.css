@@ -45,3 +45,7 @@
     transition-duration: 500ms; */
     transition-duration: 100ms;
 }
+
+.editable_label_value_rich_text {
+    display: flex;
+}

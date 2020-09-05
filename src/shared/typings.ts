@@ -184,3 +184,5 @@ export type IMoveNodeOrLeafToMethodWithPageId = (
     fromField?: string,
     toField?: string
 ) => void
+
+export type IFieldDataType = 'string' | 'number' | 'readonly' | 'richText'

@@ -173,11 +173,14 @@ class ProductEditor extends React.Component<IProps> {
                 ]}
                 typeable={[
                     {
-                        // all top level objects that happen to be products
+                        // define product price as a number field
                         path: ['*', 'price'],
-                        // define product fields that can be add/removed for a product
-                        // in this case variations
                         options: {fieldType: Constants.number}
+                    },
+                    {
+                        // define description as a rich text field
+                        path: ['*', 'description'],
+                        options: {fieldType: Constants.richText}
                     }
 
                     /* {

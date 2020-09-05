@@ -3,7 +3,7 @@ import {Direction, DOWN, IPage, UP} from '../../../../../shared/typings'
 import {Link} from '@reach/router'
 import * as React from 'react'
 import './PageItem.css'
-import {DragHandle} from '../../../generic/Drag/Drag'
+import {DragHandle} from '../../../generic/Drag/DragHandle'
 
 interface IProps {
     page: IPage

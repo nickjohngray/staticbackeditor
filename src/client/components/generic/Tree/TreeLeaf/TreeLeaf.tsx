@@ -2,12 +2,12 @@ import React from 'react'
 import './TreeLeaf.css'
 import EditableLabel from '../../EditableLabel/EditableLabel'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
-import {DragHandle} from '../../Drag/Drag'
 import FileUploader from '../../FileUploader/FileUploader'
 import {Something} from '../../Something'
 import {IDeletablePathConfig} from '../Tree'
 import {getConfigForPath} from '../treeUtil'
-import {IObjectPath} from '../../../../../shared/typings'
+import {IFieldDataType, IObjectPath} from '../../../../../shared/typings'
+import {DragHandle} from '../../Drag/DragHandle'
 
 export interface IProps {
     onUpdate: (value: string) => void
@@ -16,7 +16,7 @@ export interface IProps {
     value: string
     uploadFolder: string
     makeDragHandle: boolean
-    type?: 'string' | 'number' | 'readonly'
+    type?: IFieldDataType
     label: string
 }
 

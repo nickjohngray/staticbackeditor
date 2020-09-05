@@ -1,20 +1,30 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, RefObject, useContext} from 'react'
 import './Tree.css'
 import {isEqual, cloneDeep} from 'lodash'
 import TreeLeaf from './TreeLeaf/TreeLeaf'
-import StaticBackEditor from '../../../context/StaticBackEditor'
+import MainContext from '../../../context/MainContext'
 import {Constants} from '../../../util'
-import {IDefaultFieldOrder, IMoveNodeOrLeafToMethod, IObjectPath, ISection} from '../../../../shared/typings'
+import {
+    IDefaultFieldOrder,
+    IFieldDataType,
+    IMoveNodeOrLeafToMethod,
+    IObjectPath,
+    ISection
+} from '../../../../shared/typings'
 import TreeNode from './TreeNode/TreeNode'
 import {
+    Config,
     SortableContainer,
+    SortableContainerProps,
     SortableElement,
     SortEvent,
     SortEventWithTag,
     SortStart,
-    SortStartHandler
+    SortStartHandler,
+    WrappedComponent
 } from 'react-sortable-hoc'
 import {getConfigForPath, isCurrentPathOkForConfig, sortKeys} from './treeUtil'
+import {Drag} from '../Drag/Drag'
 
 export interface IObjectsToAdd {
     object: {}
@@ -49,7 +59,7 @@ export interface INonDragPathConfig {
 
 export interface IFieldTypePathConfig {
     path: IObjectPath
-    options?: {fieldType: 'string' | 'number' | 'readonly'}
+    options?: {fieldType: IFieldDataType}
 }
 
 export interface IObjectToPrimitivePathConfig {
@@ -133,18 +143,30 @@ interface IState {
  */
 
 class Tree extends React.Component<IProps, IState> {
-    static contextType = StaticBackEditor
+    static contextType = MainContext
+    shouldCancelDrag: boolean
+    private dragULPointer: RefObject<HTMLUListElement>
 
     constructor(props) {
         super(props)
+        this.dragULPointer = React.createRef()
         this.state = {isDirty: false}
+        this.shouldCancelDrag = true
     }
+
+    componentDidMount = () =>
+        this.dragULPointer.current.addEventListener('mousedown', this.handleMainContainerMouseDown)
+
+    componentWillUnmount = () =>
+        this.dragULPointer.current.removeEventListener('mousedown', this.handleMainContainerMouseDown)
+
+    handleMainContainerMouseDown = (event) => (this.shouldCancelDrag = event.target.className !== 'drag_handle')
 
     render = () => {
         return <ul className="tree tree_group">{this.makeTree(this.props.data, [])}</ul>
     }
 
-    getOrderedKeys = (object: any) => {
+    getOrderedKeys = (object: any): (string | number)[] => {
         const keys = Object.keys(object)
         const {orderKey} = this.props
         if (!orderKey) {
@@ -160,53 +182,22 @@ class Tree extends React.Component<IProps, IState> {
     makeTree = (object: any, currentPath: any[]) => this.getNodesOrLeaves(object, currentPath)
 
     getNodesOrLeaves = (object: [] | object, currentPath: IObjectPath) => {
-        const isDraggablePath = this.getIsDraggablePath(currentPath)
-        // if not draggable
-        if (!isDraggablePath) {
-            /* if (true) {*/
-            return this.getOrderedKeys(object).map((key, reactKey) => (
-                // todo is li needed here, dont think so tested it has no effect on view
-                <li key={key + '-' + reactKey}>{this.getNodeOrLeaf(object, currentPath, key, reactKey)}</li>
-            ))
+        const getItems = (isDragItems: boolean) => {
+            return this.getOrderedKeys(object).map((key: string, reactKey) => {
+                return isDragItems ? (
+                    this.getNodeOrLeaf(object, currentPath, key, reactKey)
+                ) : (
+                    <li key={key + '-' + reactKey}>{this.getNodeOrLeaf(object, currentPath, key, reactKey)}</li>
+                )
+            })
         }
-        return (
-            <DragList
-                helperClass="drag_handle"
-                shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
-                    if ((event as SortEventWithTag).target.tagName === 'DIV') {
-                        return false
-                    }
-                    return true
-                }}
-                items={this.getOrderedKeys(object).map((key, reactKey) => {
-                    return this.getNodeOrLeaf(object, currentPath, key, reactKey)
-                })}
-                onSortEnd={({oldIndex: fromInex, newIndex: toIndex, nodes, collection}, event: SortEvent) => {
-                    // @ts-ignore
-                    const from = nodes[fromInex].node.querySelector('span.node.node')
-                    // @ts-ignore
-                    const to = nodes[toIndex].node.querySelector('span.node.node')
-                    if (from !== null && to !== null) {
-                        console.log('from=' + from.innerText + '-' + fromInex + '  To=' + to.innerText + '-' + toIndex)
-                        this.props.onMoveNodeOrLeafTo(fromInex, toIndex, currentPath, from.innerText, to.innerText)
-                    } else {
-                        throw new Error(
-                            'could not get span.node.node of nodes[' +
-                                fromInex +
-                                '] nodes[' +
-                                fromInex +
-                                ']  or  + nodes[' +
-                                toIndex +
-                                ']'
-                        )
-                    }
-                }}
-            />
-        )
+
+        if (this.getIsDraggablePath(currentPath)) {
+            return this.makeDragList(currentPath, getItems(true))
+        }
+
+        return getItems(false)
     }
-    /*  Object.keys(object).map((key, reactKey) => {
-            return this.getNodeOrLeaf(object, currentPath, key, reactKey)
-        })*/
 
     /*
      * makes one node for the key and determines the value type
@@ -383,14 +374,14 @@ class Tree extends React.Component<IProps, IState> {
         this.props.nodeKeyForObjectsAndArrays && this.props.nodeKeyForObjectsAndArrays.some((k) => k === key)
 
     loopArray = (array, currentPath: IObjectPath, reactKey: string | number) => {
-        if (!this.getIsDraggablePath(currentPath)) {
-            /* if (true) {*/
-            return array.map((object, arrayIndex: string | number) => {
+        const getItems = (isDragItems: boolean) => {
+            return array.map((object, arrayIndex) => {
                 const currentPathWithArrayIndexAppended = currentPath.concat(arrayIndex)
-                // MAYBE
-                // li below is needed here to show items in vertical list
-                // if drag is true the drag will make this li
-                return (
+                return isDragItems ? (
+                    <Fragment key={currentPath + '-' + (arrayIndex as string) + reactKey}>
+                        {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
+                    </Fragment>
+                ) : (
                     <li key={currentPath + '-' + (arrayIndex as string) + reactKey}>
                         {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
                     </li>
@@ -398,32 +389,50 @@ class Tree extends React.Component<IProps, IState> {
             })
         }
 
-        return (
-            <DragList
-                helperClass="drag_handle"
-                shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
-                    if ((event as SortEventWithTag).target.tagName === 'DIV') {
-                        return false // the drag handle is defined in a div
-                    }
-                    // cancel this drag event for all other tag elements,
-                    // like span, button and link, these are used for
-                    // other things
-                    return true
-                }}
-                items={array.map((object, arrayIndex) => {
-                    const currentPathWithArrayIndexAppended = currentPath.concat(arrayIndex)
-                    return (
-                        <Fragment key={arrayIndex + reactKey}>
-                            {this.testThenMake(object, currentPathWithArrayIndexAppended, true, reactKey)}
-                        </Fragment>
-                    )
-                })}
-                onSortEnd={({oldIndex: fromIndex, newIndex: toIndex}) => {
-                    this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, currentPath)
-                }}
-            />
-        )
+        if (this.getIsDraggablePath(currentPath)) {
+            return this.makeDragList(currentPath, getItems(true))
+        }
+
+        return getItems(false)
     }
+
+    makeDragList = (currentPath: IObjectPath, items: any[]) => (
+        <Drag
+            ref={this.dragULPointer}
+            // @ts-ignore
+            helperClass="drag_handle"
+            shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
+                console.log('shouldCancelDrag=' + this.shouldCancelDrag)
+                if (this.shouldCancelDrag) {
+                    return true
+                }
+                return false
+            }}
+            items={items}
+            /* onSortEnd={({oldIndex: fromIndex, newIndex: toIndex}) => {
+                 this.props.onMoveNodeOrLeafTo(fromIndex, toIndex, currentPath)
+             }}*/
+            onSortEnd={({oldIndex: fromInex, newIndex: toIndex, nodes, collection}, event: SortEvent) => {
+                // @ts-ignore
+                const from = nodes[fromInex].node.querySelector('span.node.node')
+                // @ts-ignore
+                const to = nodes[toIndex].node.querySelector('span.node.node')
+                if (from !== null && to !== null) {
+                    this.props.onMoveNodeOrLeafTo(fromInex, toIndex, currentPath, from.innerText, to.innerText)
+                } else {
+                    throw new Error(
+                        'could not get span.node.node of nodes[' +
+                            fromInex +
+                            '] nodes[' +
+                            fromInex +
+                            ']  or  + nodes[' +
+                            toIndex +
+                            ']'
+                    )
+                }
+            }}
+        />
+    )
 
     makeNode = (
         nodeName: string,
@@ -560,19 +569,5 @@ class Tree extends React.Component<IProps, IState> {
         event.target.classList.toggle('node-down')
     }
 }
-
-const DragList = SortableContainer(({items}) => {
-    return (
-        <ul className="tree_group drag_list">
-            {items.map((value, index) => {
-                return <DragListItem key={'item-' + index + '-' + value} index={index} value={value} />
-            })}
-        </ul>
-    )
-})
-
-const DragListItem = SortableElement(({value}) => {
-    return <li className="drag_item">{value}</li>
-})
 
 export default Tree

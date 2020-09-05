@@ -7,5 +7,6 @@ export enum Constants {
     products = 'products',
     string = 'string',
     number = 'number',
-    readonly = 'readonly'
+    readonly = 'readonly',
+    richText = 'richText'
 }

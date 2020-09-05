@@ -4,9 +4,9 @@ import {IObjectPath} from '../../../../../shared/typings'
 import {IAddablePathConfig, IDeletablePathConfig, IObjectsToAdd} from '../Tree'
 import {getConfigForPath, isCurrentPathOkForConfig} from '../treeUtil'
 import {isEqual, isFunction} from 'lodash'
-import {DragHandle} from '../../Drag/Drag'
 import SplitButton from '../../SplitButton/SplitButton'
 import {asArray} from 'simple-git/src/lib/utils'
+import {DragHandle} from '../../Drag/DragHandle'
 
 export interface IProps {
     nodeName: string
