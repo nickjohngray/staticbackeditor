@@ -51,25 +51,32 @@ class Login extends React.Component<IProps, IState> {
                 <div className="login-container">
                     <h1> Login to take control</h1>
                     <form onSubmit={(event) => this.login(event)}>
-                        <input
-                            value={email}
-                            type={email}
-                            placeholder="email"
-                            name="email"
-                            onChange={(e) => {
-                                this.setState({email: e.target.value})
-                            }}
-                        />
-                        <input
-                            value={pwd}
-                            type="password"
-                            placeholder="pwd"
-                            name="pwd"
-                            onChange={(e) => {
-                                this.setState({pwd: e.target.value})
-                            }}
-                        />
-                        <button type="submit">Login</button>
+                        <div>
+                            <input
+                                value={email}
+                                type={email}
+                                placeholder="email"
+                                name="email"
+                                onChange={(e) => {
+                                    this.setState({email: e.target.value})
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                autoComplete={'new-password'}
+                                value={pwd}
+                                type="password"
+                                placeholder="pwd"
+                                name="pwd"
+                                onChange={(e) => {
+                                    this.setState({pwd: e.target.value})
+                                }}
+                            />{' '}
+                        </div>
+                        <div>
+                            <button type="submit">Login</button>
+                        </div>
                     </form>
                 </div>
                 <img src={logoImagePath} />

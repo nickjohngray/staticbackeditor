@@ -10,12 +10,19 @@ export default class App extends React.Component<{}, IMainContext> {
     constructor(props) {
         super(props)
 
-        this.state = {isDebug: false, setMainContext: this.setMainContext}
+        /*  this.state = {isDebug: false, setMainContext: this.setMainContext}*/
+        this.state = {isDebug: false}
     }
 
-    setMainContext = (mainContext: IMainContext) => {
-        this.setState(mainContext)
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        // todo send these errors to  be saved somewhere
+        console.log(error)
+        console.log(errorInfo)
     }
+
+    /* setMainContext = (mainContext: IMainContext) => {
+        this.setState(mainContext)
+    }*/
 
     render = () => {
         return (

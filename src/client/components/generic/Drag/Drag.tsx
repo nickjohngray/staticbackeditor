@@ -5,8 +5,6 @@ import {DragItem} from './DragItem'
 import './Drag.css'
 
 export const DragX = SortableContainer((props) => {
-    const mainContext = useContext(MainContext)
-
     return (
         <ul ref={props.inputRef} className="tree_group drag_list">
             {props.items.map((value, index) => {

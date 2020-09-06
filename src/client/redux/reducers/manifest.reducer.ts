@@ -112,6 +112,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
         // allows any object to be added , like page and product
         [ManifestActions.AddJsonObjectByObjectPath]: produce((draft: IManifestExtened, action: IAddObjectByPath) => {
             const clone = cloneDeep(draft)
+            // const clone = draft
             if (action.payload.objectPath[0] !== Constants.products) {
                 const path = action.payload.objectPath
                 const target: [] | Object = findSecondLastObjectByPath(
@@ -124,6 +125,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 addItem(path, target, jsonObjectCloned)
                 return clone
             }
+
             // todo improve below code
 
             // adding new product path like [product]

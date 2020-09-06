@@ -11,9 +11,10 @@ import {testManifest} from './routes/test_manifest'
 import {addPage} from './routes/add-page'
 import {deletePage} from './routes/delete-page'
 import {fileUploaderRouter} from './routes/file-upload'
+// import cors from 'cors'
 const app = express()
 const port = 8050
-
+// app.use(cors())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(express.static('dist'))

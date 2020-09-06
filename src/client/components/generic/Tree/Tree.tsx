@@ -222,7 +222,7 @@ class Tree extends React.Component<IProps, IState> {
         // eg image.src to image, useful for only showing image with no src node
         if (getConfigForPath(currentPath, this.props.objectToPrimitivePaths)) {
             // Object.values(object)[0] === Object.values([CURRENT OBJECT] [LEAF],
-            // the Leaf is a primitive
+            // the RTLeaf is a primitive
             nodeToLeaf = Object.values(object)[0]
         }
 
@@ -402,7 +402,7 @@ class Tree extends React.Component<IProps, IState> {
             // @ts-ignore
             helperClass="drag_handle"
             shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
-                console.log('shouldCancelDrag=' + this.shouldCancelDrag)
+                // console.log('shouldCancelDrag=' + this.shouldCancelDrag)
                 if (this.shouldCancelDrag) {
                     return true
                 }

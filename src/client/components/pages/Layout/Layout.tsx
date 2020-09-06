@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
 import {IHistory, IManifest, IPage} from '../../../../shared/typings'
-import {ContentToggler} from '@nickjohngray/blockout'
 import Pages from '../../editors/PagesDashboard/PagesDashboard'
 import {Home} from '../Home'
 import './Layout.css'
@@ -15,6 +14,7 @@ import {IStore} from '../../../redux/store'
 import Login from '../Login/Login'
 import {saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
+import ContentToggler from '../../generic/ContentToggler/ContentToggler'
 
 interface IProps {
     location: LocationProps

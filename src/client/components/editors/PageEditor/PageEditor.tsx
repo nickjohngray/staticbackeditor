@@ -9,7 +9,7 @@ import {
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link, navigate} from '@reach/router'
-import EditableLabel from '../../generic/EditableLabel/EditableLabel'
+import LabelEditor from '../../editors/LabelEditor/LabelEditor'
 import './PageEditor.css'
 import Tree from '../../generic/Tree'
 import ProductEditor from '../ProductEditor/ProductEditor'
@@ -46,7 +46,7 @@ class PageEditor extends React.Component<IProps, IState> {
             navigate('/pages')
         }
     }
-
+    // todo refactor this, maybe use useMemo
     UNSAFE_componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
         if (!nextProps.page) {
             return
@@ -66,7 +66,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         <span>pages{'/'}</span>
                     </Link>
 
-                    <EditableLabel
+                    <LabelEditor
                         value={name}
                         onUpdate={(name) => {
                             this.fireUpdatePath(name)
@@ -74,7 +74,7 @@ class PageEditor extends React.Component<IProps, IState> {
                     />
                 </h2>
                 <div className={'path-and-name-container'}>
-                    <EditableLabel
+                    <LabelEditor
                         label="Path"
                         value={path}
                         onUpdate={(path) => {

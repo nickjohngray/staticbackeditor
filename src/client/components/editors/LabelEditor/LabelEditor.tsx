@@ -1,11 +1,10 @@
 import * as React from 'react'
-import './EditableLabel.css'
+import './LabelEditor.css'
 import {isEqual} from 'lodash'
 import {Constants} from '../../../util'
 import {IFieldDataType} from '../../../../shared/typings'
-import RichTextEditor from '../../editors/RichTextEditor/RichTextEditor'
-import {Node} from 'slate'
-import RichTextReadOnly from '../../editors/RichTextEditor/RichTextReadOnly'
+import RTEditor from '../RichTextEditor/RTEditor'
+import RichText from '../RichTextEditor/RichText'
 
 interface IProps {
     value: string
@@ -21,7 +20,7 @@ interface IState {
     value: string
 }
 
-class EditableLabel extends React.Component<IProps, IState> {
+class LabelEditor extends React.Component<IProps, IState> {
     static defaultProps = {
         type: Constants.string
     }
@@ -69,7 +68,7 @@ class EditableLabel extends React.Component<IProps, IState> {
                 }
                 if (this.props.type === Constants.richText) {
                     return (
-                        <RichTextEditor
+                        <RTEditor
                             onChange={(html) => {
                                 this.updateHTMLAfterChange(html)
                             }}
@@ -129,7 +128,7 @@ class EditableLabel extends React.Component<IProps, IState> {
             }>
             {' '}
             {this.props.type === Constants.richText ? (
-                <RichTextEditor isReadOnly html={JSON.parse(this.props.value)} />
+                <RichText json={JSON.parse(this.props.value)} />
             ) : this.props.type === Constants.number ? (
                 '$' + this.state.value
             ) : (
@@ -168,4 +167,4 @@ class EditableLabel extends React.Component<IProps, IState> {
     }
 }
 
-export default EditableLabel
+export default LabelEditor

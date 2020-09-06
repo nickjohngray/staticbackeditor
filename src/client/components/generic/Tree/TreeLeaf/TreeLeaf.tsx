@@ -1,6 +1,6 @@
 import React from 'react'
 import './TreeLeaf.css'
-import EditableLabel from '../../EditableLabel/EditableLabel'
+import LabelEditor from './../../../editors/LabelEditor/LabelEditor'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import FileUploader from '../../FileUploader/FileUploader'
 import {Something} from '../../Something'
@@ -71,7 +71,7 @@ class TreeLeaf extends React.Component<IProps, IState> {
                 <>
                     {/* drag will m ake the li*/}
                     {this.props.makeDragHandle && <DragHandle />}
-                    <EditableLabel
+                    <LabelEditor
                         type={this.props.type}
                         onDelete={
                             this.props.onDelete

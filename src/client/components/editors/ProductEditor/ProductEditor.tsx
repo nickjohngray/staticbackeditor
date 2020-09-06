@@ -39,7 +39,7 @@ const variationsWithFirstOption = {
 const product: IProduct = {
     type: 'New type',
     title: 'New .. Product',
-    description: 'A very cool New Product',
+    description: '[{"type":"paragraph","children":[{"text":"New... Product"}]}]',
     price: 1,
     image: 'man.png',
     variations: []

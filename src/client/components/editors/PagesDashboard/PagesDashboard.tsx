@@ -1,13 +1,6 @@
 import * as React from 'react'
-import {LocationProps, navigate, redirectTo, RouteComponentProps, Router} from '@reach/router'
-import {
-    Direction,
-    IManifest,
-    IPage,
-    IObjectPath,
-    IMoveNodeOrLeafToMethod,
-    IMoveNodeOrLeafToMethodWithPageId
-} from '../../../../shared/typings'
+import {LocationProps, navigate, RouteComponentProps, Router} from '@reach/router'
+import {Direction, IManifest, IPage, IObjectPath, IMoveNodeOrLeafToMethodWithPageId} from '../../../../shared/typings'
 import './PagesDashboard.css'
 import {Dispatch} from 'redux'
 import {IStore} from '../../../redux/store'
@@ -29,8 +22,7 @@ import PageEditor from '../PageEditor/PageEditor'
 import {PagesEditor} from '../PagesEditor/PagesEditor'
 import {setCurrentPage} from '../../../redux/actions/ui.actions'
 import {isEqual} from 'lodash'
-import {Constants, findPageById} from '../../../util'
-import Tree from '../../generic/Tree'
+import {findPageById} from '../../../util'
 
 type IProps = RouteComponentProps & {
     manifest: IManifest
@@ -162,9 +154,9 @@ class PagesDashboard extends React.Component<IProps, IState> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     updatePage: (id: number, name: string, path: string) => dispatch(updatePage(id, name, path)),
-    updateObjectByPath: (page: IPage, text: string, objectPath: any[]) =>
+    updateObjectByPath: (page: IPage, text: string, objectPath: IObjectPath[]) =>
         dispatch(updateObjectByPath(page, text, objectPath)),
-    addObjectByPath: (page: IPage, jsonObject: object, objectPath: any[]) =>
+    addObjectByPath: (page: IPage, jsonObject: object, objectPath: IObjectPath[]) =>
         dispatch(addObjectByPath(page, jsonObject, objectPath)),
     deleteObjectByPath: (page: IPage, objectPath: any[]) => dispatch(deleteObjectByPath(page, objectPath)),
 
