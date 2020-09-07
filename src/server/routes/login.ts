@@ -51,6 +51,14 @@ router.post('/login', async (req, res) => {
             console.log('Copying images complete.')
         })
 
+        console.log('Copying pdfs from ' + repoName + '/src/pdf to dist/' + repoName)
+        ncp(path.resolve(repoName, 'src', 'pdf'), path.resolve('dist', 'pdf'), (err) => {
+            if (err) {
+                throw new Error("Could not copy pdf's from " + repoName + ' to public folder error=' + err.message)
+            }
+            console.log('Copying pdfs complete.')
+        })
+
         const pages = manifest.pages
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i]

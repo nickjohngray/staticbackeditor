@@ -15,7 +15,7 @@ const RichText = ({json}: IProps) => {
     const [value, setValue] = useState<Node[]>(jsonIn)
     const renderElement = useCallback((props) => <Element {...props} />, [])
     const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
-    let editor = useMemo(() => withReact(createEditor()), [])
+    let editor = useMemo(() => withEmbeds(withReact(createEditor())), [])
 
     // this is needed to force update for hot reload from manifest
     if (!isEqual(jsonIn, value)) {
@@ -85,6 +85,12 @@ const Leaf = ({attributes, children, leaf}) => {
     }
     // @ts-ignore
     return <span {...attributes}>{children}</span>
+}
+
+const withEmbeds = (editor) => {
+    const {isVoid} = editor
+    editor.isVoid = (element) => (element.type === 'pdf' ? true : isVoid(element))
+    return editor
 }
 
 export default RichText
