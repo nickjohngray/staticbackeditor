@@ -14,6 +14,8 @@
         ]
     },
     "rules": {
+        "cyclomatic-complexity": false,
+        "no-var-requires": false,
         "ban-types": [false, ["Object"]],
         "no-shadowed-variable": false,
         "promise-function-async": { "severity": "error" },
@@ -39,7 +41,6 @@
             true,
             "ignore-same-line"
         ],
-        "cyclomatic-complexity": true,
         "member-access": [
             true,
             "no-public"

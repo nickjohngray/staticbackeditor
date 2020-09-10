@@ -17,7 +17,7 @@ interface IProps {
 
 interface IState {
     isEditMode: boolean
-    value: string
+    value: any
 }
 
 class LabelEditor extends React.Component<IProps, IState> {
@@ -69,14 +69,14 @@ class LabelEditor extends React.Component<IProps, IState> {
                 if (this.props.type === Constants.richText) {
                     return (
                         <RTEditor
-                            onChange={(html) => {
-                                this.updateHTMLAfterChange(html)
+                            onChange={(richTextData) => {
+                                this.updateRichTextDataAfterChange(richTextData)
                             }}
                             onBlur={() => {
                                 console.log('here')
                                 this.stopEdit()
                             }}
-                            html={JSON.parse(this.props.value)}
+                            data={JSON.parse(this.props.value)}
                         />
                     )
                 }
@@ -128,6 +128,7 @@ class LabelEditor extends React.Component<IProps, IState> {
             }>
             {' '}
             {this.props.type === Constants.richText ? (
+                /* todo next remove parse and set json as object in manifest*/
                 <RichText json={JSON.parse(this.props.value)} />
             ) : this.props.type === Constants.number ? (
                 '$' + this.state.value
@@ -141,8 +142,8 @@ class LabelEditor extends React.Component<IProps, IState> {
         this.setState({value: event.target.value})
     }
 
-    updateHTMLAfterChange = (html: string) => {
-        this.setState({value: html})
+    updateRichTextDataAfterChange = (richTextData: any) => {
+        this.setState({value: richTextData})
     }
 
     toggleEditMode = () => {

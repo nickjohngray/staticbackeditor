@@ -58,7 +58,7 @@ router.post('/save-manifest', async (req, res) => {
         await fs.writeFileSync(manifestPath, JSON.stringify(manifest))
         console.log('Done!,  manifest file saved')
 
-        //
+        // todo one copy all assets to assets folder
         console.log('Copying images from ' + repoName + ' to dist/' + repoName + '/src/images')
         ncp(path.resolve('dist', repoName), path.resolve(repoName, 'src', 'images'), (err) => {
             if (err) {
@@ -89,7 +89,7 @@ router.post('/save-manifest', async (req, res) => {
         // Delete any components  removed from manifest
         const oldPages = (manifestOld as IManifest).pages
 
-        // if old page is not one of the new pages then , the page file componets
+        // if old page is not one of the new pages then , the page file components
         // must be deleted and cleaned up
         console.log('deleting removed pages')
         for (let i = 0; i < oldPages.length; i++) {

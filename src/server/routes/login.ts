@@ -43,6 +43,10 @@ router.post('/login', async (req, res) => {
             throw new Error('No imageDirectory key found in Manifest, this must be set')
         }
 
+        // todo maybe just have one assets folder in static back
+
+        // make images available from current repo to cms , by copying them
+        // out of the repo and into the root server directory
         console.log('Copying images from ' + repoName + '/src/images to dist/' + repoName)
         ncp(path.resolve(repoName, 'src', 'images'), path.resolve('dist', repoName), (err) => {
             if (err) {
@@ -51,8 +55,10 @@ router.post('/login', async (req, res) => {
             console.log('Copying images complete.')
         })
 
+        // make pdfs available from current repo to cms , by copying them
+        // out of the repo and into the root server directory
         console.log('Copying pdfs from ' + repoName + '/src/pdf to dist/' + repoName)
-        ncp(path.resolve(repoName, 'src', 'pdf'), path.resolve('dist', 'pdf'), (err) => {
+        ncp(path.resolve(repoName, 'src', 'pdf'), path.resolve('dist', repoName), (err) => {
             if (err) {
                 throw new Error("Could not copy pdf's from " + repoName + ' to public folder error=' + err.message)
             }

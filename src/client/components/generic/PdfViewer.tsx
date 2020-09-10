@@ -1,4 +1,7 @@
-import {Document, Page} from 'react-pdf'
+// dont import like import {Document, Page} from 'react-pdf'
+// as using commonjs as set in tsconfig
+import {Document, Page} from 'react-pdf/dist/umd/entry.webpack'
+
 import React from 'react'
 
 interface IPdfViewerState {

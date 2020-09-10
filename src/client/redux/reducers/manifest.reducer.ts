@@ -2,23 +2,19 @@ import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {
     APICallStatus,
-    Direction,
-    DOWN,
     IDefaultFieldOrder,
     IManifest,
     IManifestAction,
     IObjectPath,
     IPage,
     IProduct,
-    ISection,
-    UP
+    ISection
 } from '../../../shared/typings'
 import ManifestActions, {
     IAddObjectByPath,
     IAddPage,
     IDeletePage,
     IDeleteTextByObjectPath,
-    IMovePage,
     IMovePageTo,
     ISwapObjectsByPath,
     // ISwapObjectsByPath,
@@ -202,10 +198,6 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             pageToUpdate.path = action.payload.path
         }),
 
-        [ManifestActions.MovePage]: produce((draft: IManifestExtened, action: IMovePage) => {
-            movePage(draft.manifest, action.payload.pageID, action.payload.direction)
-        }),
-
         [ManifestActions.MovePageTo]: produce((draft: IManifestExtened, action: IMovePageTo) => {
             const pages: IPage[] = draft.manifest.pages
             const fromObject = pages[action.payload.fromIndex]
@@ -290,52 +282,6 @@ const findPageIndex = (pages: IPage[], pageID: number): number => {
         }
     }
     return pageIndex
-}
-
-const movePageTo = (manifest: IManifest, fromIndex: number, toIndex: number): IManifest => {
-    const pages: IPage[] = manifest.pages
-    const direction = fromIndex > toIndex ? UP : DOWN
-
-    if (direction === UP) {
-        // at top
-        if (toIndex === 0) {
-            return manifest
-        }
-    } else {
-        // at bottom
-        if (toIndex === pages.length - 1) {
-            return manifest
-        }
-    }
-
-    const dropToPageIndex = direction === UP ? toIndex - 1 : toIndex + 1
-
-    const dropToPage = pages[toIndex]
-    // swap objects
-    pages[dropToPageIndex] = pages[toIndex] // new page goes to where old page way
-    pages[toIndex] = dropToPage
-}
-
-const movePage = (manifest: IManifest, pageID: number, direction: Direction): IManifest => {
-    const pages: IPage[] = manifest.pages
-    let pageIndex = findPageIndex(pages, pageID)
-
-    if (direction === UP) {
-        if (pageIndex === 0) {
-            return manifest
-        }
-    } else {
-        if (pageIndex === pages.length - 1) {
-            return manifest
-        }
-    }
-
-    const pageIndexToMove = direction === UP ? pageIndex - 1 : pageIndex + 1
-
-    const pageToMove = pages[pageIndexToMove]
-    // swap objects
-    pages[pageIndexToMove] = pages[pageIndex]
-    pages[pageIndex] = pageToMove
 }
 
 const setAnyTopLevelProperty = (action: IManifestAction, draft: IManifestExtened) => {

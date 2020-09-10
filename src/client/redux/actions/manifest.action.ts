@@ -1,13 +1,5 @@
 import {createAction} from 'redux-actions'
-import {
-    Direction,
-    IManifest,
-    IManifestAction,
-    ApiMethods,
-    IPage,
-    IObjectPath,
-    APICallStatus
-} from '../../../shared/typings'
+import {IManifest, IManifestAction, ApiMethods, IPage, IObjectPath, APICallStatus} from '../../../shared/typings'
 
 export enum ManifestActionsActionsThatMakeUIDirty {
     MovePage = 'CHANGE/PAGE/POSITION',
@@ -47,11 +39,6 @@ export const setAnyTopLevelPropertyUndoable = createAction(
     ManifestActions.SetAnyTopLevelPropertyUndoable,
     (object) => object
 )
-
-export const movePage = createAction(ManifestActions.MovePage, (pageID: number, direction: Direction) => ({
-    pageID,
-    direction
-}))
 
 export const movePageTo = createAction(ManifestActions.MovePageTo, (fromIndex: number, toIndex: number) => ({
     fromIndex,
@@ -162,7 +149,6 @@ export const login = (email: string, pwd: string): IManifestAction => ({
     payload: {email, pwd}
 })
 
-export type IMovePage = ReturnType<typeof movePage>
 export type IMovePageTo = ReturnType<typeof movePageTo>
 export type IAddPage = ReturnType<typeof addPage>
 export type IDeletePage = ReturnType<typeof deletePage>

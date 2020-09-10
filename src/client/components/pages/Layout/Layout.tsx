@@ -15,6 +15,7 @@ import Login from '../Login/Login'
 import {saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 import ContentToggler from '../../generic/ContentToggler/ContentToggler'
+import PdfViewer from '../../generic/PdfViewer'
 
 interface IProps {
     location: LocationProps

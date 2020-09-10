@@ -30,13 +30,7 @@ app.use(API, testManifest)
 app.use(API, addPage)
 app.use(API, deletePage)
 app.use(API, fileUploaderRouter)
-
 app.use(indexRouter)
-
-app.use('/pages/edit', (req, res) => {
-    console.log('sending index.html')
-    res.sendFile(path.resolve('dist', 'index.html'))
-})
 
 app.use('*', (req, res) => {
     res.sendFile(path.resolve('dist', 'index.html'))

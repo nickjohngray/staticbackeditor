@@ -1,4 +1,4 @@
-import {Direction, DOWN, IManifest, IPage, IObjectPath, UP} from '../../../../shared/typings'
+import {IManifest, IPage, IObjectPath} from '../../../../shared/typings'
 import * as React from 'react'
 import {Link, RouteComponentProps} from '@reach/router'
 import Shapes from '../../generic/Shapes'
@@ -14,7 +14,6 @@ interface IState {
 type IProps = {
     onDeletePage: (pageID: number) => void
     onPageChange: (page: IPage) => void
-    onMovePage: (pageID: number, direction: Direction) => void
     onMovePageTo: (fromIndex: number, toIndex: number) => void
     manifest: IManifest
     onAddPage: (pageName: string, pagePath: string) => void

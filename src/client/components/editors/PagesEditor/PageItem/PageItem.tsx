@@ -1,5 +1,5 @@
 import Shapes from '../../../generic/Shapes'
-import {Direction, DOWN, IPage, UP} from '../../../../../shared/typings'
+import {IPage} from '../../../../../shared/typings'
 import {Link} from '@reach/router'
 import * as React from 'react'
 import './PageItem.css'
@@ -8,7 +8,6 @@ import {DragHandle} from '../../../generic/Drag/DragHandle'
 interface IProps {
     page: IPage
     onDeletePage: (pageID: number) => void
-    onMovePage: (pageID: number, direction: Direction) => void
     onPageChange: (page: IPage) => void
 }
 

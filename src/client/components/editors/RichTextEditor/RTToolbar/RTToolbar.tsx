@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, Ref} from 'react'
 import {css, cx} from 'emotion'
-import {IBaseProps, Menu, OrNull} from '../RTEditorUtil'
+import {Button, IBaseProps, Menu, OrNull} from '../RTEditorUtil'
 import {RTMarkButton} from './RTMarkButton'
 import FormatBold from '@material-ui/icons/FormatBold'
 import {FormatItalic} from '@material-ui/icons'
@@ -12,6 +12,9 @@ import LooksTwo from '@material-ui/icons/LooksTwo'
 import FormatQuote from '@material-ui/icons/FormatQuote'
 import FormatListNumbered from '@material-ui/icons/FormatListNumbered'
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted'
+import {useEditor} from 'slate-react'
+import {insertImage} from '../RTEditor'
+import {Icon} from '@material-ui/core'
 
 export const RTToolbar = React.forwardRef(
     ({className, ...props}: PropsWithChildren<IBaseProps>, ref: Ref<OrNull<HTMLDivElement>>) => (
@@ -37,6 +40,22 @@ export const RTToolbar = React.forwardRef(
             <RTBlockButton format="block-quote" Icon={FormatQuote} />
             <RTBlockButton format="numbered-list" Icon={FormatListNumbered} />
             <RTBlockButton format="bulleted-list" Icon={FormatListBulleted} />
+            <InsertImageButton />
         </Menu>
     )
 )
+
+const InsertImageButton = () => {
+    const editor = useEditor()
+    return (
+        <Button
+            onMouseDown={(event) => {
+                event.preventDefault()
+                const url = window.prompt('Enter the URL of the image:')
+                if (!url) return
+                insertImage(editor, url)
+            }}>
+            <Icon>image</Icon>
+        </Button>
+    )
+}

@@ -8,5 +8,17 @@ export enum Constants {
     string = 'string',
     number = 'number',
     readonly = 'readonly',
-    richText = 'richText'
+    richText = 'richText',
+    richTextData = 'richTextData'
+}
+
+export enum PageContentEditors {
+    sectionEditor = 'sectionEditor',
+    productEditor = 'productEditor',
+    richTextEditor = 'richTextEditor'
+}
+
+export enum OPENER_TYPE {
+    TAB = 'TAB',
+    EXPANDER = 'EXPANDER'
 }

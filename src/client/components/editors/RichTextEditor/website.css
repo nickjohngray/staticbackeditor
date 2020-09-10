@@ -67,3 +67,25 @@
 .white-text {
     color: white;
 }
+
+.react-pdf__Document {
+    align-self: center;
+}
+
+/*
+"className": "w-center-text w-social-icons", */
+.center-div {
+    margin: auto;
+    width: 50%;
+}
+
+.center-div-content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* align-items: start;
+align-self: center;
+display: flex; */

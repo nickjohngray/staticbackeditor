@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {LocationProps, navigate, RouteComponentProps, Router} from '@reach/router'
-import {Direction, IManifest, IPage, IObjectPath, IMoveNodeOrLeafToMethodWithPageId} from '../../../../shared/typings'
+import {IManifest, IPage, IObjectPath, IMoveNodeOrLeafToMethodWithPageId} from '../../../../shared/typings'
 import './PagesDashboard.css'
 import {Dispatch} from 'redux'
 import {IStore} from '../../../redux/store'
@@ -8,7 +8,6 @@ import {
     addPage,
     deletePage,
     deleteObjectByPath,
-    movePage,
     triggerUndoableStart,
     updatePage,
     updateObjectByPath,
@@ -26,7 +25,6 @@ import {findPageById} from '../../../util'
 
 type IProps = RouteComponentProps & {
     manifest: IManifest
-    movePage: (pageID: number, direction: Direction) => void
     movePageTo: (fromIndex: number, toIndex: number) => void
     swapObjectsByPath: IMoveNodeOrLeafToMethodWithPageId
     addPage: (pageName: string, pagePath: string) => void
@@ -99,7 +97,6 @@ class PagesDashboard extends React.Component<IProps, IState> {
                         onAddPage={this.props.addPage}
                         onDeletePage={this.props.deletePage}
                         onPageChange={this.props.setCurrentPage}
-                        onMovePage={this.props.movePage}
                         onMovePageTo={this.props.movePageTo}
                     />
 
@@ -107,11 +104,12 @@ class PagesDashboard extends React.Component<IProps, IState> {
                         <PageEditor
                             products={this.props.manifest.products}
                             path="edit/:pageID"
-                            onSectionChange={(value: string, objectPath) => this.updateSection(value, objectPath)}
-                            onSectionAdd={(jsonObject: object, objectPath) => this.addSection(jsonObject, objectPath)}
-                            onSectionDelete={(objectPath) => this.deleteSection(objectPath)}
+                            onObjectChange={(value: string, objectPath) => this.updateObject(value, objectPath)}
+                            onObjectAdd={(jsonObject: object, objectPath) => this.addObject(jsonObject, objectPath)}
+                            onObjectDelete={(objectPath) => this.deleteObject(objectPath)}
                             page={this.props.currentPage}
                             onPageNameAndPathChange={this.props.updatePage}
+                            // todo refactor below into one , only need one asset dir
                             imageDirectory={this.props.manifest.repoName}
                             projectUploadFolder={this.props.manifest.repoName}
                             onMoveNodeOrLeafTo={(fromIndex, toIndex, objectPath, fromField, toField) =>
@@ -136,15 +134,15 @@ class PagesDashboard extends React.Component<IProps, IState> {
         return !!page
     }
 
-    updateSection = (value: string, objectPath: IObjectPath) => {
+    updateObject = (value: string, objectPath: IObjectPath) => {
         this.props.updateObjectByPath(this.props.currentPage, value, objectPath)
     }
 
-    addSection = (jsonObject: object, objectPath: IObjectPath) => {
+    addObject = (jsonObject: object, objectPath: IObjectPath) => {
         this.props.addObjectByPath(this.props.currentPage, jsonObject, objectPath)
     }
 
-    deleteSection = (objectPath: IObjectPath) => {
+    deleteObject = (objectPath: IObjectPath) => {
         this.props.deleteObjectByPath(this.props.currentPage, objectPath)
     }
 
@@ -160,7 +158,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(addObjectByPath(page, jsonObject, objectPath)),
     deleteObjectByPath: (page: IPage, objectPath: any[]) => dispatch(deleteObjectByPath(page, objectPath)),
 
-    movePage: (pageID: number, direction: Direction) => dispatch(movePage(pageID, direction)),
     movePageTo: (fromIndex: number, toIndex: number) => dispatch(movePageTo(fromIndex, toIndex)),
     swapObjectsByPath: (
         fromIndex: number,

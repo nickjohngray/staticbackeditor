@@ -6,7 +6,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import PdfViewer from '../../generic/PdfViewer'
 import {Document, Page} from 'react-pdf'
 import {Transforms, createEditor, Node} from 'slate'
-import {useEditor, ReactEditor} from 'slate-react'
+import {useEditor, ReactEditor, useSelected, useFocused} from 'slate-react'
+import {css} from 'emotion'
+
+const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
 
 export const RTElement = (props) => {
     const {attributes, children, element} = props
@@ -22,11 +25,48 @@ export const RTElement = (props) => {
             if (lastSlash === -1) {
                 throw new Error("can't build pdf viewer , could not find last slash in" + element.file)
             }
+            const fixedPath = '/easyecom' + element.file.substring(lastSlash)
+            /* return (
+                <>
+                    <img style={{width: '100px', objectFit: 'contain'}} src={pdfIconSrc} alt={'pdf-' + fixedPath} />
+                    <span>{element.file}</span>
+                </>
+            )*/
+
+            const selected = useSelected()
+            const focused = useFocused()
+            return (
+                <div {...attributes}>
+                    <div contentEditable={false}>
+                        <img
+                            {...attributes}
+                            className={css`
+                                display: block;
+                                margin: AUTO;
+                                width: 50%;
+                                box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
+                            `}
+                            style={{width: '100px', objectFit: 'contain'}}
+                            src={pdfIconSrc}
+                        />
+                    </div>
+                    {children}
+                    {/* <PdfViewer file={fixedPath} />*/}
+                </div>
+            )
+
+        /* return (
+                <PdfViewer isDisabled file={fixedPath} {...attributes}>
+                    {children}
+                </PdfViewer>
+            )*/
+
+        /* const lastSlash = element.file.lastIndexOf('/')
+            if (lastSlash === -1) {
+                throw new Error("can't build pdf viewer , could not find last slash in" + element.file)
+            }
             const fixedPath = '/pdf' + element.file.substring(lastSlash)
-            // attributes, children, element
-            // const e = { ...element, src:fixedPath}
-            // const p =
-            return <PdfElement {...{attributes, children, element: {...element, url: fixedPath}}} />
+            return <PdfElement {...{attributes, children, element: {...element, url: fixedPath}}} />*/
         /*return (
                 <Document file={fixedPath} onLoadSuccess={this.onDocumentLoadSuccess}>
                     <Page pageNumber={1} />

@@ -1,3 +1,6 @@
+import {Node as INode} from 'slate'
+import {OPENER_TYPE, PageContentEditors} from '../client/util'
+
 export interface IPage {
     name: string
     path: string
@@ -9,14 +12,10 @@ export interface IPage {
     templateContent?: string
     editor?: PageContentEditors
     id: number
+    richTextData?: INode[]
 }
 
 export type IObjectPath = (string | number)[]
-
-export enum PageContentEditors {
-    sectionEditor = 'sectionEditor',
-    productEditor = 'productEditor'
-}
 
 export interface IDefaultFieldOrder {
     name: string
@@ -39,20 +38,12 @@ export interface ISectionOpener {
     open: boolean
 }
 
-export enum OPENER_TYPE {
-    TAB = 'TAB',
-    EXPANDER = 'EXPANDER'
-}
-
 export interface IImage {
     src: string
     url?: string
 }
 
-export type Direction = 'UP' | 'DOWN'
-
-export const UP = 'UP'
-export const DOWN = 'DOWN'
+// export type Direction = 'UP' | 'DOWN'
 
 export interface IManifest {
     appName: string

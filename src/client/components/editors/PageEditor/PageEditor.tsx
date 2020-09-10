@@ -1,11 +1,4 @@
-import {
-    IPage,
-    IObjectPath,
-    ISection,
-    PageContentEditors,
-    IMoveNodeOrLeafToMethod,
-    IProduct
-} from '../../../../shared/typings'
+import {IPage, IObjectPath, ISection, IMoveNodeOrLeafToMethod, IProduct} from '../../../../shared/typings'
 import * as React from 'react'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link, navigate} from '@reach/router'
@@ -13,14 +6,16 @@ import LabelEditor from '../../editors/LabelEditor/LabelEditor'
 import './PageEditor.css'
 import Tree from '../../generic/Tree'
 import ProductEditor from '../ProductEditor/ProductEditor'
+import RTEditor from '../RichTextEditor/RTEditor'
+import {Constants, PageContentEditors} from '../../../util'
 
 type IProps = {
     page: IPage
     products: IProduct[]
     onPageNameAndPathChange: (id: number, name: string, path: string) => void
-    onSectionAdd: (jsonObject: object, objectPath: any[]) => void
-    onSectionChange: (text: string, objectPath: any[]) => void
-    onSectionDelete: (objectPath: any[]) => void
+    onObjectAdd: (jsonObject: object, objectPath: any[]) => void
+    onObjectChange: (text: string, objectPath: any[]) => void
+    onObjectDelete: (objectPath: any[]) => void
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
     imageDirectory: string
     projectUploadFolder: string
@@ -33,6 +28,7 @@ interface IState {
 }
 
 class PageEditor extends React.Component<IProps, IState> {
+    richTextData: any
     constructor(props: IProps) {
         super(props)
         if (this.props.page) {
@@ -95,9 +91,9 @@ class PageEditor extends React.Component<IProps, IState> {
             case PageContentEditors.sectionEditor: {
                 return (
                     <SectionEditor
-                        onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
-                        onAdd={(jsonObject, objectPath) => this.props.onSectionAdd(jsonObject, objectPath)}
-                        onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
+                        onUpdate={(text, objectPath) => this.props.onObjectChange(text, objectPath)}
+                        onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
+                        onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
                         sections={this.props.page.sections}
                         imageDirectory={this.props.imageDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
@@ -108,13 +104,26 @@ class PageEditor extends React.Component<IProps, IState> {
             case PageContentEditors.productEditor: {
                 return (
                     <ProductEditor
-                        onUpdate={(text, objectPath) => this.props.onSectionChange(text, objectPath)}
-                        onAdd={(jsonObject, objectPath) => this.props.onSectionAdd(jsonObject, objectPath)}
-                        onDelete={(objectPath) => this.props.onSectionDelete(objectPath)}
+                        onUpdate={(text, objectPath) => this.props.onObjectChange(text, objectPath)}
+                        onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
+                        onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
                         products={this.props.products}
                         imageDirectory={this.props.imageDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
                         onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
+                    />
+                )
+            }
+            case PageContentEditors.richTextEditor: {
+                return (
+                    <RTEditor
+                        onChange={(richTextData) => {
+                            this.richTextData = richTextData
+                        }}
+                        onBlur={() => {
+                            this.props.onObjectChange(this.richTextData, [Constants.richTextData])
+                        }}
+                        data={this.props.page.richTextData}
                     />
                 )
             }
