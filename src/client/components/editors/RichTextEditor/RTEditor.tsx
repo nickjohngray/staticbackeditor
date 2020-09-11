@@ -19,16 +19,20 @@ interface IProps {
     onBlur?: () => void
     onChange?: (data: INode[]) => void
     isReadOnly?: boolean
+    onBlur2?: (data: INode[]) => void
+    style?: {}
 }
 
-const RTEditor = ({data, onBlur, onChange, isReadOnly = false}: IProps) => {
+const RTEditor = ({data, onBlur2, onBlur, onChange, isReadOnly = false, style}: IProps) => {
     const [value, setValue] = useState<INode[]>(data)
     const renderElement = useCallback((props) => <RTElement {...props} />, [])
     const renderLeaf = useCallback((props) => <RTLeaf {...props} />, [])
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), [])
 
+    console.log(value)
+
     return (
-        <div className="rteContainer">
+        <div className="rteContainer" style={style}>
             <Slate
                 className="rteSlate"
                 editor={editor}
@@ -43,13 +47,14 @@ const RTEditor = ({data, onBlur, onChange, isReadOnly = false}: IProps) => {
 
                 <Editable
                     readOnly={isReadOnly}
-                    onBlur={onBlur}
+                    onBlur={() => onBlur2(value)}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"
                     spellCheck
                     autoFocus
                     className="rteEditable"
+                    style={style}
                     onMouseDown={(event: React.MouseEvent<HTMLElement, MouseEvent>) => {
                         /*if ((event.target as HTMLElement).className.indexOf('react-pdf') !== -1) {
                             event.preventDefault()

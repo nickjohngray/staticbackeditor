@@ -9,7 +9,7 @@ import {Transforms, createEditor, Node} from 'slate'
 import {useEditor, ReactEditor, useSelected, useFocused} from 'slate-react'
 import {css} from 'emotion'
 
-const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
+const pdfIconSrc = require('./../../../assets/images/pdf_icon.png')
 
 export const RTElement = (props) => {
     const {attributes, children, element} = props

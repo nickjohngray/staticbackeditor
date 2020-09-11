@@ -1,0 +1,107 @@
+.ie-row {
+ /*   display:flex;*/
+    flex-direction: row;
+    border: 1px solid red;
+
+    background-color: black;
+
+}
+
+.ie-col {
+    display:flex;
+    flex-direction: column;
+    border: 1px solid red;
+}
+
+.w.a {
+    color: #108db8;
+    text-decoration: none;
+
+    /* font-weight: bold; */
+}
+
+.w-h1 {
+    color: rgba(0, 236, 85, 0.81);
+    font-family: impact, serif;
+}
+
+.w-h2 {
+    color: #4e5458;
+    display: block;
+    font-family: CoreSans, Arial, sans-serif;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.w-page {
+    background-color: #000 !important;
+    -webkit-box-pack: center;
+    color: #fff !important;
+    display: -ms-flexbox;
+    display: block;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: center;
+    font-size: 20px !important;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.w-center-it {
+    display: flex;
+    text-align: center;
+}
+
+.w-center-text {
+    text-align: center;
+}
+
+.w-a {
+    color: #108db8;
+    text-decoration: none;
+
+    /* font-weight: bold; */
+}
+
+.social-icons {
+    align-items: start;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.social-icons a {
+    padding: 10px;
+    white-space: nowrap;
+}
+
+.social-icons a > span {
+    margin-left: 12px;
+}
+
+.white-text {
+    color: white;
+}
+
+.react-pdf__Document {
+    align-self: center;
+}
+
+/*
+"className": "w-center-text w-social-icons", */
+.center-div {
+    margin: auto;
+    width: 50%;
+}
+
+.center-div-content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* align-items: start;
+align-self: center;
+display: flex; */
+

@@ -15,7 +15,8 @@ export enum Constants {
 export enum PageContentEditors {
     sectionEditor = 'sectionEditor',
     productEditor = 'productEditor',
-    richTextEditor = 'richTextEditor'
+    richTextEditor = 'richTextEditor',
+    incredibleEditor = 'incredibleEditor'
 }
 
 export enum OPENER_TYPE {

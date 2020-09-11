@@ -8,6 +8,8 @@ import Tree from '../../generic/Tree'
 import ProductEditor from '../ProductEditor/ProductEditor'
 import RTEditor from '../RichTextEditor/RTEditor'
 import {Constants, PageContentEditors} from '../../../util'
+import IncredibleEditor from '../IncredibileEditor.tsx/IncredibleEditor'
+import {IIncredibleItem} from '../IncredibileEditor.tsx'
 
 type IProps = {
     page: IPage
@@ -124,6 +126,19 @@ class PageEditor extends React.Component<IProps, IState> {
                             this.props.onObjectChange(this.richTextData, [Constants.richTextData])
                         }}
                         data={this.props.page.richTextData}
+                    />
+                )
+            }
+            case PageContentEditors.incredibleEditor: {
+                return (
+                    <IncredibleEditor
+                        onUpdate={(text, objectPath) => this.props.onObjectChange(text, objectPath)}
+                        onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
+                        onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
+                        imageDirectory={this.props.imageDirectory}
+                        projectUploadFolder={this.props.projectUploadFolder}
+                        onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
+                        data={this.props.page.incredibleData}
                     />
                 )
             }

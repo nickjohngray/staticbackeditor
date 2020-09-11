@@ -1,5 +1,6 @@
 import {Node as INode} from 'slate'
 import {OPENER_TYPE, PageContentEditors} from '../client/util'
+import {IIncredibleItem} from '../client/components/editors/IncredibileEditor.tsx'
 
 export interface IPage {
     name: string
@@ -13,6 +14,7 @@ export interface IPage {
     editor?: PageContentEditors
     id: number
     richTextData?: INode[]
+    incredibleData?: IIncredibleItem
 }
 
 export type IObjectPath = (string | number)[]

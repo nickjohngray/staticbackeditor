@@ -4,12 +4,9 @@ import {faFacebook, faGoogle, faInstagram} from '@fortawesome/free-brands-svg-ic
 import {faPhone} from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import {Simulate} from 'react-dom/test-utils'
-import error = Simulate.error
-import PdfViewer from '../../generic/PdfViewer'
-import {css} from 'emotion'
 import {useFocused, useSelected} from 'slate-react'
 
-const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
+//const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
 // import pdfIconSrc  from  './../../../assets/images/pdf_icon.svg'
 
 const faIcons = {
