@@ -24,6 +24,8 @@ router.post('/login', async (req, res) => {
         if (!userInfo) {
             res.json({error: 'Error in login.ts. Incorrect user name & or password'})
         }
+
+        // only get repo if it has not already been cloned
         if (await fs.existsSync(userInfo.repo)) {
             // get pull here if its clean
             // await fs.rmdirSync(userInfo.repo, {recursive: true})

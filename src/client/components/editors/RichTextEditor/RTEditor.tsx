@@ -5,6 +5,7 @@ import {Editable, withReact, Slate} from 'slate-react'
 import {createEditor, Node as INode, Transforms} from 'slate'
 import imageExtensions from 'image-extensions'
 import isUrl from 'is-url'
+import {useMemoOne, useCallbackOne} from 'use-memo-one'
 
 import {withHistory} from 'slate-history'
 import './RTEditor.css'
@@ -16,20 +17,120 @@ import './website.css'
 
 interface IProps {
     data: INode[]
-    onBlur?: () => void
+    onBlur?: (data: INode[]) => void
     onChange?: (data: INode[]) => void
     isReadOnly?: boolean
-    onBlur2?: (data: INode[]) => void
     style?: {}
 }
 
-const RTEditor = ({data, onBlur2, onBlur, onChange, isReadOnly = false, style}: IProps) => {
+const x = [
+    {
+        type: 'div',
+        children: [
+            {
+                type: 'h1',
+                className: 'center-text w-h1',
+                children: [
+                    {
+                        text: 'About us'
+                    }
+                ]
+            },
+            {
+                text: 'We are a Strongman Gym and cater to both female and male athletes'
+            },
+            {
+                text: '',
+                br: true
+            },
+            {
+                text:
+                    'We offer classes in the evening from 7.30pm to 9.30pm Monday to Friday, coached by Owner and Director of Strength Pit.'
+            },
+            {
+                text: '',
+                br: true
+            },
+            {
+                text: 'Online coaching and online programming.'
+            },
+            {
+                type: 'p',
+                children: [
+                    {
+                        type: 'h1',
+                        className: 'w-h1',
+                        children: [
+                            {
+                                text: 'History'
+                            }
+                        ]
+                    },
+                    {
+                        text:
+                            'Strength Pit Otara was born out of the passion to facilitate a safe place, tailored for Maori and Pasifika to be themselves, and grow their natural strength.'
+                    },
+                    {
+                        text: '',
+                        br: true
+                    },
+                    {
+                        text:
+                            'Coach Afaese Paea, born and bred in Otara, always had a interest in strength sports, powerlifting, martial arts and Rugby.'
+                    },
+                    {
+                        text: '',
+                        br: true
+                    },
+                    {
+                        text:
+                            'While browsing around the big boys toys one year he stumbled across a Strongman event at the Easter Show back in 2005 - 2006 and searched how to get involved in that sport.'
+                    },
+                    {
+                        type: 'p',
+                        children: [
+                            {
+                                text:
+                                    'And the rest is history, his first Novice competition he won without any training and then decided to pursue the NZ Strongman Arena.'
+                            },
+                            {
+                                text: '',
+                                br: true
+                            },
+                            {
+                                text:
+                                    'Due to the events being few and far between it was difficult to train without the apparatus’s so we decided to offer strength training to a local Box Empire Training Box based in Otara back in 2014 and the word got around and some 10 poly boys started showing up after the Box had closed.'
+                            },
+                            {
+                                text: '',
+                                br: true
+                            },
+                            {
+                                text:
+                                    'Thanks to a really good mate also born and bred in Otara Lama Saga loaned us his space until we out grew it.'
+                            },
+                            {
+                                type: 'p',
+                                children: [
+                                    {
+                                        text:
+                                            'We set up officially in June 2015, and operate online coaching, strength and conditioning workshops all over the country and have Athletes competing in Strongman both in NZ and Australia.'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
+
+const RTEditor = ({data, onBlur, onChange, isReadOnly = false, style}: IProps) => {
     const [value, setValue] = useState<INode[]>(data)
     const renderElement = useCallback((props) => <RTElement {...props} />, [])
-    const renderLeaf = useCallback((props) => <RTLeaf {...props} />, [])
-    const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), [])
-
-    console.log(value)
+    const renderLeaf = useCallbackOne((props) => <RTLeaf {...props} />, [])
+    const editor = useMemoOne(() => withHistory(withReact(createEditor())), [])
 
     return (
         <div className="rteContainer" style={style}>
@@ -47,7 +148,7 @@ const RTEditor = ({data, onBlur2, onBlur, onChange, isReadOnly = false, style}: 
 
                 <Editable
                     readOnly={isReadOnly}
-                    onBlur={() => onBlur2(value)}
+                    onBlur={() => onBlur(value)}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"

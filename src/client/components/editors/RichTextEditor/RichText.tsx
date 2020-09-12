@@ -5,17 +5,20 @@ import {Editable, withReact, Slate} from 'slate-react'
 import {createEditor, Node} from 'slate'
 import './RTEditor.css'
 import {isEqual} from 'lodash'
+import {RTLeaf} from './RTLeaf'
+import {RTElement} from './RTElement'
 
 interface IProps {
     json: Node[]
+    style?: {}
 }
 
-const RichText = ({json}: IProps) => {
+const RichText = ({json, style}: IProps) => {
     const jsonIn = json
     const [value, setValue] = useState<Node[]>(jsonIn)
-    const renderElement = useCallback((props) => <Element {...props} />, [])
-    const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
-    let editor = useMemo(() => withEmbeds(withReact(createEditor())), [])
+    const renderElement = useCallback((props) => <RTElement {...props} />, [])
+    const renderLeaf = useCallback((props) => <RTLeaf {...props} />, [])
+    let editor = useMemo(() => withReact(createEditor()), [])
 
     // this is needed to force update for hot reload from manifest
     if (!isEqual(jsonIn, value)) {
@@ -23,7 +26,7 @@ const RichText = ({json}: IProps) => {
     }
 
     return (
-        <div className="rteContainer">
+        <div className="rteContainer" style={style}>
             <Slate
                 className="rteSlate"
                 editor={editor}
@@ -32,6 +35,7 @@ const RichText = ({json}: IProps) => {
                     setValue(value)
                 }}>
                 <Editable
+                    style={style}
                     readOnly={true}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
@@ -42,55 +46,6 @@ const RichText = ({json}: IProps) => {
             </Slate>
         </div>
     )
-}
-
-const Element = ({attributes, children, element}) => {
-    switch (element.type) {
-        case 'block-quote':
-            return <blockquote {...attributes}>{children}</blockquote>
-        case 'bulleted-list':
-            return <ul {...attributes}>{children}</ul>
-        case 'heading-one':
-            return <h1 {...attributes}>{children}</h1>
-        case 'heading-two':
-            return <h2 {...attributes}>{children}</h2>
-        case 'list-item':
-            return <li {...attributes}>{children}</li>
-        case 'numbered-list':
-            return <ol {...attributes}>{children}</ol>
-        default:
-            return <p {...attributes}>{children}</p>
-    }
-}
-
-const Leaf = ({attributes, children, leaf}) => {
-    if (leaf.bold) {
-        // @ts-ignore
-        children = <strong>{children}</strong>
-    }
-
-    if (leaf.code) {
-        // @ts-ignore
-        children = <code>{children}</code>
-    }
-
-    if (leaf.italic) {
-        // @ts-ignore
-        children = <em>{children}</em>
-    }
-
-    if (leaf.underline) {
-        // @ts-ignore
-        children = <u>{children}</u>
-    }
-    // @ts-ignore
-    return <span {...attributes}>{children}</span>
-}
-
-const withEmbeds = (editor) => {
-    const {isVoid} = editor
-    editor.isVoid = (element) => (element.type === 'pdf' ? true : isVoid(element))
-    return editor
 }
 
 export default RichText

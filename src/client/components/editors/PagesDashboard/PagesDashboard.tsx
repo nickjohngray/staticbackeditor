@@ -56,6 +56,8 @@ class PagesDashboard extends React.Component<IProps, IState> {
         }
     }
 
+    // the current page needs to be set when the manifest changes
+    // as the current page is set in a different reducer
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
         if (!this.props.currentPage) {
             return
@@ -63,7 +65,8 @@ class PagesDashboard extends React.Component<IProps, IState> {
         if (!isEqual(nextProps.manifest, this.props.manifest)) {
             const page = findPageById(this.props.currentPage.id, nextProps.manifest.pages)
             if (!page) {
-                alert('could not find page with name ' + this.props.currentPage.name.toUpperCase())
+                // page got deleted from manifest
+                this.props.setCurrentPage(undefined)
             }
             this.props.setCurrentPage(page)
         }
@@ -167,7 +170,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         fromField: string,
         toField: string
     ) => dispatch(swapObjectsByPath(fromIndex, toIndex, objectPath, pageID, fromField, toField)),
-    addPage: (pageName: string, pagePath: string) => dispatch(addPage(pageName, pagePath, getPageTemplate(pageName))),
+    addPage: (pageName: string, pagePath: string) =>
+        dispatch(
+            addPage(pageName, pagePath, getPageTemplateContent(pageName), 'src/components/pages/IncredibleTemplate')
+        ),
     deletePage: (pageID: number) => dispatch(deletePage(pageID)),
     triggerUndoableStart: () => dispatch(triggerUndoableStart()),
     setCurrentPage: (currentPage: IPage) => dispatch(setCurrentPage(currentPage))
@@ -184,12 +190,20 @@ export default connect(
     mapDispatchToProps
 )(PagesDashboard)
 
-const getPageTemplate = (pageName: string) => {
-    return `import React from 'react'
+const getPageTemplateContent = (pageName: string) => {
+    return `import React from 'react';
+import {getPage} from 'components/pages/manifestUtil';
+import Incredible from 'components/IncredibileEditor.tsx/Incredible';
+import {IIncredibleItem, IPage} from '../../typings';
 
-export default () => (
-    <div className={'page center-it'}>
-        <h1>${pageName}</h1>
-    </div>
-)`
+export default () => {
+    const page : IPage = getPage('about_new')
+    const data : IIncredibleItem =   page.incredibleData
+
+    return (
+    <div className={'page center-it '}>
+        {<Incredible data={data}    />}
+
+    </div>)
+}`
 }

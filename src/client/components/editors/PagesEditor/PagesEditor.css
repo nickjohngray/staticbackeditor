@@ -1,4 +1,6 @@
 .dashboard {
+    align-items: flex-end;
+    display: flex;
     margin-top: 0;
 }
 

@@ -11,6 +11,7 @@ import {testManifest} from './routes/test_manifest'
 import {addPage} from './routes/add-page'
 import {deletePage} from './routes/delete-page'
 import {fileUploaderRouter} from './routes/file-upload'
+import {publish} from './routes/publish'
 // import cors from 'cors'
 const app = express()
 const port = 8050
@@ -26,6 +27,7 @@ app.use(API, cloneRepoRouter)
 app.use(API, pushToMasterRouter)
 app.use(API, loginRouter)
 app.use(API, saveManifest)
+app.use(API, publish)
 app.use(API, testManifest)
 app.use(API, addPage)
 app.use(API, deletePage)

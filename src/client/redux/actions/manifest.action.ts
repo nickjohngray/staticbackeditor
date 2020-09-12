@@ -17,6 +17,7 @@ export enum ManifestActions {
     UpdatePage = 'UPDATE/PAGE',
     Login = 'Login',
     SaveManifest = 'SAVE/MANIFEST',
+    PublishManifest = 'PUBLISH/MANIFEST',
     loadManifest = 'LOAD/MANIFEST',
     SetAnyTopLevelProperty = 'SET/ANY/TOP/LEVEL/PROPERTY',
     SetAnyTopLevelPropertyUndoable = 'SET/ANY/TOP/LEVEL/PROPERTY/UNDOABLE',
@@ -30,8 +31,10 @@ export enum ManifestActions {
 
 enum ApiRoutes {
     Save = '/api/save-manifest',
-    load = '/api/manifest',
-    login = '/api/login'
+    oad = '/api/manifest',
+    login = '/api/login',
+    publish = '/api/publish',
+    load = '/api/manifest'
 }
 
 export const setAnyTopLevelProperty = createAction(ManifestActions.SetAnyTopLevelProperty, (object) => object)
@@ -90,7 +93,12 @@ export const swapObjectsByPath = createAction(
 
 export const addPage = createAction(
     ManifestActions.AddPage,
-    (pageName: string, pagePath: string, pageContent: string) => ({pageName, pagePath, pageContent})
+    (pageName: string, pagePath: string, pageContent: string, templatePath: string) => ({
+        pageName,
+        pagePath,
+        pageContent,
+        templatePath
+    })
 )
 
 export const updatePage = createAction(ManifestActions.UpdatePage, (id: number, name: string, path: string) => ({
@@ -101,7 +109,8 @@ export const updatePage = createAction(ManifestActions.UpdatePage, (id: number, 
 
 export const updateObjectByPath = createAction(
     ManifestActions.UpdateTextByObjectPath,
-    (page: IPage, text: string, objectPath: any[]) => ({
+    // todo set text type as string or slate Node[]
+    (page: IPage, text: any, objectPath: any[]) => ({
         page,
         text,
         objectPath
@@ -133,6 +142,13 @@ export const saveManifest = (manifest: IManifest): IManifestAction => ({
     type: ManifestActions.SaveManifest,
     payload: {manifest},
     api: ApiRoutes.Save,
+    method: ApiMethods.post
+})
+
+export const publish = (manifest: IManifest): IManifestAction => ({
+    type: ManifestActions.PublishManifest,
+    payload: {manifest},
+    api: ApiRoutes.publish,
     method: ApiMethods.post
 })
 

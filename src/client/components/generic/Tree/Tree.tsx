@@ -3,7 +3,7 @@ import './Tree.css'
 import {isEqual, cloneDeep} from 'lodash'
 import TreeLeaf from './TreeLeaf/TreeLeaf'
 import MainContext from '../../../context/MainContext'
-import {Constants} from '../../../util'
+import {Constants, isPrimitive} from '../../../util'
 import {
     IDefaultFieldOrder,
     IFieldDataType,
@@ -25,6 +25,7 @@ import {
 } from 'react-sortable-hoc'
 import {getConfigForPath, isCurrentPathOkForConfig, sortKeys} from './treeUtil'
 import {Drag} from '../Drag/Drag'
+import {isDragHandle} from '../Drag/DragHandle'
 
 export interface IObjectsToAdd {
     object: {}
@@ -160,7 +161,9 @@ class Tree extends React.Component<IProps, IState> {
     componentWillUnmount = () =>
         this.dragULPointer.current.removeEventListener('mousedown', this.handleMainContainerMouseDown)
 
-    handleMainContainerMouseDown = (event) => (this.shouldCancelDrag = event.target.className !== 'drag_handle')
+    // the drag handle is a material ui icon and its converting the class name to an object
+    // if the user clicks the drag handle then drag is allowed
+    handleMainContainerMouseDown = (event) => (this.shouldCancelDrag = !isDragHandle(event.target as HTMLElement))
 
     render = () => {
         return <ul className="tree tree_group">{this.makeTree(this.props.data, [])}</ul>
@@ -237,7 +240,7 @@ class Tree extends React.Component<IProps, IState> {
         // todo refactor to use collapse
         // this leaf has been made on an editable node,
         // it can be skipped, we dont want a double up
-        if (this.isPrimitive(object[key]) && this.isKeyOneOfNodeKeysForObjectsAndArrays(key)) {
+        if (isPrimitive(object[key]) && this.isKeyOneOfNodeKeysForObjectsAndArrays(key)) {
             return <Fragment key={'skipped_' + key}> </Fragment>
         }
 
@@ -297,18 +300,14 @@ class Tree extends React.Component<IProps, IState> {
 
         // if this object is in an array and it only has on key and value
         // that is a primitive make a leaf not the object
-        if (
-            this.props.collapseSingle &&
-            Object.keys(object).length === 1 &&
-            this.isPrimitive(Object.values(object)[0])
-        ) {
+        if (this.props.collapseSingle && Object.keys(object).length === 1 && isPrimitive(Object.values(object)[0])) {
             const leafValue = Object.values(object)[0]
             const leafLabel = Object.keys(object)[0]
             const leafPath = currentPath.concat(leafLabel)
             return this.makeLeaf(leafValue, leafPath, false, null)
         }
 
-        if (this.isPrimitive(object)) {
+        if (isPrimitive(object)) {
             return this.makeLeaf(object as string, currentPath)
         }
         if (this.isArray(object)) {
@@ -532,10 +531,6 @@ class Tree extends React.Component<IProps, IState> {
     }
 
     isArray = (value) => Array.isArray(value)
-
-    isPrimitive = (value): boolean => {
-        return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
-    }
 
     isImagePath = (path: any[]): boolean => {
         let isImagePath = false

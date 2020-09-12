@@ -15,6 +15,8 @@ export interface IPage {
     id: number
     richTextData?: INode[]
     incredibleData?: IIncredibleItem
+    isDeletable?: boolean
+    isFixedURLPath?: boolean
 }
 
 export type IObjectPath = (string | number)[]
@@ -49,11 +51,13 @@ export interface IImage {
 
 export interface IManifest {
     appName: string
+    prodUrl: string
     imagePath: string
     pages: IPage[]
     products: IProduct[]
     FBAccessToken: string
     repoName: string
+    id: number
 }
 export enum APICallStatus {
     NOT_INIT = 'NOT_INIT',

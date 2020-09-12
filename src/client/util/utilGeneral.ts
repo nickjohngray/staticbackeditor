@@ -19,3 +19,7 @@ export const getNextPageId = (pages: IPage[]) => {
 export const prependKeyToObjectPath = (path: IObjectPath, key: string): IObjectPath => {
     return [key, ...path]
 }
+
+export const isPrimitive = (value): boolean => {
+    return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+}

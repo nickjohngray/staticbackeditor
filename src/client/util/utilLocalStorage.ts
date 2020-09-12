@@ -25,3 +25,7 @@ export const getJsonFromLocalStorage = (key: string) => {
         throw e
     }
 }
+
+export const deleteFromLocalStorage = (key: string) => {
+    localStorage.removeItem(key)
+}

@@ -1,36 +1,64 @@
+/* ie == unbeatable editor */
 .ie-row {
- /*   display:flex;*/
-    flex-direction: row;
-    border: 1px solid red;
-
     background-color: black;
+    border: 1px solid deepskyblue;
 
+    /*   display:flex; */
+    flex-direction: row;
 }
 
-.ie-col {
-    display:flex;
+.ie-row .editable_label_value_rich_text {
+    display: initial;
+}
+
+.nested-row .social-icons {
+    align-items: center;
+    display: flex;
     flex-direction: column;
-    border: 1px solid red;
 }
 
-.w.a {
+.nested-row a.social-icon {
+    color: red;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+.nested-row a.social-icon > span {
+    margin-left: 12px;
+}
+
+.ie-row .react-pdf__Document {
+    margin: auto;
+
+    /* todo allow editor to set these styles */
+    overflow: auto;
+    width: 50%;
+}
+
+/* not used yet */
+.ie-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.rteContainer a {
     color: #108db8;
     text-decoration: none;
-
-    /* font-weight: bold; */
 }
 
-.w-h1 {
+.rteContainer h1 {
     color: rgba(0, 236, 85, 0.81);
     font-family: impact, serif;
+    text-align: center;
 }
 
-.w-h2 {
-    color: #4e5458;
+.rteContainer h2 {
+    color: white;
     display: block;
     font-family: CoreSans, Arial, sans-serif;
     font-size: 1.5em;
     font-weight: bold;
+    text-align: center;
 }
 
 .w-page {
@@ -56,45 +84,14 @@
     text-align: center;
 }
 
-.w-a {
-    color: #108db8;
-    text-decoration: none;
-
-    /* font-weight: bold; */
-}
-
-.social-icons {
-    align-items: start;
-    align-self: center;
-    display: flex;
-    flex-direction: column;
-}
-
-.social-icons a {
-    padding: 10px;
-    white-space: nowrap;
-}
-
-.social-icons a > span {
-    margin-left: 12px;
-}
-
-.white-text {
-    color: white;
-}
-
-.react-pdf__Document {
-    align-self: center;
-}
-
 /*
 "className": "w-center-text w-social-icons", */
-.center-div {
+.rteContainer .center-div {
     margin: auto;
     width: 50%;
 }
 
-.center-div-content {
+.rteContainer .center-div-content {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -104,4 +101,3 @@
 /* align-items: start;
 align-self: center;
 display: flex; */
-

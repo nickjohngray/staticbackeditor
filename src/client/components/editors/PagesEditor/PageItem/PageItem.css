@@ -1,3 +1,37 @@
-.x {
-    color: red;
+.page-and-button-controls {
+    background-color: #00000045;
+    display: flex;
+    flex-direction: row;
+    min-width: 200px;
+    opacity: 0.8;
+    outline: 2px solid;
+    padding: 5px;
+
+    /*   allow drag handle on left hande edge to activate drag */
+    padding-left: 0;
+}
+
+.page-and-button-controls:hover {
+    opacity: 1;
+}
+
+.page-and-button-controls a {
+    color: #000;
+    flex-grow: 2;
+    font-size: 20px;
+    font-weight: 700;
+    opacity: 0.8;
+    padding-left: 5px;
+    text-decoration: none;
+}
+
+.delete-page-button {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+}
+
+.page-and-button-controls a:hover {
+    opacity: 1;
 }

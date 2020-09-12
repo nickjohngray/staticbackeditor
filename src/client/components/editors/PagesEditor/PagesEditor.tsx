@@ -5,10 +5,11 @@ import Shapes from '../../generic/Shapes'
 import {SortableContainer, SortableElement, SortEvent, SortEventWithTag} from 'react-sortable-hoc'
 import './PagesEditor.css'
 import PageItem from './PageItem'
+import {isDragHandle} from '../../generic/Drag/DragHandle'
+import Add from '@material-ui/icons/Add'
 
 interface IState {
     pageName: string
-    pagePath: string
 }
 
 type IProps = {
@@ -25,32 +26,25 @@ export class PagesEditor extends React.Component<IProps, IState> {
         super(props)
 
         this.state = {
-            pageName: '',
-            pagePath: ''
+            pageName: ''
         }
     }
 
     render = () => (
         <div className="dashboard">
             <div className="pages">
-                <h2> Pages </h2>
+                {/*  <h2> Pages </h2>*/}
                 <SortableList
                     helperClass={'page_item_while_dragged'}
                     shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
-                        if ((event as SortEventWithTag).target.tagName === 'DIV') {
-                            return false // the drag handle is defined in a div
-                        }
-                        // cancel this drag event for all other tag elements,
-                        // like span, button and link, these are used for
-                        // other things
-                        return true
+                        return !isDragHandle(event.target as HTMLElement)
                     }}
                     items={this.getPageItems()}
                     onSortEnd={this.onSortEnd}
                 />
             </div>
             <div className="add_page">
-                <h2> New Page </h2>
+                {/*<h2> New Page </h2>*/}
                 <form>
                     <div className="form_element">
                         <input
@@ -59,31 +53,21 @@ export class PagesEditor extends React.Component<IProps, IState> {
                             value={this.state.pageName}
                             onChange={(e) => this.setState({pageName: e.target.value})}
                         />
-                        {this.getPageNameMessage() || <Shapes.Tick />}
+                        {/* {this.getPageNameMessage() || <Shapes.Tick />}*/}
                     </div>
 
-                    <div className="form_element">
-                        <input
-                            placeholder="Page Path"
-                            type="text"
-                            value={this.state.pagePath}
-                            onChange={(e) => this.setState({pagePath: e.target.value})}
-                        />
-                        {this.state.pagePath.trim() === '' ? (
-                            <span className="input-message">Please enter a page path.</span>
-                        ) : (
-                            <Shapes.Tick />
-                        )}
-                    </div>
                     <div className="form-controls">
-                        <input
-                            value="Create Page"
+                        <button
                             type="button"
                             disabled={!this.isFormOk()}
-                            onClick={() => this.props.onAddPage(this.state.pageName, this.state.pagePath)}
-                        />
-
-                        {this.isFormOk() && <Shapes.Tick />}
+                            // to do check for special chars
+                            onClick={() => {
+                                this.props.onAddPage(this.state.pageName, this.state.pageName)
+                                this.setState({pageName: ''})
+                            }}>
+                            {' '}
+                            <Add />{' '}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -114,8 +98,21 @@ export class PagesEditor extends React.Component<IProps, IState> {
         this.props.manifest.pages.find((page) => pageName.toUpperCase() === page.name.toUpperCase())
 
     // all values filled and the page does not exist
-    isFormOk = () =>
-        this.state.pageName.trim() !== '' && this.state.pagePath.trim() !== '' && !this.pageExists(this.state.pageName)
+    isFormOk = () => {
+        if (this.state.pageName.trim() === '') {
+            return false
+        }
+
+        if (this.pageExists(this.state.pageName)) {
+            return false
+        }
+
+        const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+        if (format.test(this.state.pageName)) {
+            return false
+        }
+        return true
+    }
 }
 
 const SortableItem = SortableElement(({value}) => <li>{value}</li>)

@@ -6,10 +6,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import PdfViewer from '../../generic/PdfViewer'
 import {Document, Page} from 'react-pdf'
 import {Transforms, createEditor, Node} from 'slate'
-import {useEditor, ReactEditor, useSelected, useFocused} from 'slate-react'
+import {useEditor, ReactEditor, useSelected, useFocused, useReadOnly} from 'slate-react'
 import {css} from 'emotion'
 
-const pdfIconSrc = require('./../../../assets/images/pdf_icon.png')
+//const pdfIconSrc = require('./../../../assets/images/pdf_icon.png')
 
 export const RTElement = (props) => {
     const {attributes, children, element} = props
@@ -19,19 +19,19 @@ export const RTElement = (props) => {
 
     switch (element.type) {
         default:
-            return <p {...attributes}>{children}</p>
-        case 'pdf':
+            return <span {...attributes}>{children}</span>
+        /*case 'pdf':
             const lastSlash = element.file.lastIndexOf('/')
             if (lastSlash === -1) {
                 throw new Error("can't build pdf viewer , could not find last slash in" + element.file)
             }
             const fixedPath = '/easyecom' + element.file.substring(lastSlash)
-            /* return (
+            /!* return (
                 <>
                     <img style={{width: '100px', objectFit: 'contain'}} src={pdfIconSrc} alt={'pdf-' + fixedPath} />
                     <span>{element.file}</span>
                 </>
-            )*/
+            )*!/
 
             const selected = useSelected()
             const focused = useFocused()
@@ -51,9 +51,9 @@ export const RTElement = (props) => {
                         />
                     </div>
                     {children}
-                    {/* <PdfViewer file={fixedPath} />*/}
+                    {/!* <PdfViewer file={fixedPath} />*!/}
                 </div>
-            )
+            )*/
 
         /* return (
                 <PdfViewer isDisabled file={fixedPath} {...attributes}>
@@ -75,6 +75,7 @@ export const RTElement = (props) => {
 
         /*  PdfViewer file={fixedPath}> </PdfViewer>*/
         case 'div':
+        case 'richText':
             return (
                 <div className={element.className} {...attributes}>
                     {children}
@@ -86,6 +87,12 @@ export const RTElement = (props) => {
                     {children}
                 </h1>
             )
+        case 'p':
+            return (
+                <p className={element.className} {...attributes}>
+                    {children}
+                </p>
+            )
         case 'h2':
             return (
                 <h2 className={element.className} {...attributes}>
@@ -95,7 +102,7 @@ export const RTElement = (props) => {
 
         case 'a':
             return (
-                <a className={element.className} href={element.href} {...attributes}>
+                <a className={element.className} href={useReadOnly() ? undefined : element.href} {...attributes}>
                     {children}
                 </a>
             )

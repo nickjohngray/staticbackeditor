@@ -30,7 +30,7 @@ router.post('/save-manifest', async (req, res) => {
         res.json({error: +ErrorIn + fieldsAreEmptyMessage})
         return
     }
-    const repoName: string = (manifest as IManifest).repoName
+    const repoName: string = manifest.repoName
 
     try {
         const manifestPath = path.resolve(process.cwd(), repoName, 'manifest.json')
@@ -55,6 +55,8 @@ router.post('/save-manifest', async (req, res) => {
         // for the page , need a standard html pr markdown editor
         // this will be the default editor
 
+        // this is needed to force reload after netify builds and deploys
+        manifest.id = parseInt(manifest.id, 10) + 1
         await fs.writeFileSync(manifestPath, JSON.stringify(manifest))
         console.log('Done!,  manifest file saved')
 

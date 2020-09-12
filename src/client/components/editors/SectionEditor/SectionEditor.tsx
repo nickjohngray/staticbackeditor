@@ -79,7 +79,15 @@ class SectionEditor extends React.Component<IProps, ISate> {
                     +
                 </button>
                 <Tree
-                    ignoreKeys={[{path: ['*', 'opener']}, {path: ['*', 'defaultFieldOrder']}]}
+                    ignoreKeys={[
+                        {path: ['*', 'opener']},
+                        {
+                            path: ['*', 'sections', '*', 'defaultFieldOrder']
+                        },
+                        {
+                            path: ['*', 'defaultFieldOrder']
+                        }
+                    ]}
                     deletable={[
                         // top most level  that happen to be sections
                         {path: ['*']},
@@ -146,8 +154,6 @@ class SectionEditor extends React.Component<IProps, ISate> {
                     objectToPrimitivePaths={[{path: ['*', 'sections', '*', 'image']}]}
                     // we dont want the tree to make this or any of its children
 
-                    // todo fix this
-                    // ignoreKeys={['opener', 'defaultFieldOrder']}
                     nodeKeyForObjectsAndArrays={['header']}
                     data={this.props.sections}
                     skipNode="sections"

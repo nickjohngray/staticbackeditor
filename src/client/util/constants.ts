@@ -12,6 +12,7 @@ export enum Constants {
     richTextData = 'richTextData'
 }
 
+// todo change this to union types like 'a' | 'b'
 export enum PageContentEditors {
     sectionEditor = 'sectionEditor',
     productEditor = 'productEditor',

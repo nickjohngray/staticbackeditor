@@ -25,8 +25,8 @@ export const commit = async (repoName: string, message: string, ...fileNames: st
         }
 
         const git: SimpleGit = simpleGit(options)
-        await git.add(fileNames)
-        await git.commit(message)
+        await git.add('.') // fileNames
+        await git.commit(message, fileNames, {['--no-verify']: true})
     } catch (e) {
         console.log('error====' + e)
         throw e

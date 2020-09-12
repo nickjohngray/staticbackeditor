@@ -2,14 +2,21 @@
     margin-top: 0;
 }
 
+.app_name {
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
 header {
     align-items: center;
-    background: #000000d6;
-    border-radius: 5px;
+    background: #acacac66;
+    background: repeating-linear-gradient(10deg, #000, #c32c2c 100px);
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    position: fixed;
+    justify-content: space-between;
     top: 0;
     width: 100%;
 }
@@ -19,7 +26,10 @@ header {
 }
 
 .undo_redo_save_container {
-    background: #000000d6;
+    align-items: initial;
+    cursor: col-resize;
+    display: flex;
+    padding: 5px;
 }
 
 nav {

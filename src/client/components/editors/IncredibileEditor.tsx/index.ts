@@ -5,22 +5,34 @@ import {SizeProp as IFontAwesomeSize} from '@fortawesome/fontawesome-svg-core'
 export {default} from './IncredibleEditor'
 
 export type IIncredibleItem = {
-    title: string
-    br: boolean
-    file: string
+    type?: IIncredibleTypes
+    title?: string
+    br?: boolean
+    file?: string
     size?: IFontAwesomeSize
-    style: {}
-    type: ITypes
-    children: Array<IIncredibleItem>
+    style?: {}
+    children?: IIncredibleItem[]
     href?: string
     placeholder?: string
     icon?: string
     text?: string
 }
+// todo fix these names
+export type IIncredibleTypes =
+    | 'row'
+    | 'col'
+    | 'h1'
+    | 'h2'
+    | 'linkWithIcon'
+    | 'text'
+    | 'pdf'
+    | 'p'
+    | 'a'
+    | 'richText'
+    | 'heading-one'
+    | 'paragraph'
 
-export type ITypes = 'row' | 'col' | 'h1' | 'h2' | 'linkWithIcon' | 'text' | 'pdf' | 'p' | 'a'
-
-export enum types {
+export enum IncredibleTypes {
     row = 'row',
     col = 'col',
     h1 = 'h1',
@@ -29,7 +41,9 @@ export enum types {
     linkWithIcon = 'linkWithIcon',
     pdf = 'pdf',
     p = 'p',
-    a = 'a'
+    a = 'a',
+    richText = 'richText',
+    headingOne = 'heading-one'
 }
 
 export enum classNames {
@@ -37,16 +51,19 @@ export enum classNames {
     col = 'ie-col'
 }
 
-export const getClassName = (type: ITypes): string => {
+export const getClassName = (type: IIncredibleTypes): string => {
     switch (type) {
-        case types.row: {
+        case IncredibleTypes.row: {
             return classNames.row
         }
-        case types.col: {
+        case IncredibleTypes.col: {
             return classNames.col
         }
-        case types.p: {
+        case IncredibleTypes.p: {
             return ''
+        }
+        default: {
+            throw new Error('this should not be hit')
         }
     }
 }

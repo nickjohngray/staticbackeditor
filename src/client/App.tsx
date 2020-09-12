@@ -11,7 +11,7 @@ export default class App extends React.Component<{}, IMainContext> {
         super(props)
 
         /*  this.state = {isDebug: false, setMainContext: this.setMainContext}*/
-        this.state = {isDebug: false}
+        this.state = {isDebug: true}
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {

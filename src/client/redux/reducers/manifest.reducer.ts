@@ -23,7 +23,8 @@ import ManifestActions, {
 } from '../actions/manifest.action'
 import undoable, {includeAction} from 'redux-undo'
 import {cloneDeep, remove} from 'lodash'
-import {Constants, findPageById, getNextPageId} from '../../util'
+import {Constants, findPageById, getNextPageId, PageContentEditors} from '../../util'
+import {IIncredibleItem} from '../../components/editors/IncredibileEditor.tsx'
 
 interface IManifestExtened {
     requestStage: APICallStatus
@@ -94,12 +95,29 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             draft.isBusy = action.status === APICallStatus.request
         }),
 
+        [ManifestActions.PublishManifest]: produce((draft: IManifestExtened, action: IManifestAction) => {
+            draft.requestStage = action.status
+            if (action.status === APICallStatus.fail) {
+                draft.error = action.error
+            }
+
+            if (action.status === APICallStatus.success) {
+                if (action.backendPayload.error) {
+                    draft.error = action.backendPayload.error
+                }
+            }
+
+            draft.isBusy = action.status === APICallStatus.request
+        }),
+
         [ManifestActions.AddPage]: produce((draft: IManifestExtened, action: IAddPage) => {
-            const page = {
+            const page: IPage = {
                 name: action.payload.pageName,
                 path: action.payload.pagePath,
-                template: 'src/components/pages/' + action.payload.pagePath,
+                template: action.payload.templatePath,
                 templateContent: action.payload.pageContent,
+                editor: PageContentEditors.incredibleEditor,
+                incredibleData,
                 id: getNextPageId(draft.manifest.pages)
             }
             draft.manifest.pages.push(page)
@@ -153,6 +171,30 @@ const manifestReducer = handleActions<IManifestExtened, any>(
                 const page: IPage = findPageById(action.payload.page.id, clone.manifest.pages)
                 if (action.payload.objectPath[0] !== Constants.products) {
                     const target: [] | Object = findSecondLastObjectByPath(page, action.payload.objectPath)
+                    // todo text can be any object
+                    if (Array.isArray(action.payload.text) && Array.isArray(target)) {
+                        const payloadAsArray: any[] = action.payload.text
+                        const secondLastObjectIndex = parseInt(path[path.length - 1], 10)
+                        // addItem(path, target, arr)
+                        // replace first item
+
+                        const targetAsArray: any[] = target // [secondLastObjectIndex]
+
+                        /* if (payloadAsArray.length === 1) {
+                            targetAsArray[secondLastObjectIndex] = cloneDeep(payloadAsArray[0])
+                            return clone
+                        }*/
+                        // target[secondLastObjectIndex] = arr[0]
+
+                        targetAsArray.splice(secondLastObjectIndex, 1, ...payloadAsArray)
+
+                        // insert other new items if any in arr below other items
+                        /* for (let i = 1; i < payloadAsArray.length; i++) {
+
+                        }*/
+
+                        return clone
+                    }
                     target[path[path.length - 1]] = action.payload.text
                     return clone
                 }
@@ -357,3 +399,30 @@ export default undoable(manifestReducer, {
         ManifestActions.swapObjectsByPath
     ])
 })
+
+const incredibleData: IIncredibleItem = {
+    type: 'row',
+    children: [
+        {
+            type: 'richText',
+            children: [
+                {
+                    type: 'heading-one',
+                    children: [
+                        {
+                            text: 'New Heading'
+                        }
+                    ]
+                },
+                {
+                    type: 'paragraph',
+                    children: [
+                        {
+                            text: 'Some Text here...'
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

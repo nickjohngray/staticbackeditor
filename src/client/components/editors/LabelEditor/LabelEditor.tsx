@@ -1,18 +1,22 @@
 import * as React from 'react'
 import './LabelEditor.css'
 import {isEqual} from 'lodash'
-import {Constants} from '../../../util'
+import {Constants, isPrimitive} from '../../../util'
 import {IFieldDataType} from '../../../../shared/typings'
 import RTEditor from '../RichTextEditor/RTEditor'
 import RichText from '../RichTextEditor/RichText'
+import {Node as INode} from 'slate'
 
 interface IProps {
-    value: string
-    onUpdate: (text: string) => void
+    value: any
+    // todo make value like below
+    //value: string | INode[]
+    onUpdate: (strinfOrINode: any) => void
     onDelete?: () => void
     label?: string
     // we need a default value for this
     type?: IFieldDataType
+    richTextStyle?: {}
 }
 
 interface IState {
@@ -69,6 +73,7 @@ class LabelEditor extends React.Component<IProps, IState> {
                 if (this.props.type === Constants.richText) {
                     return (
                         <RTEditor
+                            style={this.props.richTextStyle}
                             onChange={(richTextData) => {
                                 this.updateRichTextDataAfterChange(richTextData)
                             }}
@@ -76,7 +81,8 @@ class LabelEditor extends React.Component<IProps, IState> {
                                 console.log('here')
                                 this.stopEdit()
                             }}
-                            data={JSON.parse(this.props.value)}
+                            //todo make prop type INode | string for value
+                            data={this.getRichTextBoxValue()}
                         />
                     )
                 }
@@ -106,6 +112,8 @@ class LabelEditor extends React.Component<IProps, IState> {
         )
     }
 
+    getRichTextBoxValue = () => (isPrimitive(this.props.value) ? JSON.parse(this.props.value) : this.props.value)
+
     getLabelAndValue = () => {
         if (this.props.label) {
             return (
@@ -126,10 +134,9 @@ class LabelEditor extends React.Component<IProps, IState> {
             className={
                 this.props.type === Constants.richText ? 'editable_label_value_rich_text' : 'editable_label_value'
             }>
-            {' '}
             {this.props.type === Constants.richText ? (
                 /* todo next remove parse and set json as object in manifest*/
-                <RichText json={JSON.parse(this.props.value)} />
+                <RichText style={this.props.richTextStyle} json={this.getRichTextBoxValue()} />
             ) : this.props.type === Constants.number ? (
                 '$' + this.state.value
             ) : (

@@ -40,12 +40,12 @@ export const RTToolbar = React.forwardRef(
             <RTBlockButton format="block-quote" Icon={FormatQuote} />
             <RTBlockButton format="numbered-list" Icon={FormatListNumbered} />
             <RTBlockButton format="bulleted-list" Icon={FormatListBulleted} />
-            <InsertImageButton />
+            {/*   <InsertImageButton />*/}
         </Menu>
     )
 )
 
-const InsertImageButton = () => {
+/*const InsertImageButton = () => {
     const editor = useEditor()
     return (
         <Button
@@ -58,4 +58,4 @@ const InsertImageButton = () => {
             <Icon>image</Icon>
         </Button>
     )
-}
+}*/

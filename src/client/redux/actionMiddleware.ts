@@ -35,6 +35,8 @@ const actionMiddleware = ({dispatch, getState}) => {
 
             if (action.type === ManifestActions.SaveManifest) {
                 dispatch(setIsSaved(true))
+                // todo workout what to save to local storage.
+
                 saveStateToLocalStorage(Constants.manifest, getState)
                 saveStateToLocalStorage(Constants.ui, getState)
             }

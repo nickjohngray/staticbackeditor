@@ -31,6 +31,7 @@ interface IState {
 
 class PageEditor extends React.Component<IProps, IState> {
     richTextData: any
+
     constructor(props: IProps) {
         super(props)
         if (this.props.page) {
@@ -41,9 +42,11 @@ class PageEditor extends React.Component<IProps, IState> {
 
     componentWillMount() {
         if (!this.props.page) {
-            navigate('/pages')
+            navigate('/')
+            /* navigate('/pages')*/
         }
     }
+
     // todo refactor this, maybe use useMemo
     UNSAFE_componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
         if (!nextProps.page) {
@@ -60,7 +63,8 @@ class PageEditor extends React.Component<IProps, IState> {
         return (
             <div>
                 <h2>
-                    <Link title={'Back to pages'} to="/pages" replace>
+                    {/* <Link title={'Back to pages'} to="/pages" replace>*/}
+                    <Link title={'Back to pages'} to="/" replace>
                         <span>pages{'/'}</span>
                     </Link>
 
@@ -73,6 +77,7 @@ class PageEditor extends React.Component<IProps, IState> {
                 </h2>
                 <div className={'path-and-name-container'}>
                     <LabelEditor
+                        type={this.props.page.isFixedURLPath ? 'readonly' : 'string'}
                         label="Path"
                         value={path}
                         onUpdate={(path) => {
@@ -132,7 +137,7 @@ class PageEditor extends React.Component<IProps, IState> {
             case PageContentEditors.incredibleEditor: {
                 return (
                     <IncredibleEditor
-                        onUpdate={(text, objectPath) => this.props.onObjectChange(text, objectPath)}
+                        onUpdate={(jsonObject, objectPath) => this.props.onObjectChange(jsonObject, objectPath)}
                         onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
                         imageDirectory={this.props.imageDirectory}
@@ -143,7 +148,15 @@ class PageEditor extends React.Component<IProps, IState> {
                 )
             }
             default: {
-                return <div> No Editor</div>
+                return (
+                    <div>
+                        <h2> Sorry! The Content is Not editable </h2>
+                        <p>
+                            This page does not have a editor for it as it is a custom page. An Editor can be built for
+                            it on request.
+                        </p>
+                    </div>
+                )
             }
         }
     }

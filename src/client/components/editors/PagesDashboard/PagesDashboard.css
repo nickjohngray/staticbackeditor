@@ -6,11 +6,13 @@
 }
 
 .pages_container {
-    align-items: center;
-    background: repeating-linear-gradient(45deg, #0000002b, transparent 100px);
+    background: repeating-linear-gradient(45deg, #00000008, transparent 100px);
     display: flex;
     flex-direction: column;
     height: 100vh;
+
+    /* align-items: center; */
+    padding-left: 20px;
 }
 
 .input-message {
@@ -26,7 +28,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    max-height: 200px;
+    max-height: 500px;
     overflow: scroll;
     padding: 20px;
 }
