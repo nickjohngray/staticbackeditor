@@ -33,7 +33,7 @@ export class PagesEditor extends React.Component<IProps, IState> {
     render = () => (
         <div className="dashboard">
             <div className="pages">
-                {/*  <h2> Pages </h2>*/}
+                {this.renderNewComponent()}
                 <SortableList
                     helperClass={'page_item_while_dragged'}
                     shouldCancelStart={(event: SortEvent | SortEventWithTag) => {
@@ -43,36 +43,49 @@ export class PagesEditor extends React.Component<IProps, IState> {
                     onSortEnd={this.onSortEnd}
                 />
             </div>
-            <div className="add_page">
-                {/*<h2> New Page </h2>*/}
-                <form>
-                    <div className="form_element">
-                        <input
-                            placeholder="Page Name"
-                            type="text"
-                            value={this.state.pageName}
-                            onChange={(e) => this.setState({pageName: e.target.value})}
-                        />
-                        {/* {this.getPageNameMessage() || <Shapes.Tick />}*/}
-                    </div>
-
-                    <div className="form-controls">
-                        <button
-                            type="button"
-                            disabled={!this.isFormOk()}
-                            // to do check for special chars
-                            onClick={() => {
-                                this.props.onAddPage(this.state.pageName, this.state.pageName)
-                                this.setState({pageName: ''})
-                            }}>
-                            {' '}
-                            <Add />{' '}
-                        </button>
-                    </div>
-                </form>
-            </div>
         </div>
     )
+
+    renderNewComponent = () => (
+        <div className="add_page">
+            {/*<h2> New Page </h2>*/}
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    this.maybeAddPage()
+                }}>
+                <div className="form_element">
+                    <input
+                        placeholder="Click & enter new page name..."
+                        type="text"
+                        value={this.state.pageName}
+                        onChange={(e) => this.setState({pageName: e.target.value})}
+                    />
+                    {/* {this.getPageNameMessage() || <Shapes.Tick />}*/}
+                </div>
+
+                <div className="form-controls">
+                    <button
+                        type="button"
+                        disabled={!this.isFormOk()}
+                        // to do check for special chars
+                        onClick={() => {
+                            this.maybeAddPage()
+                        }}>
+                        <Add />
+                    </button>
+                </div>
+            </form>
+        </div>
+    )
+
+    maybeAddPage = () => {
+        if (!this.isFormOk()) {
+            return
+        }
+        this.props.onAddPage(this.state.pageName, this.state.pageName)
+        this.setState({pageName: ''})
+    }
 
     getPageItems = () =>
         this.props.manifest.pages.map((page, key) => <PageItem key={page.id + '-' + key} page={page} {...this.props} />)

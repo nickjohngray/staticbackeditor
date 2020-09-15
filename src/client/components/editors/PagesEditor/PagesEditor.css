@@ -7,3 +7,24 @@
 .page_item_while_dragged {
     list-style: none;
 }
+
+.add_page {
+    width: 100%;
+}
+
+.add_page form {
+    display: flex;
+    padding: 20px;
+    padding-top: 0;
+    width: 100%;
+}
+
+.add_page form .form_element input {
+    background: transparent;
+    border: 0;
+    color: #000;
+    flex-grow: 2;
+    font-size: 20px;
+    height: 70%;
+    outline: none;
+}

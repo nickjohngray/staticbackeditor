@@ -1,3 +1,8 @@
+/*
+db.customers.insert({'email':'xyz@gmail.com','pwd':'xyz','repo':'syz'})
+ db.getCollection('customers').find({})
+ */
+
 import {MongoClient} from 'mongodb'
 
 export const openConnection = async () => {
