@@ -1,13 +1,11 @@
-import {globalHistory, HistoryListenerParameter, Router, Link, navigate, LocationProps} from '@reach/router'
+import {globalHistory, HistoryListenerParameter, Router, navigate, LocationProps} from '@reach/router'
 import React from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
 import {IHistory, IManifest, IPage} from '../../../../shared/typings'
 import PagesDashboard from '../../editors/PagesDashboard/PagesDashboard'
-import {Home} from '../Home'
 import './Layout.css'
-import {Products} from '../Products'
 import {ErrorPage} from '../ErrorPage'
 import {NotFound} from '../NotFound'
 import {IStore} from '../../../redux/store'
@@ -15,9 +13,7 @@ import Login from '../Login/Login'
 import {publish, saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
 import {ActionCreators as UndoActionCreators} from 'redux-undo'
 import ContentToggler from '../../generic/ContentToggler/ContentToggler'
-import PdfViewer from '../../generic/PdfViewer'
-import {Pages} from '@material-ui/icons'
-import {Constants, deleteFromLocalStorage, saveStateToLocalStorage} from '../../../util'
+import {Constants, deleteFromLocalStorage} from '../../../util'
 
 interface IProps {
     location: LocationProps
@@ -156,6 +152,7 @@ class Layout extends React.Component<IProps, IState> {
                 <div className="main-content">
                     <Router>
                         <PagesDashboard path="*" />
+                        <PagesDashboard path="*/*" />
                         <ErrorPage path="error" />
                         <NotFound default />
                         {/* when adding more pages add these back maybe have pages on own page*/}

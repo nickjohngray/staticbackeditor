@@ -4,7 +4,7 @@ import {Link} from '@reach/router'
 import * as React from 'react'
 import './PageItem.css'
 import {DragHandle} from '../../../generic/Drag/DragHandle'
-import DeleteForever from '@material-ui/icons/DeleteForever'
+import {DeleteForeverIcon} from '../../../generic/icons'
 
 interface IProps {
     page: IPage
@@ -26,7 +26,7 @@ class PageItem extends React.Component<IProps> {
                             className="delete-page-button"
                             title="Delete Page"
                             onClick={() => this.props.onDeletePage(id)}>
-                            <DeleteForever />
+                            <DeleteForeverIcon />
                         </button>
                     )}
                 </div>

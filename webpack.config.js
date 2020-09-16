@@ -6,19 +6,32 @@ const ExtractCssChunks = require('extract-css-chunks-webpack-plugin')
 
 const outputDirectory = 'dist'
 
-module.exports = {
+
+
+module.exports = (env, argv) => {
+    if (argv.mode === 'development') {
+        config.devtool = 'source-map'
+    }
+
+    if (argv.mode === 'production') {
+        //...
+    }
+
+    return config
+}
+
+const config = {
     entry: ['babel-polyfill', './src/client/index.tsx'],
     output: {
         path: path.join(__dirname, outputDirectory),
         filename: 'staticbackeditor.js',
         publicPath: '/'
     },
-    devtool: 'source-map',
     plugins: [
         //new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: './src/client/index.html',
-            title: 'Static Back Editor XXXXXX'
+            title: 'Static Back Editor'
         }),
         new ExtractCssChunks({
             // Options similar to the same options in webpackOptions.output
@@ -27,13 +40,13 @@ module.exports = {
             chunkFilename: '[id].css'
         })
         /*new CopyPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, 'src', 'client'),
-                    to: 'assets'
-                }
-            ]
-        })*/
+        patterns: [
+            {
+                from: path.resolve(__dirname, 'src', 'client'),
+                to: 'assets'
+            }
+        ]
+    })*/
     ],
     module: {
         rules: [

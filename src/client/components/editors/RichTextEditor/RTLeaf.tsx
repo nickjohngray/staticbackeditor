@@ -6,7 +6,7 @@ import React from 'react'
 import {Simulate} from 'react-dom/test-utils'
 import {useFocused, useSelected} from 'slate-react'
 
-//const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
+// const pdfIconSrc = require('./../../../assets/images/pdf_icon.svg')
 // import pdfIconSrc  from  './../../../assets/images/pdf_icon.svg'
 
 const faIcons = {

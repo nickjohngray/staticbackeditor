@@ -1,7 +1,4 @@
 {
-  "**/*.+(js|jsx|css|less|scss|ts|tsx|md)": [
-    "prettier --write"
-  ],
   "*.{css,less,sass}": [
           "npm run checkcss"
   ],

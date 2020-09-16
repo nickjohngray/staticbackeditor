@@ -1,12 +1,11 @@
-import {IManifest, IPage, IObjectPath} from '../../../../shared/typings'
+import {IManifest, IPage} from '../../../../shared/typings'
 import * as React from 'react'
-import {Link, RouteComponentProps} from '@reach/router'
-import Shapes from '../../generic/Shapes'
+import { RouteComponentProps} from '@reach/router'
+import {AddIcon} from '../../generic/icons'
 import {SortableContainer, SortableElement, SortEvent, SortEventWithTag} from 'react-sortable-hoc'
 import './PagesEditor.css'
 import PageItem from './PageItem'
 import {isDragHandle} from '../../generic/Drag/DragHandle'
-import Add from '@material-ui/icons/Add'
 
 interface IState {
     pageName: string
@@ -65,14 +64,13 @@ export class PagesEditor extends React.Component<IProps, IState> {
                 </div>
 
                 <div className="form-controls">
-                    <button
+                    <button title="Add New page"
                         type="button"
                         disabled={!this.isFormOk()}
-                        // to do check for special chars
                         onClick={() => {
                             this.maybeAddPage()
                         }}>
-                        <Add />
+                        <AddIcon/>
                     </button>
                 </div>
             </form>

@@ -57,9 +57,12 @@ nav a:hover {
     position: fixed;
 }
 
-button:hover {
-    background-color: black;
+button {
     color: white;
+    opacity: 0.8;
+}
+
+button:hover {
     opacity: 1;
 }
 

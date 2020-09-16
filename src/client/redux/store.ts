@@ -3,26 +3,10 @@ import reducer from './reducers'
 import actionMiddleware from './actionMiddleware'
 import {APICallStatus} from '../../shared/typings'
 import {Constants, getJsonFromLocalStorage} from '../util'
+import {composeWithDevTools} from 'redux-devtools-extension'
+import {is} from 'immer/dist/utils/common'
 
-// let reduxDevTools = {}
-
-// const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-
-/*
- Load REDUX DEV tools!
- ignore the error , it will occur when window is null while building for Prod
- and we dont care about this as we dont want dev tools loaded on Prod,
- only load redux  dev tools on Dev
-
- ADD THESE BACK SOON!!!
- */
-/*if (isDev) {
-    try {
-        reduxDevTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
-        // tslint:disable-next-line:no-empty
-    } catch {
-    }
-}*/
+const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
 const defaultManifestState = {
     past: [],
@@ -50,7 +34,11 @@ const state = {
     manifest: manifestStateHistory
 }
 
-const store = createStore(reducer, state, applyMiddleware(actionMiddleware))
+const store = createStore(
+    reducer,
+    state,
+    isDev ? composeWithDevTools(applyMiddleware(actionMiddleware)) : applyMiddleware(actionMiddleware)
+)
 
 export default store
 

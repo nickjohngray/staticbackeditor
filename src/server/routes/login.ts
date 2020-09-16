@@ -41,30 +41,18 @@ router.post('/login', async (req, res) => {
 
         const repoName = manifest.repoName
         if (!repoName) {
-            console.log('No imageDirectory key found in Manifest, this must be set')
-            throw new Error('No imageDirectory key found in Manifest, this must be set')
+            console.log('No repoName  key found in Manifest, this must be set')
+            throw new Error('No repoName  key found in Manifest, this must be set')
         }
 
-        // todo maybe just have one assets folder in static back
-
-        // make images available from current repo to cms , by copying them
+        // make assets available from current repo to cms , by copying them
         // out of the repo and into the root server directory
-        console.log('Copying images from ' + repoName + '/src/images to dist/' + repoName)
-        ncp(path.resolve(repoName, 'src', 'images'), path.resolve('dist', repoName), (err) => {
+        console.log('Copying assets from ' + repoName + '/src/assets to dist/' + repoName)
+        ncp(path.resolve(repoName, 'src', 'assets'), path.resolve('dist', repoName), (err) => {
             if (err) {
-                throw new Error('Could not copy images from ' + repoName + ' to public folder error=' + err.message)
+                throw new Error('Could not copy assets from ' + repoName + ' to public folder error=' + err.message)
             }
-            console.log('Copying images complete.')
-        })
-
-        // make pdfs available from current repo to cms , by copying them
-        // out of the repo and into the root server directory
-        console.log('Copying pdfs from ' + repoName + '/src/pdf to dist/' + repoName)
-        ncp(path.resolve(repoName, 'src', 'pdf'), path.resolve('dist', repoName), (err) => {
-            if (err) {
-                throw new Error("Could not copy pdf's from " + repoName + ' to public folder error=' + err.message)
-            }
-            console.log('Copying pdfs complete.')
+            console.log('Copying assets complete.')
         })
 
         const pages = manifest.pages

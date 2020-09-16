@@ -4,7 +4,13 @@ module.exports = {
     /*
      * Authentication: Get Signed In User Data
      * Inputs: username
+     *
+     db.customers.insert({ 'email' : 'strengthpitotara@gmail.com',
+    'pwd' : '#7Strength7Pitotara7#',
+    'repo' : 'easyecom'})
+    *
      */
+
     getSignInUser: async (username) =>
         await (() =>
             new Promise((resolve, reject) =>

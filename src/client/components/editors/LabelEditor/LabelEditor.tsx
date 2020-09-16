@@ -10,7 +10,7 @@ import {Node as INode} from 'slate'
 interface IProps {
     value: any
     // todo make value like below
-    //value: string | INode[]
+    // value: string | INode[]
     onUpdate: (strinfOrINode: any) => void
     onDelete?: () => void
     label?: string
@@ -81,7 +81,7 @@ class LabelEditor extends React.Component<IProps, IState> {
                                 console.log('here')
                                 this.stopEdit()
                             }}
-                            //todo make prop type INode | string for value
+                            // todo make prop type INode | string for value
                             data={this.getRichTextBoxValue()}
                         />
                     )

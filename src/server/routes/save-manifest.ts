@@ -61,10 +61,10 @@ router.post('/save-manifest', async (req, res) => {
         console.log('Done!,  manifest file saved')
 
         // todo one copy all assets to assets folder
-        console.log('Copying images from ' + repoName + ' to dist/' + repoName + '/src/images')
-        ncp(path.resolve('dist', repoName), path.resolve(repoName, 'src', 'images'), (err) => {
+        console.log('Copying assets from ' + repoName + ' to dist/' + repoName + '/src/assets')
+        ncp(path.resolve('dist', repoName), path.resolve(repoName, 'src', 'assets'), (err) => {
             if (err) {
-                throw new Error('Could not copy images from ' + repoName + ' to public folder error=' + err.message)
+                throw new Error('Could not copy assets from ' + repoName + ' to public folder error=' + err.message)
             }
             console.log('Copying images complete.')
         })

@@ -1,9 +1,9 @@
 import React, {useRef} from 'react'
-import DragIndicator from '@material-ui/icons/DragIndicator'
+import {DragHandleIcon} from '../icons'
 
 export const DragHandle = () => {
     const ul = useRef(null)
-    return <DragIndicator ref={ul} className="drag_handle" />
+    return <DragHandleIcon ref={ul} className="drag_handle" />
 }
 
 export const isDragHandle = (target: HTMLElement) => {

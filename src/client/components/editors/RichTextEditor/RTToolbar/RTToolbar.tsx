@@ -1,20 +1,21 @@
 import React, {PropsWithChildren, Ref} from 'react'
 import {css, cx} from 'emotion'
-import {Button, IBaseProps, Menu, OrNull} from '../RTEditorUtil'
+import {IBaseProps, Menu, OrNull} from '../RTEditorUtil'
 import {RTMarkButton} from './RTMarkButton'
-import FormatBold from '@material-ui/icons/FormatBold'
-import {FormatItalic} from '@material-ui/icons'
-import FormatUnderlined from '@material-ui/icons/FormatUnderlined'
-import Code from '@material-ui/icons/Code'
-import {RTBlockButton} from './RTBlockButton'
-import LooksOne from '@material-ui/icons/LooksOne'
-import LooksTwo from '@material-ui/icons/LooksTwo'
-import FormatQuote from '@material-ui/icons/FormatQuote'
-import FormatListNumbered from '@material-ui/icons/FormatListNumbered'
-import FormatListBulleted from '@material-ui/icons/FormatListBulleted'
 import {useEditor} from 'slate-react'
 import {insertImage} from '../RTEditor'
-import {Icon} from '@material-ui/core'
+import {
+    CodeIcon,
+    FormatBoldIcon,
+    FormatItalicIcon,
+    FormatListBulletedIcon,
+    FormatListNumberdIcon,
+    FormatQuoteIcon,
+    FormatUnderlinedIcon,
+    LooksOneIcon,
+    LooksTwoIcon
+} from '../../../generic/icons'
+import {RTBlockButton} from './RTBlockButton'
 
 export const RTToolbar = React.forwardRef(
     ({className, ...props}: PropsWithChildren<IBaseProps>, ref: Ref<OrNull<HTMLDivElement>>) => (
@@ -31,15 +32,15 @@ export const RTToolbar = React.forwardRef(
                     margin-bottom: 0px;
                 `
             )}>
-            <RTMarkButton format="bold" Icon={FormatBold} />
-            <RTMarkButton format="italic" Icon={FormatItalic} />
-            <RTMarkButton format="underline" Icon={FormatUnderlined} />
-            <RTMarkButton format="code" Icon={Code} />
-            <RTBlockButton format="heading-one" Icon={LooksOne} />
-            <RTBlockButton format="heading-two" Icon={LooksTwo} />
-            <RTBlockButton format="block-quote" Icon={FormatQuote} />
-            <RTBlockButton format="numbered-list" Icon={FormatListNumbered} />
-            <RTBlockButton format="bulleted-list" Icon={FormatListBulleted} />
+            <RTMarkButton format="bold" Icon={FormatBoldIcon} />
+            <RTMarkButton format="italic" Icon={FormatItalicIcon} />
+            <RTMarkButton format="underline" Icon={FormatUnderlinedIcon} />
+            <RTMarkButton format="code" Icon={CodeIcon} />
+            <RTBlockButton format="heading-one" Icon={LooksOneIcon} />
+            <RTBlockButton format="heading-two" Icon={LooksTwoIcon} />
+            <RTBlockButton format="block-quote" Icon={FormatQuoteIcon} />
+            <RTBlockButton format="numbered-list" Icon={FormatListNumberdIcon} />
+            <RTBlockButton format="bulleted-list" Icon={FormatListBulletedIcon} />
             {/*   <InsertImageButton />*/}
         </Menu>
     )
