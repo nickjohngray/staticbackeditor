@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
 import {changeURL} from '../../../redux/actions/history.action'
 import {IHistory, IManifest, IPage} from '../../../../shared/typings'
+import PageEditor from '../../editors/PageEditor/PageEditor'
 import PagesDashboard from '../../editors/PagesDashboard/PagesDashboard'
 import './Layout.css'
 import {ErrorPage} from '../ErrorPage'
@@ -82,7 +83,7 @@ class Layout extends React.Component<IProps, IState> {
         globalHistory.listen((history: HistoryListenerParameter) => {
             this.props.changeURL({URL: history.location.pathname})
         })
-
+       /* tdo do we need this as route pages is gone for now*/
         if (!this.props.currentPage && window.location.pathname.indexOf('/pages/edit') !== -1) {
             navigate('/pages', {replace: true})
         }
@@ -152,12 +153,11 @@ class Layout extends React.Component<IProps, IState> {
                 <div className="main-content">
                     <Router>
                         <PagesDashboard path="*" />
-                        <PagesDashboard path="*/*" />
                         <ErrorPage path="error" />
                         <NotFound default />
                         {/* when adding more pages add these back maybe have pages on own page*/}
                         {/*<Home path="/" />
-                            <Pages path="pages/*" />
+
                             <ErrorPage path="error" />
                             <Products path="products" />
                             <NotFound default />*/}
@@ -165,7 +165,7 @@ class Layout extends React.Component<IProps, IState> {
                 </div>
                 <footer>
                     <ContentToggler className="help_toggler" title="Help?">
-                        <p>Help Here</p>
+                        <p>If you make a mistake just undo it, more help coming soon...</p>
                     </ContentToggler>
                 </footer>
             </div>

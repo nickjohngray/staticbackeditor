@@ -31,7 +31,7 @@ class PageItem extends React.Component<IProps> {
                     )}
                 </div>
 
-                <Link onClick={() => this.props.onPageChange(page)} to={`edit/${page.path}`}>
+                <Link onClick={() => this.props.onPageChange(page)} to={`/${page.path}`}>
                     {page.name}
                 </Link>
             </div>

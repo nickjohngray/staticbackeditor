@@ -59,6 +59,19 @@ class PagesDashboard extends React.Component<IProps, IState> {
     // the current page needs to be set when the manifest changes
     // as the current page is set in a different reducer
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+
+        // if there is page name in the URL but there is no current page
+        // it mens the browser got reloaded ,
+        // we can't let the path="/:pageID" PageEditor component load
+        // actually it will not currently  load as it checks if there is
+        // a current page if not nothing is return ,
+        // in this case we just want to load the root page
+        if (!this.props.currentPage ) {
+            const idx = window.location.href.indexOf('/')
+            if(idx !== -1 && window.location.href.substring(idx + 1).length > 0  ) {
+                navigate('/')
+            }
+        }
         if (!this.props.currentPage) {
             return
         }
@@ -106,7 +119,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
                     {this.props.currentPage && (
                         <PageEditor
                             products={this.props.manifest.products}
-                            path="edit/:pageID"
+                            path="/:pageID"
                             onObjectChange={(value: string, objectPath) => this.updateObject(value, objectPath)}
                             onObjectAdd={(jsonObject: object, objectPath) => this.addObject(jsonObject, objectPath)}
                             onObjectDelete={(objectPath) => this.deleteObject(objectPath)}
@@ -193,7 +206,7 @@ export default connect(
 const getPageTemplateContent = (pageName: string) => {
     return `import React from 'react';
 import {getPage} from 'components/pages/manifestUtil';
-import Incredible from 'components/IncredibileEditor.tsx/Incredible';
+import Incredible from 'components/IncredibileEditor/Incredible';
 import {IIncredibleItem, IPage} from '../../typings';
 
 export default () => {

@@ -21,6 +21,18 @@ header {
     width: 100%;
 }
 
+button {
+    cursor: pointer !important;
+    opacity: 0.7;
+}
+
+header button {
+    background-color: black;
+    color: whitesmoke;
+    margin: 5px;
+    padding: 5px;
+}
+
 .debug {
     color: blue !important;
 }
@@ -53,20 +65,17 @@ nav a:hover {
 }
 
 .help_toggler {
+    background-color: black;
     bottom: 0;
+    color: white;
     position: fixed;
 }
 
-button {
-    color: white;
+button:hover {
+    background-color: transparent;
     opacity: 0.8;
 }
 
-button:hover {
-    opacity: 1;
-}
-
 button:active {
-    background-color: #ff0423;
-    color: black;
+    opacity: 1;
 }
