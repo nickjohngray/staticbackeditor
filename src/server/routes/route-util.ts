@@ -2,38 +2,30 @@ import path from 'path'
 import fs from 'fs'
 import childProcess from 'child_process'
 
-export const startUpPreviewRepo = async (repoName) => {
+export const startUpPreviewRepo =  (repoName) => {
     try {
         console.log('About to install node modules for: ' + repoName)
 
         const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
 
-        repoInstallProcess.on('exit', (error, stdout, stderr) => {
-            if (error) {
-                console.log('Error: npm run repo-install')
-                console.log(error.stack)
-                console.log('Error code: '+ error.code)
-                console.log('Signal received: '+ error.signal)
+        repoInstallProcess.on('exit', (code) => {
+            let err = code === 0 ? null : new Error('exit code ' + code)
+            if (err) {
+                console.log(
+                    'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
+                )
                 return
             }
-            console.log('npm run repo-install STDOUT: '+ stdout)
-            console.log('npm run repo-install STDERR: '+ stderr)
-
             console.log(repoName + ' node modules installed, starting up...')
 
             const repoStartProcess = childProcess.exec(`npm run repo-start ${repoName}`)
 
-            repoStartProcess.on('exit', (error, stdout, stderr) => {
-                if (error) {
-                    console.log('Error: npm run repo-install')
-                    console.log(error.stack)
-                    console.log('Error code: '+ error.code)
-                    console.log('Signal received: '+ error.signal)
+            repoStartProcess.on('exit', (code2) => {
+                let err2 = code2 === 0 ? null : new Error('exit code ' + code)
+                if (err2) {
+                    console.log(err2)
                     return
                 }
-                console.log('npm run repo-install STDOUT: '+ stdout)
-                console.log('npm run repo-install STDERR: '+ stderr)
-
                 console.log(repoName + ' is no longer running')
             })
 // show all console messages from repo start
@@ -60,7 +52,6 @@ export const getPageComponentPath = (pageName: string, repoName: string) =>
 
 export const getPageComponentName = (template: string): string => {
     const pathBits = template.split('/')
-    console.log('getPageComponentName=== ' + pathBits[pathBits.length - 1])
     return pathBits[pathBits.length - 1]
 }
 
@@ -78,11 +69,9 @@ export const makePageComponentIfNotExist = (pageName: string, repoName: string):
     const pageComponentPath = getPageComponentPath(pageName, repoName)
     if (!fs.existsSync(pageComponentPath)) {
 // write new page to the current repo pages dir
-        console.log('adding ' + pageComponentPath + ' with content: ' + pageTemplate)
         fs.writeFileSync(pageComponentPath, pageTemplate)
         return true
     } else {
-        console.log(pageComponentPath + ' exists can make')
         return false
     }
 }
@@ -92,7 +81,6 @@ export const makePageComponent = async (pageName: string, repoName: string, page
         const pageComponentPath = getPageComponentPath(pageName, repoName)
 // remove old component file if it exist
         if (await fs.existsSync(pageComponentPath)) {
-            console.log('File Exists removing it. ' + pageComponentPath)
             await fs.unlinkSync(pageComponentPath)
         }
         await fs.writeFileSync(pageComponentPath, pageContent)

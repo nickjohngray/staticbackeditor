@@ -33,34 +33,46 @@ router.post('/save-manifest', async (req, res) => {
     const repoName: string = manifest.repoName
 
     try {
+        console.log('Saving ' + repoName)
+        const cwd = process.cwd()
+        console.log('cwd=' + cwd)
+
         const manifestPath = path.resolve(process.cwd(), repoName, 'manifest.json')
+
+        console.log('manifestPath=' + manifestPath)
 
         let manifestOld: IManifest
 
         // put old manifest into memory then delete it from fs
 
-        if (await fs.existsSync(manifestPath)) {
+        if ( fs.existsSync(manifestPath)) {
             console.log('putting  old manifest into memory')
             manifestOld = JSON.parse(await fs.readFileSync(manifestPath, 'utf8'))
-            await fs.unlinkSync(manifestPath)
-            console.log('deleting  old manifest file')
+            //await fs.unlinkSync(manifestPath)
+            //console.log('deleting  old manifest file')
         } else {
             res.json({error: ErrorIn + 'manifest file does not exist'})
         }
         console.log('saving new  manifest data to manifest file')
 
-        // we dont have to set template content key or or value
+        // we dont have to set template content key  or value
         // this will be done on login
         // or frontend can set this key , do this when building the editor
         // for the page , need a standard html pr markdown editor
         // this will be the default editor
 
-        // this is needed to force reload after netify builds and deploys
-        manifest.id = parseInt(manifest.id, 10) + 1
-        await fs.writeFileSync(manifestPath, JSON.stringify(manifest))
+       //  fs.writeFileSync(manifestPath, JSON.stringify(manifest))
+
+        var options = { flag : 'w' };
+        fs.writeFile(manifestPath, JSON.stringify(manifest), options, (err) => {
+            if (err) { throw err; }
+
+            console.log('file saved');
+        });
+
         console.log('Done!,  manifest file saved')
 
-        // todo one copy all assets to assets folder
+        //   copy all assets to assets folder
         console.log('Copying assets from ' + repoName + ' to dist/' + repoName + '/src/assets')
         ncp(path.resolve('dist', repoName), path.resolve(repoName, 'src', 'assets'), (err) => {
             if (err) {
@@ -70,7 +82,7 @@ router.post('/save-manifest', async (req, res) => {
         })
 
         const pages = (manifest as IManifest).pages
-        console.log('making new pages')
+
         for (let i = 0; i < pages.length; i++) {
             const pageName = getPageComponentName(pages[i].template)
 
@@ -82,7 +94,7 @@ router.post('/save-manifest', async (req, res) => {
             if (!(await makePageComponent(pageName, repoName, pageContent))) {
                 console.log('Could not make page ' + pageName)
             } else {
-                console.log(i + -'made page  ' + pages[i].template)
+
             }
         }
         console.log('making new pages Done!')
@@ -107,16 +119,9 @@ router.post('/save-manifest', async (req, res) => {
             }
         }
         console.log('deleting removed pages Done!')
-
         console.log('save complete')
-
-        /*    console.log('committing changes to git')
-        await commit(imageDirectory,'Static Back Editor 2 - ' + new Date().toDateString(),'manifest.json')
-        console.log('committing changes to git Done!')*/
-
         res.sendStatus(200)
-        // make a publish method for this , and maybe for commit
-        // await pushToMaster(imageDirectory)
+
     } catch (error) {
         console.log('error===' + error.message)
         res.json({error: ErrorIn + error.message})

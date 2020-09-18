@@ -1,11 +1,11 @@
 
-const childProcess =  require('child_process')
+const { exec } =  require('child_process')
 
 
     try {
         console.log('Starting Prod forever')
 
-        const p = childProcess.exec('npm run start-dev')
+        const p = exec('npm run start-dev')
 
         p.on('exit', (code) => {
             let err = code === 0 ? null : new Error('exit code ' + code)

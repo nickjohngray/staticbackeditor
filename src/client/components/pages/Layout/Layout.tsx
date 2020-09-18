@@ -66,7 +66,7 @@ class Layout extends React.Component<IProps, IState> {
         const height = screen.availHeight
         if (!this.windowObjectReference || this.windowObjectReference.closed) {
             this.windowObjectReference = window.open(
-                window.location.protocol + '//' + window.location.hostname + ':3001',
+                window.location.protocol + '//' + window.location.hostname + ':3000',
                 this.props.manifest.appName,
                 'resizable,width=' + width + 'height=' + height
             )

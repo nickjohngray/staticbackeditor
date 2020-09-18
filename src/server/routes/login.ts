@@ -59,9 +59,7 @@ router.post('/login', async (req, res) => {
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i]
             // get file path of component of this page from template key
-            console.log('getting page component name for ' + page.template)
             const templatePath = getPageComponentPath(getPageComponentName(page.template), repoName)
-            console.log('template path=== ' + templatePath)
             // read the file content into template_content const
             const templateContent = fs.readFileSync(templatePath, 'utf8')
             //  set the  value of templateContent to the value of template_content const
