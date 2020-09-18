@@ -2,6 +2,59 @@ import path from 'path'
 import fs from 'fs'
 import childProcess from 'child_process'
 
+export const startUpPreviewRepo = async (repoName) => {
+    try {
+        console.log('About to install node modules for: ' + repoName)
+
+        const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
+
+        repoInstallProcess.on('exit', (error, stdout, stderr) => {
+            if (error) {
+                console.log('Error: npm run repo-install')
+                console.log(error.stack)
+                console.log('Error code: '+ error.code)
+                console.log('Signal received: '+ error.signal)
+                return
+            }
+            console.log('npm run repo-install STDOUT: '+ stdout)
+            console.log('npm run repo-install STDERR: '+ stderr)
+
+            console.log(repoName + ' node modules installed, starting up...')
+
+            const repoStartProcess = childProcess.exec(`npm run repo-start ${repoName}`)
+
+            repoStartProcess.on('exit', (error, stdout, stderr) => {
+                if (error) {
+                    console.log('Error: npm run repo-install')
+                    console.log(error.stack)
+                    console.log('Error code: '+ error.code)
+                    console.log('Signal received: '+ error.signal)
+                    return
+                }
+                console.log('npm run repo-install STDOUT: '+ stdout)
+                console.log('npm run repo-install STDERR: '+ stderr)
+
+                console.log(repoName + ' is no longer running')
+            })
+// show all console messages from repo start
+            repoStartProcess.stdout.on('data', (message) => {
+                console.log(repoName + '>>>' + message)
+            })
+
+            repoStartProcess.on('error', (code2) => {
+                console.log('error starting up ' + repoName + 'Error is ' + code2)
+            })
+        })
+
+// listen for errors as they may prevent the exit event from firing
+        repoInstallProcess.on('error', (err) => {
+            console.log(err)
+        })
+    } catch (err) {
+        console.error(err)
+    }
+}
+
 export const getPageComponentPath = (pageName: string, repoName: string) =>
     path.resolve(process.cwd(), repoName, 'src', 'components', 'pages', pageName + '.tsx')
 
@@ -24,7 +77,7 @@ export const deletePageComponent = async (pageName: string, repoName: string): P
 export const makePageComponentIfNotExist = (pageName: string, repoName: string): boolean => {
     const pageComponentPath = getPageComponentPath(pageName, repoName)
     if (!fs.existsSync(pageComponentPath)) {
-        // write new page to the current repo pages dir
+// write new page to the current repo pages dir
         console.log('adding ' + pageComponentPath + ' with content: ' + pageTemplate)
         fs.writeFileSync(pageComponentPath, pageTemplate)
         return true
@@ -37,7 +90,7 @@ export const makePageComponentIfNotExist = (pageName: string, repoName: string):
 export const makePageComponent = async (pageName: string, repoName: string, pageContent: string): Promise<boolean> => {
     try {
         const pageComponentPath = getPageComponentPath(pageName, repoName)
-        // remove old component file if it exist
+// remove old component file if it exist
         if (await fs.existsSync(pageComponentPath)) {
             console.log('File Exists removing it. ' + pageComponentPath)
             await fs.unlinkSync(pageComponentPath)
@@ -57,12 +110,12 @@ const rmdir = (dir: any): boolean | string => {
             let stat = fs.statSync(filename)
 
             if (filename === '.' || filename === '..') {
-                // pass these files
+// pass these files
             } else if (stat.isDirectory()) {
-                // rmdir recursively
+// rmdir recursively
                 rmdir(filename)
             } else {
-                // rm filename
+// rm filename
                 fs.unlinkSync(filename)
             }
         }
@@ -78,10 +131,10 @@ import SectionList from 'components/SectionList'
 import {getPage} from 'components/pages/pageUtil'
 
 export default () => (
-    <div className={'page center-it '}>
-        <h1>Athletes</h1>
-        <SectionList sections={getPage('athletes').sections} />
-    </div>
+<div className={'page center-it '}>
+<h1>Athletes</h1>
+<SectionList sections={getPage('athletes').sections} />
+</div>
 )`
 
 export const dumpError = (err) => {
@@ -96,51 +149,6 @@ export const dumpError = (err) => {
         }
     } else {
         console.log('dumpError :: argument is not an object')
-    }
-}
-
-export const startUpPreviewRepo = async (repoName) => {
-    try {
-        console.log('About to install node modules for: ' + repoName)
-
-        const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
-
-        repoInstallProcess.on('exit', (code) => {
-            let err = code === 0 ? null : new Error('exit code ' + code)
-            if (err) {
-                console.log(
-                    'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
-                )
-                return
-            }
-            console.log(repoName + ' nodle modules installed, starting up...')
-
-            const repoStartProcess = childProcess.exec(`npm run repo-start ${repoName}`)
-
-            repoStartProcess.on('exit', (code2) => {
-                let err2 = code2 === 0 ? null : new Error('exit code ' + code)
-                if (err2) {
-                    console.log(err2)
-                    return
-                }
-                console.log(repoName + ' is no longer running')
-            })
-            // show all console messages from repo start
-            repoStartProcess.stdout.on('data', (message) => {
-                console.log(repoName + '>>>' + message)
-            })
-
-            repoStartProcess.on('error', (code2) => {
-                console.log('error starting up ' + repoName + 'Error is ' + code2)
-            })
-        })
-
-        // listen for errors as they may prevent the exit event from firing
-        repoInstallProcess.on('error', (err) => {
-            console.log(err)
-        })
-    } catch (err) {
-        console.error(err)
     }
 }
 

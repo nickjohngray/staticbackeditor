@@ -3,7 +3,7 @@ import express from 'express'
 import fs from 'fs'
 import {IManifest} from '../../shared/typings'
 import path from 'path'
-import {deletePageComponent, getPageComponentName, makePageComponent} from './util'
+import {deletePageComponent, getPageComponentName, makePageComponent} from './route-util'
 import {fieldsOk} from '../../shared/util' // move this to share dir
 import {ncp} from 'ncp'
 
