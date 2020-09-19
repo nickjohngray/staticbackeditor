@@ -24,7 +24,7 @@ import ManifestActions, {
 import undoable, {includeAction} from 'redux-undo'
 import {cloneDeep, remove} from 'lodash'
 import {Constants, findPageById, getNextPageId, PageContentEditors} from '../../util'
-import {IIncredibleItem} from '../../components/editors/IncredibileEditor.tsx'
+import {IIncredibleItem} from '../../components/editors/IncredibileEditor'
 
 interface IManifestExtened {
     requestStage: APICallStatus

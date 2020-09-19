@@ -126,7 +126,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
                             page={this.props.currentPage}
                             onPageNameAndPathChange={this.props.updatePage}
                             // todo refactor below into one , only need one asset dir
-                            imageDirectory={this.props.manifest.repoName}
+                            assetDirectory={this.props.manifest.repoName}
                             projectUploadFolder={this.props.manifest.repoName}
                             onMoveNodeOrLeafTo={(fromIndex, toIndex, objectPath, fromField, toField) =>
                                 this.props.swapObjectsByPath(

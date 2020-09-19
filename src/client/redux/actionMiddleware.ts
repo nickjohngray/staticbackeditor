@@ -5,7 +5,7 @@ import {setIsSaved} from './actions/ui.actions'
 import {Constants, saveStateToLocalStorage} from '../util'
 
 // to get in here the action must have the api value set.
-// imageDirectory is not needed as that is defined in the manifest
+// assetDirectory is not needed as that is defined in the manifest
 // nod will extract  that
 const actionMiddleware = ({dispatch, getState}) => {
     const markUnsavedForDirtyActions = (action: IManifestAction) => {

@@ -1,6 +1,6 @@
 import {Node as INode} from 'slate'
 import {OPENER_TYPE, PageContentEditors} from '../client/util'
-import {IIncredibleItem} from '../client/components/editors/IncredibileEditor.tsx'
+import {IIncredibleItem} from '../client/components/editors/IncredibileEditor'
 
 export interface IPage {
     name: string

@@ -120,7 +120,7 @@ export interface IProps {
 
     projectUploadFolder: string
 
-    imageDirectory?: string
+    assetDirectory?: string
     skipNode?: string
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
     orderKey?: string
@@ -509,7 +509,7 @@ class Tree extends React.Component<IProps, IState> {
         )
     }
 
-    getImagePath = (image: string): string => '/' + this.props.imageDirectory + '/' + image
+    getImagePath = (image: string): string => '/' + this.props.assetDirectory + '/' + image
 
     getNodeName = (object, alternativeName = 'opener') => {
         const propertyOfObject = this.getNodeEditableLeafPath(object)
@@ -534,7 +534,7 @@ class Tree extends React.Component<IProps, IState> {
 
     isImagePath = (path: any[]): boolean => {
         let isImagePath = false
-        if (this.props.imageDirectory === undefined) {
+        if (this.props.assetDirectory === undefined) {
             isImagePath = false
         }
 

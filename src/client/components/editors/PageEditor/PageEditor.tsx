@@ -8,8 +8,8 @@ import Tree from '../../generic/Tree'
 import ProductEditor from '../ProductEditor/ProductEditor'
 import RTEditor from '../RichTextEditor/RTEditor'
 import {Constants, PageContentEditors} from '../../../util'
-import IncredibleEditor from '../IncredibileEditor.tsx/IncredibleEditor'
-import {IIncredibleItem} from '../IncredibileEditor.tsx'
+import IncredibleEditor from '../IncredibileEditor/IncredibleEditor'
+import {IIncredibleItem} from '../IncredibileEditor'
 
 type IProps = {
     page: IPage
@@ -19,7 +19,7 @@ type IProps = {
     onObjectChange: (text: string, objectPath: any[]) => void
     onObjectDelete: (objectPath: any[]) => void
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
-    imageDirectory: string
+    assetDirectory: string
     projectUploadFolder: string
 } & RouteComponentProps // routable
 
@@ -102,7 +102,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
                         sections={this.props.page.sections}
-                        imageDirectory={this.props.imageDirectory}
+                        assetDirectory={this.props.assetDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
                         onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
                     />
@@ -115,7 +115,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
                         products={this.props.products}
-                        imageDirectory={this.props.imageDirectory}
+                        assetDirectory={this.props.assetDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
                         onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
                     />
@@ -140,7 +140,7 @@ class PageEditor extends React.Component<IProps, IState> {
                         onUpdate={(jsonObject, objectPath) => this.props.onObjectChange(jsonObject, objectPath)}
                         onAdd={(jsonObject, objectPath) => this.props.onObjectAdd(jsonObject, objectPath)}
                         onDelete={(objectPath) => this.props.onObjectDelete(objectPath)}
-                        imageDirectory={this.props.imageDirectory}
+                        assetDirectory={this.props.assetDirectory}
                         projectUploadFolder={this.props.projectUploadFolder}
                         onMoveNodeOrLeafTo={this.props.onMoveNodeOrLeafTo}
                         data={this.props.page.incredibleData}

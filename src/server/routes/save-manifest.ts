@@ -49,19 +49,14 @@ router.post('/save-manifest', async (req, res) => {
             console.log('putting  old manifest into memory')
             manifestOld = JSON.parse(await fs.readFileSync(manifestPath, 'utf8'))
             //await fs.unlinkSync(manifestPath)
+            // this unlinking does not work on linuex it brakes hot reload
+            // fs.write must be used below
+
             //console.log('deleting  old manifest file')
         } else {
             res.json({error: ErrorIn + 'manifest file does not exist'})
         }
         console.log('saving new  manifest data to manifest file')
-
-        // we dont have to set template content key  or value
-        // this will be done on login
-        // or frontend can set this key , do this when building the editor
-        // for the page , need a standard html pr markdown editor
-        // this will be the default editor
-
-       //  fs.writeFileSync(manifestPath, JSON.stringify(manifest))
 
         var options = { flag : 'w' };
         fs.writeFile(manifestPath, JSON.stringify(manifest), options, (err) => {

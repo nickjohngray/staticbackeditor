@@ -8,7 +8,7 @@ interface IProps {
     onUpdate: (text: string, objectPath: IObjectPath) => void
     onAdd: (jsonObject: object, objectPath: IObjectPath) => void
     onDelete: (objectPath: IObjectPath) => void
-    imageDirectory: string
+    assetDirectory: string
     projectUploadFolder: string
     skipNode?: string
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
@@ -142,7 +142,7 @@ class SectionEditor extends React.Component<IProps, ISate> {
                         }
                     ]}
                     imagesPaths={[['image']]}
-                    imageDirectory={this.props.imageDirectory}
+                    assetDirectory={this.props.assetDirectory}
                     projectUploadFolder={this.props.projectUploadFolder}
                     onUpdate={(text: string, objectPath: IObjectPath) => this.props.onUpdate(text, fixPath(objectPath))}
                     onDelete={(objectPath: IObjectPath) => this.props.onDelete(fixPath(objectPath))}

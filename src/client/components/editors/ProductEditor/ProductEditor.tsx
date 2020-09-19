@@ -19,7 +19,7 @@ interface IProps {
     onUpdate?: (text: string, objectPath: any[]) => void
     onAdd?: (jsonObject: object, objectPath: any[]) => void
     onDelete?: (objectPath: any[]) => void
-    imageDirectory?: string
+    assetDirectory?: string
     projectUploadFolder?: string
     onMoveNodeOrLeafTo?: IMoveNodeOrLeafToMethod
 }
@@ -58,7 +58,7 @@ class ProductEditor extends React.Component<IProps> {
 
             <Tree
                 imagesPaths={[['image']]}
-                imageDirectory={this.props.imageDirectory}
+                assetDirectory={this.props.assetDirectory}
                 projectUploadFolder={this.props.projectUploadFolder}
                 onUpdate={(text: string, objectPath: IObjectPath) => {
                     this.props.onUpdate(text, fixPath(objectPath))

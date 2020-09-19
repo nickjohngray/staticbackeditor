@@ -1,9 +1,7 @@
 import React, {useCallback, useContext, Fragment} from 'react'
 import {getClassName, IIncredibleItem, IncredibleTypes} from './index'
 import './IncredibleEditor.css'
-import RichText from '../RichTextEditor/RichText'
-import RTEditor from '../RichTextEditor/RTEditor'
-import {IMoveNodeOrLeafToMethod, IObjectPath, IProduct, ISection} from '../../../../shared/typings'
+import {IMoveNodeOrLeafToMethod, IObjectPath} from '../../../../shared/typings'
 import {Node as INode} from 'slate'
 import MainContext from '../../../context/MainContext'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -24,7 +22,7 @@ interface IPros {
     onUpdate: (textOrNode: any, objectPath: IObjectPath) => void
     onAdd: (jsonObject: object, objectPath: IObjectPath) => void
     onDelete: (objectPath: IObjectPath) => void
-    imageDirectory: string
+    assetDirectory: string
     projectUploadFolder: string
     onMoveNodeOrLeafTo: IMoveNodeOrLeafToMethod
 }
@@ -68,8 +66,7 @@ const makeComponent = (item: IIncredibleItem, path: IObjectPath, props: IPros) =
             if (lastSlash === -1) {
                 throw new Error("can't build pdf viewer , could not find last slash in" + item.file)
             }
-            const fixedPath = '/easyecom' + item.file.substring(lastSlash)
-
+            const fixedPath = '/' + props.assetDirectory  + item.file.substring(lastSlash)
             return <PdfViewer key={path.toString()} file={fixedPath} />
         }
         case IncredibleTypes.richText: {
