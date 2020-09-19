@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
             page.templateContent = templateContent
         }
 
-        startUpPreviewRepo(repoName)
+
 
         res.json(manifest)
     } catch (error) {

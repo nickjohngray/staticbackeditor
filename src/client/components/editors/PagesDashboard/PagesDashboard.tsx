@@ -103,7 +103,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
 
         return (
             <div className="pages_container manin-container">
-                {this.props.isBusy && <Loader />}
+              {/*  {this.props.isBusy && <Loader />}*/}
 
                 <Router>
                     <PagesEditor

@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import {indexRouter} from './routes'
 import {commitRouter} from './routes/commit'
 import {cloneRepoRouter} from './routes/clone-repo'
+import {preview} from './routes/preview'
 import {pushToMasterRouter} from './routes/push-to-master'
 import * as path from 'path'
 import {loginRouter} from './routes/login'
@@ -28,6 +29,7 @@ app.use(API, pushToMasterRouter)
 app.use(API, loginRouter)
 app.use(API, saveManifest)
 app.use(API, publish)
+app.use(API, preview)
 app.use(API, testManifest)
 app.use(API, addPage)
 app.use(API, deletePage)

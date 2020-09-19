@@ -159,7 +159,8 @@ class Tree extends React.Component<IProps, IState> {
         this.dragULPointer.current.addEventListener('mousedown', this.handleMainContainerMouseDown)
 
     componentWillUnmount = () =>
-        this.dragULPointer.current.removeEventListener('mousedown', this.handleMainContainerMouseDown)
+        // the check is needed for hot reload for cms
+        this.dragULPointer && this.dragULPointer.current && this.dragULPointer.current.removeEventListener('mousedown', this.handleMainContainerMouseDown)
 
     // the drag handle is a material ui icon and its converting the class name to an object
     // if the user clicks the drag handle then drag is allowed

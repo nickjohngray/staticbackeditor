@@ -1,5 +1,6 @@
 import {createAction} from 'redux-actions'
 import {IManifest, IManifestAction, ApiMethods, IPage, IObjectPath, APICallStatus} from '../../../shared/typings'
+import {ApiRoutes} from './ApiRoutes'
 
 export enum ManifestActionsActionsThatMakeUIDirty {
     MovePage = 'CHANGE/PAGE/POSITION',
@@ -26,15 +27,8 @@ export enum ManifestActions {
     UpdateTextByObjectPath = 'UPDATE/TEXT/BY/OBJECT/PATH',
     AddJsonObjectByObjectPath = 'ADD/JSON/OBJECT/BY/OBJECT/PATH',
     MovePageTo = 'MOVE/PAGE/TO',
-    swapObjectsByPath = 'SWAP/OBJECTS/By/PATH'
-}
+    swapObjectsByPath = 'SWAP/OBJECTS/By/PATH',
 
-enum ApiRoutes {
-    Save = '/api/save-manifest',
-    oad = '/api/manifest',
-    login = '/api/login',
-    publish = '/api/publish',
-    load = '/api/manifest'
 }
 
 export const setAnyTopLevelProperty = createAction(ManifestActions.SetAnyTopLevelProperty, (object) => object)

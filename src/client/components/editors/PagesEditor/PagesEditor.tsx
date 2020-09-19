@@ -1,6 +1,8 @@
+import {ActionCreators} from "redux-undo"
 import {IManifest, IPage} from '../../../../shared/typings'
 import * as React from 'react'
 import { RouteComponentProps} from '@reach/router'
+import store from '../../../redux/store'
 import {AddIcon} from '../../generic/icons'
 import {SortableContainer, SortableElement, SortEvent, SortEventWithTag} from 'react-sortable-hoc'
 import './PagesEditor.css'
@@ -27,6 +29,12 @@ export class PagesEditor extends React.Component<IProps, IState> {
         this.state = {
             pageName: ''
         }
+    }
+
+    componentDidMount() {
+        // reset redo, for new page we dont want these things to
+        // be undone when they leave here
+        store.dispatch(ActionCreators.clearHistory())
     }
 
     render = () => (

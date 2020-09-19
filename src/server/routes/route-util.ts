@@ -2,48 +2,81 @@ import path from 'path'
 import fs from 'fs'
 import childProcess from 'child_process'
 
-export const startUpPreviewRepo =  (repoName) => {
+/*export const startUpPreviewRepo = async  (repoName) => {
+    try {*/
+
+export const getUserInfo = async (client, email: string, pwd: string) => {
+    try {
+        return await client
+            .db('staticback')
+            .collection('customers')
+            .findOne({email, pwd}, {projection: {repo: 1, _id: 0}})
+    } catch (e) {
+        throw e
+    }
+}
+
+export const startUpPreviewRepo = async (repoName) => {
     try {
         console.log('About to install node modules for: ' + repoName)
 
-        const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
+        return new Promise( (resolve, reject) => {
+        const repoInstallProcess =  childProcess.exec(`npm run repo-install ${repoName}`)
 
         repoInstallProcess.on('exit', (code) => {
             let err = code === 0 ? null : new Error('exit code ' + code)
             if (err) {
-                console.log(
-                    'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
-                )
-                return
+                reject(false)
+                throw 'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
+
             }
             console.log(repoName + ' node modules installed, starting up...')
 
-            const repoStartProcess = childProcess.exec(`npm run repo-start ${repoName}`)
+            const repoStartProcess = childProcess.exec(`npm run --no-color repo-start  ${repoName}`)
 
             repoStartProcess.on('exit', (code2) => {
                 let err2 = code2 === 0 ? null : new Error('exit code ' + code)
                 if (err2) {
                     console.log(err2)
-                    return
                 }
                 console.log(repoName + ' is no longer running')
             })
 // show all console messages from repo start
-            repoStartProcess.stdout.on('data', (message) => {
-                console.log(repoName + '>>>' + message)
+            repoStartProcess.stdout.on('data', (message: string) => {
+                const m = message.toLocaleLowerCase()
+                console.log(repoName + '>>>' + m)
+                console.log('message =' +   m.toLocaleLowerCase() )
+                // App serving at http://localhost:3004
+                let idx = m.indexOf ('app serving at' )
+                console.log('idx is ' + idx)
+                if(idx !== -1) {
+                    console.log('found !!!!!!!')
+                    // idx = m.lastIndexOf (':')
+                    console.log(m.length)
+                    let str = m.substring(idx)
+                    console.log('str===' + str)
+                    idx = m.lastIndexOf (':') // :3004
+                     str = m.substring(idx + 1) // 3004
+                    console.log('str2===' + str)
+                    resolve(str)
+                }
             })
 
             repoStartProcess.on('error', (code2) => {
-                console.log('error starting up ' + repoName + 'Error is ' + code2)
+                reject(false)
+                throw 'error starting up ' + repoName + 'Error is ' + code2
             })
         })
 
-// listen for errors as they may prevent the exit event from firing
-        repoInstallProcess.on('error', (err) => {
-            console.log(err)
+        // listen for errors as they may prevent the exit event from firing
+        repoInstallProcess.on('error', (e) => {
+            reject(false)
+           throw e
         })
-    } catch (err) {
-        console.error(err)
+
+        } ).catch( (e) => { throw  e}) // end promise
+    } catch (e) {
+        console.log(e)
     }
 }
 

@@ -109,6 +109,27 @@ const manifestReducer = handleActions<IManifestExtened, any>(
 
             draft.isBusy = action.status === APICallStatus.request
         }),
+/*
+        [ManifestActions.PreviewManifest]: produce((draft: IManifestExtened, action: IManifestAction) => {
+            draft.requestStage = action.status
+            if (action.status === APICallStatus.fail) {
+                draft.error = action.error
+            }
+
+            if (action.status === APICallStatus.success) {
+                if (action.backendPayload.error) {
+                    draft.error = action.backendPayload.error
+                }
+                else { // 3001[39m
+                    const portWithRubbish = action.backendPayload.previewPort
+                    const portFixed = portWithRubbish.substring(0, 4)
+
+                    draft.previewPort = parseInt( portFixed ,10)
+                }
+            }
+
+            draft.isBusy = action.status === APICallStatus.request
+        }),*/
 
         [ManifestActions.AddPage]: produce((draft: IManifestExtened, action: IAddPage) => {
             const page: IPage = {

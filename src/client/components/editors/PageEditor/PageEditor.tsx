@@ -1,5 +1,7 @@
+import {ActionCreators} from 'redux-undo'
 import {IPage, IObjectPath, ISection, IMoveNodeOrLeafToMethod, IProduct} from '../../../../shared/typings'
 import * as React from 'react'
+import store from '../../../redux/store'
 import SectionEditor from '../SectionEditor/SectionEditor'
 import {RouteComponentProps, Link, navigate} from '@reach/router'
 import LabelEditor from '../../editors/LabelEditor/LabelEditor'
@@ -38,6 +40,7 @@ class PageEditor extends React.Component<IProps, IState> {
             const {name, path} = props.page
             this.state = {name, path}
         }
+
     }
 
     componentWillMount() {
