@@ -77,3 +77,20 @@
     word-spacing: normal;
     -webkit-writing-mode: horizontal-tb !important;
 }
+
+.content-and-ma{
+    display: flex;
+    flex-direction: column;
+
+}
+.logo {
+/*background-color: black;*/
+    position: absolute;
+    top:0;
+    left:0;
+    opacity: .05;
+    z-index: -1;
+
+
+
+}

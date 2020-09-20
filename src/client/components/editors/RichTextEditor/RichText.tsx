@@ -41,7 +41,7 @@ const RichText = ({json, style}: IProps) => {
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"
                     autoFocus
-                    className="rteEditable"
+                    className="rte-editable"
                 />
             </Slate>
         </div>

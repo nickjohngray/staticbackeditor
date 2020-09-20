@@ -1,9 +1,11 @@
+import {useEffect} from 'react'
 import * as React from 'react'
 import {LocationProps, navigate, RouteComponentProps, Router} from '@reach/router'
 import {IManifest, IPage, IObjectPath, IMoveNodeOrLeafToMethodWithPageId} from '../../../../shared/typings'
 import './PagesDashboard.css'
 import {Dispatch} from 'redux'
 import {IStore} from '../../../redux/store'
+import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {
     addPage,
     deletePage,
@@ -56,36 +58,6 @@ class PagesDashboard extends React.Component<IProps, IState> {
         }
     }
 
-    // the current page needs to be set when the manifest changes
-    // as the current page is set in a different reducer
-    componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
-
-        // if there is page name in the URL but there is no current page
-        // it mens the browser got reloaded ,
-        // we can't let the path="/:pageID" PageEditor component load
-        // actually it will not currently  load as it checks if there is
-        // a current page if not nothing is return ,
-        // in this case we just want to load the root page
-        if (!this.props.currentPage ) {
-            const idx = window.location.href.indexOf('/')
-            if(idx !== -1 && window.location.href.substring(idx + 1).length > 0  ) {
-                navigate('/')
-            }
-        }
-        if (!this.props.currentPage) {
-            return
-        }
-        if (!isEqual(nextProps.manifest, this.props.manifest)) {
-            const page = findPageById(this.props.currentPage.id, nextProps.manifest.pages)
-            if (!page) {
-                // page got deleted from manifest
-                this.props.setCurrentPage(undefined)
-            }
-            this.props.setCurrentPage(page)
-        }
-    }
-
-    componentDidMount = () => this.props.triggerUndoableStart()
 
     render = () => {
         // check if user hit reload browser store clear in this case
@@ -102,7 +74,17 @@ class PagesDashboard extends React.Component<IProps, IState> {
         }
 
         return (
+            <div>
+                <div className='logo'>
+                    <LazyLoadImage
+                        height={'100%'}
+                        width={'100%'}
+                        ttile={this.props.manifest.repoName}
+                        src={'/' + this.props.manifest.repoName + '/' + this.props.manifest.logoPath}
+                    />
+                </div>
             <div className="pages_container manin-container">
+
               {/*  {this.props.isBusy && <Loader />}*/}
 
                 <Router>
@@ -116,7 +98,7 @@ class PagesDashboard extends React.Component<IProps, IState> {
                         onMovePageTo={this.props.movePageTo}
                     />
 
-                    {this.props.currentPage && (
+                    {this.props.currentPage ? (
                         <PageEditor
                             products={this.props.manifest.products}
                             path="/:pageID"
@@ -139,9 +121,10 @@ class PagesDashboard extends React.Component<IProps, IState> {
                                 )
                             }
                         />
-                    )}
+                    ) : <PathNotFound setCurrentPage={this.props.setCurrentPage}   default/>}
                 </Router>
             </div>
+                </div>
         )
     }
 
@@ -202,6 +185,36 @@ export default connect(
     }),
     mapDispatchToProps
 )(PagesDashboard)
+
+
+type  IPathNotFound = {
+    setCurrentPage: (currentPage: IPage) => void
+} & RouteComponentProps
+
+// go back to home if no current page setup
+
+export const PathNotFound = (props: IPathNotFound) => {
+
+    useEffect( () => {
+        props.setCurrentPage(undefined)
+        setTimeout( () => {
+            navigate('/')
+        },100)
+    })
+
+   return( <div>
+        <br /> <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        {/* @ts-ignore*/}
+        <center>Reloading ... </center>
+    </div>)
+}
+
 
 const getPageTemplateContent = (pageName: string) => {
     return `import React from 'react';

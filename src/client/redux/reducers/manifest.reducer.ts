@@ -31,7 +31,6 @@ interface IManifestExtened {
     manifest: IManifest
     error: any
     isBusy?: boolean
-    undoableStart?: boolean
 }
 
 const initialState: IManifestExtened = {
@@ -39,7 +38,6 @@ const initialState: IManifestExtened = {
     requestStage: APICallStatus.NOT_INIT,
     error: null,
     isBusy: false,
-    undoableStart: false
 }
 
 const manifestReducer = handleActions<IManifestExtened, any>(
@@ -329,9 +327,7 @@ const manifestReducer = handleActions<IManifestExtened, any>(
             }
         }),
 
-        [ManifestActions.TriggerUndoableStart]: produce((draft: IManifestExtened, action: IManifestAction) => {
-            draft.undoableStart = true
-        })
+
     },
     initialState
 )
@@ -405,7 +401,7 @@ const addItem = (path: IObjectPath, target: [] | Object, jsonObjectCloned: [] | 
 
 // allow user to undo/redo their changes
 export default undoable(manifestReducer, {
-    ignoreInitialState: true,
+    ignoreInitialState: false,
     filter: includeAction([
         ManifestActions.UpdatePage,
         ManifestActions.AddPage,

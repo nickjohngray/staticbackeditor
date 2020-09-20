@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './LabelEditor.css'
-import {isEqual} from 'lodash'
+import {isEqual, cloneDeep} from 'lodash'
 import {Constants, isPrimitive} from '../../../util'
 import {IFieldDataType} from '../../../../shared/typings'
 import RTEditor from '../RichTextEditor/RTEditor'
@@ -75,11 +75,15 @@ class LabelEditor extends React.Component<IProps, IState> {
                         <RTEditor
                             style={this.props.richTextStyle}
                             onChange={(richTextData) => {
-                                this.updateRichTextDataAfterChange(richTextData)
+                                if( !isEqual(richTextData,  this.props.value)) {
+                                    this.setState({value: richTextData})
+                                }
                             }}
-                            onBlur={() => {
-                                console.log('here')
-                                this.stopEdit()
+                            onBlur={(richTextData) => {
+                                this.setState({isEditMode: false})
+                                if( !isEqual(this.state.value , this.props.value)) {
+                                    this.fireUpdate()
+                                }
                             }}
                             // todo make prop type INode | string for value
                             data={this.getRichTextBoxValue()}
@@ -149,9 +153,6 @@ class LabelEditor extends React.Component<IProps, IState> {
         this.setState({value: event.target.value})
     }
 
-    updateRichTextDataAfterChange = (richTextData: any) => {
-        this.setState({value: richTextData})
-    }
 
     toggleEditMode = () => {
         const isEditMode = !this.state.isEditMode

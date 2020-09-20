@@ -1,7 +1,7 @@
-import {ActionCreators} from "redux-undo"
+import {ActionCreators} from 'redux-undo'
 import {IManifest, IPage} from '../../../../shared/typings'
 import * as React from 'react'
-import { RouteComponentProps} from '@reach/router'
+import {RouteComponentProps} from '@reach/router'
 import store from '../../../redux/store'
 import {AddIcon} from '../../generic/icons'
 import {SortableContainer, SortableElement, SortEvent, SortEventWithTag} from 'react-sortable-hoc'
@@ -73,11 +73,11 @@ export class PagesEditor extends React.Component<IProps, IState> {
 
                 <div className="form-controls">
                     <button title="Add New page"
-                        type="button"
-                        disabled={!this.isFormOk()}
-                        onClick={() => {
-                            this.maybeAddPage()
-                        }}>
+                            type="button"
+                            disabled={!this.isFormOk()}
+                            onClick={() => {
+                                this.maybeAddPage()
+                            }}>
                         <AddIcon/>
                     </button>
                 </div>
@@ -94,7 +94,13 @@ export class PagesEditor extends React.Component<IProps, IState> {
     }
 
     getPageItems = () =>
-        this.props.manifest.pages.map((page, key) => <PageItem key={page.id + '-' + key} page={page} {...this.props} />)
+        this.props.manifest.pages.map((page, key) => {
+
+            return (
+
+                <PageItem key={page.id + '-' + key} page={page} {...this.props} />
+            )
+        })
 
     onSortEnd = ({oldIndex, newIndex}) => this.props.onMovePageTo(oldIndex, newIndex)
 
@@ -140,7 +146,7 @@ const SortableList = SortableContainer(({items}) => {
     return (
         <ul>
             {items.map((value, index) => (
-                <SortableItem key={'item-' + index + '-' + value} index={index} value={value} />
+                <SortableItem key={'item-' + index + '-' + value} index={index} value={value}/>
             ))}
         </ul>
     )

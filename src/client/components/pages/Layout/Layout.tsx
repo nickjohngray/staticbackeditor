@@ -13,10 +13,15 @@ import {GoLiveIcon, LogoutIcon, PreviewIcon, RedoIcon, SaveIcon, UndoIcon, ViewL
 import {ErrorPage} from '../ErrorPage'
 import Loader from '../Loaders/OrbLoader/OrbLoader'
 import {NotFound} from '../NotFound'
-import {IStore} from '../../../redux/store'
+import store, {IStore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {publish, saveManifest, setAnyTopLevelProperty} from '../../../redux/actions/manifest.action'
-import {ActionCreators as UndoActionCreators} from 'redux-undo'
+import {
+    publish,
+    saveManifest,
+    setAnyTopLevelProperty,
+    triggerUndoableStart
+} from '../../../redux/actions/manifest.action'
+import {ActionCreators, ActionCreators as UndoActionCreators} from 'redux-undo'
 import ContentToggler from '../../generic/ContentToggler/ContentToggler'
 import {Constants, deleteFromLocalStorage} from '../../../util'
 
@@ -90,7 +95,7 @@ class Layout extends React.Component<IProps, IState> {
 
         if (this.props.currentPage) {
             // add a / after current page to pop window with current page if there is one
-            url += '/' +  this.props.currentPage.path
+            url += '/' + this.props.currentPage.path
         }
 
         this.windowObjectReference = window.open(url,
@@ -119,12 +124,17 @@ class Layout extends React.Component<IProps, IState> {
     }
 
     componentDidMount = () => {
+        store.dispatch(ActionCreators.clearHistory())
+        //store.dispatch(triggerUndoableStart())
+
+
         // todo get rid of this shit
         globalHistory.listen((history: HistoryListenerParameter) => {
             if (this.props.currentPageURL !== history.location.pathname) {
                 this.props.changeURL({URL: history.location.pathname})
             }
         })
+
 
         /* todo do we need this as route pages is gone for now*/
         if (!this.props.currentPage && window.location.pathname.indexOf('/pages/edit') !== -1) {
@@ -175,8 +185,6 @@ class Layout extends React.Component<IProps, IState> {
                             <RedoIcon/> {this.props.redoableCount > 0 ?
                             [this.props.redoableCount] : undefined}
                         </button>
-                        <button title="Go Live" onClick={() => this.props.publish(this.props.manifest)}>
-                            <GoLiveIcon/></button>
                         <button title={'View Your Live Website[ ' + this.props.manifest.prodUrl + ']'}
                                 onClick={() => {
                                     window.open(this.props.manifest.prodUrl)
@@ -191,6 +199,14 @@ class Layout extends React.Component<IProps, IState> {
                                 }}>
                             <LogoutIcon/>
                         </button>
+                        <button title="Go Live" onClick={() => {
+                            if (confirm('Are you sure you want to go live?')) {
+                                this.props.publish(this.props.manifest)
+                            }
+                        }}
+
+                        >
+                            <GoLiveIcon/></button>
                     </div>
                     {/*  add this back when more menu items are  needed*/}
                     {/* <nav>

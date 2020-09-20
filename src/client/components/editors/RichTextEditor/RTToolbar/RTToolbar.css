@@ -1,0 +1,11 @@
+.rte-toolbar {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    border-bottom: none;
+}
+
+.rte-toolbar  svg:hover {
+    fill: whitesmoke;
+}
+

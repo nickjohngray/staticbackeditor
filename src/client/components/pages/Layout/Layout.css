@@ -27,18 +27,21 @@ button {
 }
 
 header button {
-    background-color: white;
+    background-color: whitesmoke;
     opacity: 1;
-    min-width: 45px;
-    min-height: 45px;
+    /*min-width: 40px;
+    min-height: 40px;*/
+    border: none;
+    outline: none;
+}
+header button svg:hover {
+    color:#009688
 }
 
 header button:hover {
-    background-color: greenyellow;
+    background-color:whitesmoke;
     /*padding-left: 5px;
     padding-right: 5px;*/
-    margin-right: 2px;
-    margin-left: 2px;
     opacity: 1;
     transition: margin .2s;
 }
@@ -72,9 +75,7 @@ nav a {
     color: white;
 }
 
-nav a:hover {
-    color: yellowgreen;
-}
+
 
 .link-active {
     color: #ff0423;
@@ -89,7 +90,7 @@ nav a:hover {
 
 button:hover {
     background-color: transparent;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
 button:active {

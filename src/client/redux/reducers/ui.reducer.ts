@@ -1,10 +1,12 @@
+import {navigate} from '@reach/router'
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {APICallStatus, IManifestAction, IPage} from '../../../shared/typings'
 import {Constants, saveStateToLocalStorage} from '../../util'
 import ManifestActions from '../actions/manifest.action'
-import {IPreview,  ISetCurrentPage, ISetIsSaved, UiActions} from '../actions/ui.actions'
+import {IPreview, ISetCurrentPage, ISetIsSaved, UiActions} from '../actions/ui.actions'
 import {cloneDeep} from 'lodash'
+
 interface IUI {
     error: any
     currentPage: IPage
@@ -29,8 +31,13 @@ const initialState: IUI = {
 const uiReducer = handleActions<IUI, any>(
     {
         [UiActions.SetCurrentPage]: produce((draft: IUI, action: ISetCurrentPage) => {
-            draft.currentPage = action.payload.page
-           // saveStateToLocalStorage(Constants.ui,  cloneDeep( draft))
+            const d = cloneDeep(draft)
+            d.currentPage = action.payload.page
+            if(d.currentPage) {
+                const p = d.currentPage.path
+                navigate('/' + p)
+            }
+            return d
 
         }),
         [UiActions.SetIsSaved]: produce((draft: IUI, action: ISetIsSaved) => {
@@ -45,12 +52,11 @@ const uiReducer = handleActions<IUI, any>(
             if (action.status === APICallStatus.success) {
                 if (action.backendPayload.error) {
                     draft.error = action.backendPayload.error
-                }
-                else { // 3001[39m
+                } else { // 3001[39m
                     const portWithRubbish = action.backendPayload.previewPort
                     const portFixed = portWithRubbish.substring(0, 4)
 
-                    draft.previewPort = parseInt( portFixed ,10)
+                    draft.previewPort = parseInt(portFixed, 10)
                 }
             }
 

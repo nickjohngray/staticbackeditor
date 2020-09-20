@@ -58,6 +58,7 @@ export interface IManifest {
     FBAccessToken: string
     repoName: string
     id: number
+    logoPath: string
 }
 export enum APICallStatus {
     NOT_INIT = 'NOT_INIT',
