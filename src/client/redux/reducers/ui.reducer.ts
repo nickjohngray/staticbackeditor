@@ -2,7 +2,7 @@ import {navigate} from '@reach/router'
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {APICallStatus, IManifestAction, IPage} from '../../../shared/typings'
-import {IPreview, ISetCurrentPageID, ISetIsSaved, UiActions} from '../actions/ui.actions'
+import {IClearPreviewPort, IPreview, ISetCurrentPageID, ISetIsSaved, UiActions} from '../actions/ui.actions'
 import {cloneDeep} from 'lodash'
 
 interface IUI {
@@ -41,6 +41,9 @@ const uiReducer = handleActions<IUI, any>(
         [UiActions.SetIsSaved]: produce((draft: IUI, action: ISetIsSaved) => {
             draft.isSaved = action.payload.isSaved
         }),
+        [UiActions.ClearPreviewPort]: produce((draft: IUI, action: IClearPreviewPort) => {
+            draft.previewPort = undefined
+        }),
         [UiActions.Preview]: produce((draft: IUI, action: IPreview) => {
             draft.requestStage = action.status
             if (action.status === APICallStatus.fail) {
@@ -55,6 +58,8 @@ const uiReducer = handleActions<IUI, any>(
                     const portFixed = portWithRubbish.substring(0, 4)
 
                     draft.previewPort = parseInt(portFixed, 10)
+
+
                 }
             }
 

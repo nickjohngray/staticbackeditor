@@ -2,10 +2,11 @@ import {globalHistory, HistoryListenerParameter, Router, navigate, LocationProps
 import React from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
+import {killPreview} from '../../../../server/routes/route-util'
 import {undo} from '../../../../server/routes/undo'
 import {changeURL} from '../../../redux/actions/history.action'
 import {IHistory, IManifest, IPage} from '../../../../shared/typings'
-import {preview} from '../../../redux/actions/ui.actions'
+import {clearPreviewPort, preview} from '../../../redux/actions/ui.actions'
 import PageEditor from '../../editors/PageEditor/PageEditor'
 import PagesDashboard from '../../editors/PagesDashboard/PagesDashboard'
 import './Layout.css'
@@ -37,6 +38,7 @@ interface IProps {
     isRedoable: boolean
     undo: () => void
     redo: () => void
+    clearPreviewPort: () => void
     isSaved: boolean
     saveManifest: (manifest: IManifest) => void
     publish: (manifest: IManifest) => void
@@ -113,9 +115,23 @@ class Layout extends React.Component<IProps, IState> {
 
 
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
+       // this occurs when the user hits the preview button for first time
+        // and backend returns the preview port
         if (nextProps.previewPort !== this.props.previewPort) {
             this.openAppPreview(nextProps.previewPort)
+
+            // kill preview port after 30 mins
+            // it is also killed on backend to save memory
+            // and we dont want several instances running of the clients repo
+                console.log('killing preview in 10 sec')
+                setTimeout(() => {
+                    this.props.clearPreviewPort()
+                /*}, 5000) // 30 minds*/
+                 },1000 * 60 * 30) // 30 minds
+
+
         }
+
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -223,7 +239,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     redo: () => dispatch(UndoActionCreators.redo()),
     saveManifest: (manifest: IManifest) => dispatch(saveManifest(manifest)),
     publish: (manifest: IManifest) => dispatch(publish(manifest)),
-    preview: (manifest: IManifest) => dispatch(preview(manifest))
+    preview: (manifest: IManifest) => dispatch(preview(manifest)),
+    clearPreviewPort: () => dispatch(clearPreviewPort())
 })
 
 export default connect(

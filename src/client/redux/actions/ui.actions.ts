@@ -7,10 +7,15 @@ export enum UiActions {
     SetCurrentPageID = 'SET/CURRENT/PAGE',
     SetIsSaved = 'SET/IS/SAVED',
     Preview = 'PREVIEW',
+    ClearPreviewPort = 'Clear/Preview/Port'
 
 }
 
-export const seCurrentPageID = createAction(UiActions.SetCurrentPageID, (pageID: number) => ({pageID}))
+export const setCurrentPageID = createAction(UiActions.SetCurrentPageID, (pageID: number) => ({pageID}))
+export const clearPreviewPort = createAction(UiActions.ClearPreviewPort, () => {
+    return {}
+})
+
 export const setIsSaved = createAction(UiActions.SetIsSaved, (isSaved: boolean) => ({isSaved}))
 
 export const preview = (manifest: IManifest): IManifestAction => ({
@@ -20,6 +25,7 @@ export const preview = (manifest: IManifest): IManifestAction => ({
     method: ApiMethods.post
 })
 
-export type ISetCurrentPageID = ReturnType<typeof seCurrentPageID>
+export type ISetCurrentPageID = ReturnType<typeof setCurrentPageID>
 export type ISetIsSaved = ReturnType<typeof setIsSaved>
-export type IPreview= ReturnType<typeof preview>
+export type IPreview = ReturnType<typeof preview>
+export type IClearPreviewPort = ReturnType<typeof clearPreviewPort>

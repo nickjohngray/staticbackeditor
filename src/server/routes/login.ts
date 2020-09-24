@@ -72,9 +72,19 @@ router.post('/login', async (req, res) => {
             page.templateContent = templateContent
         }
 
-       await installNodeModulesForRepo(repoName)
+        // install node modules if they not been
+        if (await fs.existsSync( path.join( userInfo.repo, 'node_modules') )) {
+           console.log(' node modules already installed')
+            res.json(manifest)
+        } else {
+            console.log('installing node modules')
+            await installNodeModulesForRepo(repoName)
+            res.json(manifest)
+        }
 
-        res.json(manifest)
+
+
+
     } catch (error) {
         dumpError(error)
         res.json({error: 'Error in login.ts. ' + error.message})

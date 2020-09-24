@@ -49,6 +49,63 @@ export const installNodeModulesForRepo = async (repoName) => {
     }
 }
 
+
+
+export const killPreview = async ( port: string) => {
+    try {
+        console.log('killing preview running on port : ' + port)
+
+        return new Promise((resolve, reject) => {
+           // const cmd = `thefile=$(lsof -F cg -i :${port} -s TCP:LISTEN)`
+            //const cmd =  `lsof -F cg -i :3001 -s TCP:LISTEN`
+
+            const portFixed = port.substring(0, 4)
+            const cmd =  `lsof -F cg -i :${portFixed} -s TCP:LISTEN`
+            console.log('running:')
+            console.log(cmd)
+            const repoStartProcess = childProcess.exec(cmd)
+
+            repoStartProcess.on('exit', (code2) => {
+                let err2 = code2 === 0 ? null : new Error('exit code ' + code2)
+                if (err2) {
+                    console.log(err2)
+                }
+                console.log(port + ' is no longer running')
+            })
+
+            // show all console messages from repo start
+            repoStartProcess.stdout.on('data', (message: string) => {
+                let m = message.toLocaleLowerCase()
+                console.log('find PID from this' + '>>>' + m)
+                console.log('message =' + m.toLocaleLowerCase())
+                // App serving at http://localhost:3004
+                let idx = m.indexOf('\n')
+                const pid = m.substring(1,idx)
+                console.log('pid is ' + pid)
+                // return port number that it got started on
+                const cmd = `kill -9 ${pid}`
+                console.log('running cmd' + cmd )
+                childProcess.exec(cmd)
+
+                resolve(true)
+
+            })
+
+            repoStartProcess.on('error', (code2) => {
+                reject(false)
+                throw 'error killing  ' + port + 'Error is ' + code2
+            })
+
+        }).catch((e) => {
+            throw  e
+        }) // end promise
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+
 export const startUpPreviewRepo = async (repoName) => {
     try {
         console.log('building preview for: ' + repoName)
@@ -83,6 +140,8 @@ export const startUpPreviewRepo = async (repoName) => {
                     idx = m.lastIndexOf(':') // :3004
                     str = m.substring(idx + 1) // 3004
                     console.log('returning port number for preview ' + str)
+
+
                     resolve(str)
                 }
             })

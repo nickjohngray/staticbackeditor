@@ -62,11 +62,11 @@ const makeContainers = (items: IIncredibleItem[], path: IObjectPath, props: IPro
 const makeComponent = (item: IIncredibleItem, path: IObjectPath, props: IPros) => {
     switch (item.type) {
         case IncredibleTypes.pdf: {
-            const lastSlash = item.file.lastIndexOf('/')
+           /* const lastSlash = item.file.lastIndexOf('/')
             if (lastSlash === -1) {
                 throw new Error("can't build pdf viewer , could not find last slash in" + item.file)
-            }
-            const fixedPath = '/' + props.assetDirectory  + item.file.substring(lastSlash)
+            }*/
+            const fixedPath = '/' + props.assetDirectory  + '/' +  item.file //.substring(lastSlash)
             return <PdfViewer key={path.toString()} file={fixedPath} />
         }
         case IncredibleTypes.richText: {

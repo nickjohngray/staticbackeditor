@@ -22,7 +22,7 @@ import {connect} from 'react-redux'
 import Loader from '../../pages/Loaders/OrbLoader/OrbLoader'
 import PageEditor from '../PageEditor/PageEditor'
 import {PagesEditor} from '../PagesEditor/PagesEditor'
-import {seCurrentPageID} from '../../../redux/actions/ui.actions'
+import {setCurrentPageID} from '../../../redux/actions/ui.actions'
 import {isEqual} from 'lodash'
 import {findPageById} from '../../../util'
 
@@ -165,7 +165,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         ),
     deletePage: (pageID: number) => dispatch(deletePage(pageID)),
     triggerUndoableStart: () => dispatch(triggerUndoableStart()),
-    setCurrentPageID: (currentPageID: number) => dispatch(seCurrentPageID(currentPageID))
+    setCurrentPageID: (currentPageID: number) => dispatch(setCurrentPageID(currentPageID))
 })
 
 export default connect(

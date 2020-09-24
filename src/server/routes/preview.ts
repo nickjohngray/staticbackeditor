@@ -3,7 +3,7 @@ import express from 'express'
 import {IManifest} from '../../shared/typings'
 import {fieldsOk} from '../../shared/util' // move this to share dir
 import {commit, pushToMaster} from '../git-util'
-import {startUpPreviewRepo} from './route-util'
+import {killPreview, startUpPreviewRepo} from './route-util'
 
 const router = express.Router()
 
@@ -23,16 +23,21 @@ router.post('/preview', async (req, res) => {
         res.json({error: +ErrorIn + fieldsAreEmptyMessage})
         return
     }
-    console.log('WTF')
     const repoName: string = (manifest as IManifest).repoName
 
     try {
         console.log('Starting Preview for ' + repoName)
-        console.log('committing changes to git')
       const previewPort =  await  startUpPreviewRepo(repoName)
         if(previewPort) {
             console.log('Preview ready for ' + repoName)
             res.json({previewPort})
+
+            console.log('killing preview in 10 sec')
+            setTimeout ( () => {
+                killPreview(previewPort as string)
+
+            },1000 * 60 * 30) // 30 minds
+
         } else {
             throw 'error trying to load preview for ' + repoName
         }
