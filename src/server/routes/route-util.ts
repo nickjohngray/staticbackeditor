@@ -16,48 +16,73 @@ export const getUserInfo = async (client, email: string, pwd: string) => {
     }
 }
 
-export const startUpPreviewRepo = async (repoName) => {
+export const installNodeModulesForRepo = async (repoName) => {
     try {
         console.log('About to install node modules for: ' + repoName)
 
-        return new Promise( (resolve, reject) => {
-        const repoInstallProcess =  childProcess.exec(`npm run repo-install ${repoName}`)
+        return new Promise((resolve, reject) => {
+            const repoInstallProcess = childProcess.exec(`npm run repo-install ${repoName}`)
 
-        repoInstallProcess.on('exit', (code) => {
-            let err = code === 0 ? null : new Error('exit code ' + code)
-            if (err) {
+            repoInstallProcess.on('exit', (code) => {
+                let err = code === 0 ? null : new Error('exit code ' + code)
+                if (err) {
+                    reject(false)
+                    throw 'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
+
+                }
+                console.log(repoName + ' node modules installed')
+                resolve(true)
+
+            })
+
+            // listen for errors as they may prevent the exit event from firing
+            repoInstallProcess.on('error', (e) => {
                 reject(false)
-                throw 'an error occurred while trying to install node_modules for ' + repoName + ' error is ' + err
+                throw e
+            })
 
-            }
-            console.log(repoName + ' node modules installed, starting up...')
+        }).catch((e) => {
+            throw  e
+        }) // end promise
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export const startUpPreviewRepo = async (repoName) => {
+    try {
+        console.log('building preview for: ' + repoName)
+
+        return new Promise((resolve, reject) => {
 
             const repoStartProcess = childProcess.exec(`npm run --no-color repo-start  ${repoName}`)
 
             repoStartProcess.on('exit', (code2) => {
-                let err2 = code2 === 0 ? null : new Error('exit code ' + code)
+                let err2 = code2 === 0 ? null : new Error('exit code ' + code2)
                 if (err2) {
                     console.log(err2)
                 }
                 console.log(repoName + ' is no longer running')
             })
-// show all console messages from repo start
+
+            // show all console messages from repo start
             repoStartProcess.stdout.on('data', (message: string) => {
                 const m = message.toLocaleLowerCase()
                 console.log(repoName + '>>>' + m)
-                console.log('message =' +   m.toLocaleLowerCase() )
+                console.log('message =' + m.toLocaleLowerCase())
                 // App serving at http://localhost:3004
-                let idx = m.indexOf ('app serving at' )
+                let idx = m.indexOf('app serving at')
                 console.log('idx is ' + idx)
-                if(idx !== -1) {
-                    console.log('found !!!!!!!')
+                // return port number that it got started on
+                if (idx !== -1) {
+                   // console.log('found !!!!!!!')
                     // idx = m.lastIndexOf (':')
-                    console.log(m.length)
+                   // console.log(m.length)
                     let str = m.substring(idx)
-                    console.log('str===' + str)
-                    idx = m.lastIndexOf (':') // :3004
-                     str = m.substring(idx + 1) // 3004
-                    console.log('str2===' + str)
+                   // console.log('str===' + str)
+                    idx = m.lastIndexOf(':') // :3004
+                    str = m.substring(idx + 1) // 3004
+                    console.log('returning port number for preview ' + str)
                     resolve(str)
                 }
             })
@@ -66,15 +91,10 @@ export const startUpPreviewRepo = async (repoName) => {
                 reject(false)
                 throw 'error starting up ' + repoName + 'Error is ' + code2
             })
-        })
 
-        // listen for errors as they may prevent the exit event from firing
-        repoInstallProcess.on('error', (e) => {
-            reject(false)
-           throw e
-        })
-
-        } ).catch( (e) => { throw  e}) // end promise
+        }).catch((e) => {
+            throw  e
+        }) // end promise
     } catch (e) {
         console.log(e)
     }

@@ -4,7 +4,13 @@ import {getUserInfo, openConnection} from '../mongo/openConnection'
 import {cloneRepo} from '../git-util'
 import fs from 'fs'
 import {IManifest} from '../../shared/typings'
-import {dumpError, getPageComponentName, getPageComponentPath, startUpPreviewRepo} from './route-util'
+import {
+    dumpError,
+    getPageComponentName,
+    getPageComponentPath,
+    installNodeModulesForRepo,
+    startUpPreviewRepo
+} from './route-util'
 import path from 'path'
 import {ncp} from 'ncp'
 import {fieldsOk} from '../../shared/util'
@@ -66,7 +72,7 @@ router.post('/login', async (req, res) => {
             page.templateContent = templateContent
         }
 
-
+       await installNodeModulesForRepo(repoName)
 
         res.json(manifest)
     } catch (error) {
