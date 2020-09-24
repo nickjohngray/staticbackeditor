@@ -15,7 +15,7 @@ interface IState {
 
 type IProps = {
     onDeletePage: (pageID: number) => void
-    onPageChange: (page: IPage) => void
+    onPageChange: (pageID: number) => void
     onMovePageTo: (fromIndex: number, toIndex: number) => void
     manifest: IManifest
     onAddPage: (pageName: string, pagePath: string) => void
@@ -97,8 +97,13 @@ export class PagesEditor extends React.Component<IProps, IState> {
         this.props.manifest.pages.map((page, key) => {
 
             return (
-
-                <PageItem key={page.id + '-' + key} page={page} {...this.props} />
+                <PageItem key={page.id + '-' + key}
+                          pageName={page.name}
+                          pageID={page.id}
+                          isPageDeletable={page.isDeletable}
+                          onPageChange={this.props.onPageChange}
+                          onDeletePage={this.props.onDeletePage}
+                />
             )
         })
 

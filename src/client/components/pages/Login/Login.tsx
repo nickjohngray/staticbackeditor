@@ -93,6 +93,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 export default connect(
     (state: IStore) => ({
+        //manifest: state.manifest.manifest,
+        //isBusy: state.manifest.isBusy
         manifest: state.manifest.present.manifest,
         isBusy: state.manifest.present.isBusy
     }),

@@ -399,6 +399,9 @@ const addItem = (path: IObjectPath, target: [] | Object, jsonObjectCloned: [] | 
     }
 }
 
+// without undo
+/*export default manifestReducer*/
+
 // allow user to undo/redo their changes
 export default undoable(manifestReducer, {
     ignoreInitialState: false,

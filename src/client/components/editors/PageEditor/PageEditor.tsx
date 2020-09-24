@@ -43,11 +43,12 @@ class PageEditor extends React.Component<IProps, IState> {
 
     }
 
-    componentWillMount() {
-        if (!this.props.page) {
+    componentDidMount() {
+        store.dispatch(ActionCreators.clearHistory())
+        /*if (!this.props.page) {
             navigate('/')
-            /* navigate('/pages')*/
-        }
+            /!* navigate('/pages')*!/
+        }*/
     }
 
     // todo refactor this, maybe use useMemo

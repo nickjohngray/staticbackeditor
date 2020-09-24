@@ -2,14 +2,12 @@ import {navigate} from '@reach/router'
 import produce from 'immer'
 import {handleActions} from 'redux-actions'
 import {APICallStatus, IManifestAction, IPage} from '../../../shared/typings'
-import {Constants, saveStateToLocalStorage} from '../../util'
-import ManifestActions from '../actions/manifest.action'
-import {IPreview, ISetCurrentPage, ISetIsSaved, UiActions} from '../actions/ui.actions'
+import {IPreview, ISetCurrentPageID, ISetIsSaved, UiActions} from '../actions/ui.actions'
 import {cloneDeep} from 'lodash'
 
 interface IUI {
     error: any
-    currentPage: IPage
+    currentPageID: number
     isSaved: boolean
     isDebug
     previewPort: number
@@ -19,7 +17,7 @@ interface IUI {
 
 const initialState: IUI = {
     error: false,
-    currentPage: null,
+    currentPageID: -1,
     isSaved: true,
     isDebug: true,
     previewPort: undefined,
@@ -30,14 +28,14 @@ const initialState: IUI = {
 
 const uiReducer = handleActions<IUI, any>(
     {
-        [UiActions.SetCurrentPage]: produce((draft: IUI, action: ISetCurrentPage) => {
-            const d = cloneDeep(draft)
-            d.currentPage = action.payload.page
-            if(d.currentPage) {
-                const p = d.currentPage.path
+        [UiActions.SetCurrentPageID]: produce((draft: IUI, action: ISetCurrentPageID) => {
+            const UIDraft = cloneDeep(draft)
+            UIDraft.currentPageID = action.payload.pageID
+            if(UIDraft.currentPageID) {
+                const p = UIDraft.currentPageID
                 navigate('/' + p)
             }
-            return d
+            return UIDraft
 
         }),
         [UiActions.SetIsSaved]: produce((draft: IUI, action: ISetIsSaved) => {

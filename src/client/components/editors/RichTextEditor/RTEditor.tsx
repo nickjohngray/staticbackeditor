@@ -46,7 +46,11 @@ const RTEditor = ({data, onBlur, onChange, isReadOnly = false, style}: IProps) =
 
                 <Editable
                     readOnly={isReadOnly}
-                    onBlur={() => onBlur(value)}
+                    onBlur={() => {
+                        console.log(value)
+                        onBlur(value) }
+
+                    }
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     placeholder="Enter some text"

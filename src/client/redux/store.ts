@@ -19,9 +19,16 @@ const defaultManifestState = {
     future: []
 }
 
+/*const defaultManifestStateWithoutUndoable = {
+        error: null,
+        isBusy: false,
+        manifest: null,
+        requestStage: APICallStatus.NOT_INIT
+}*/
+
 const defaultUIState = {
     error: false,
-    currentPage: null,
+    currentPageID: -1,
     isSaved: true
 }
 

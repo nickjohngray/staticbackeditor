@@ -15,6 +15,7 @@ import Loader from '../Loaders/OrbLoader/OrbLoader'
 import {NotFound} from '../NotFound'
 import store, {IStore} from '../../../redux/store'
 import Login from '../Login/Login'
+import {isEqual} from 'lodash'
 import {
     publish,
     saveManifest,
@@ -23,12 +24,12 @@ import {
 } from '../../../redux/actions/manifest.action'
 import {ActionCreators, ActionCreators as UndoActionCreators} from 'redux-undo'
 import ContentToggler from '../../generic/ContentToggler/ContentToggler'
-import {Constants, deleteFromLocalStorage} from '../../../util'
+import {Constants, deleteFromLocalStorage, findPageById} from '../../../util'
 
 interface IProps {
     location: LocationProps
     changeURL: (url: IHistory) => void
-    currentPageURL: string
+    currentPageIDURL: string
     manifest: IManifest
     error: {}
     setProp: ({}) => void
@@ -40,13 +41,12 @@ interface IProps {
     saveManifest: (manifest: IManifest) => void
     publish: (manifest: IManifest) => void
     preview: (manifest: IManifest) => void
-    currentPage: IPage
+    currentPageID: number
     isDebug: boolean
     isBusy: boolean,
     previewPort: number
     redoableCount: number,
     undoableCount: number,
-
 }
 
 interface IState {
@@ -63,8 +63,6 @@ class Layout extends React.Component<IProps, IState> {
 
     constructor(props) {
         super(props)
-        // todo these dont need to be in state
-        // they are not going to change
         this.state = {
             links: [
                 {name: 'home', path: '/'},
@@ -93,9 +91,9 @@ class Layout extends React.Component<IProps, IState> {
         // if (!this.windowObjectReference || this.windowObjectReference.closed) {
         let url = window.location.protocol + '//' + window.location.hostname + ':' + port
 
-        if (this.props.currentPage) {
+        if (this.props.currentPageID !== -1) {
             // add a / after current page to pop window with current page if there is one
-            url += '/' + this.props.currentPage.path
+            url += '/' +  findPageById(this.props.currentPageID, this.props.manifest.pages).path
         }
 
         this.windowObjectReference = window.open(url,
@@ -106,41 +104,13 @@ class Layout extends React.Component<IProps, IState> {
         this.windowObjectReference.onClose = () => {
             this.windowObjectReference = null
         }
-        // return
-        // }
-        // window is still open , replace the current page with the new page if one
-        /*if(currentPage) {
-            // http://localhost:3001/merchandise
-            let windowHref = this.windowObjectReference.location.href
-            // http://localhost:3001
-            windowHref =  windowHref.substring(0,windowHref.lastIndexOf('/') )
-            // http://localhost:3001/[ABOUT]
-            windowHref = windowHref + currentPage
-            // http://localhost:3001/[ABOUT]
-            this.windowObjectReference.href = windowHref
-        }*/
 
         this.windowObjectReference.focus()
     }
 
-    componentDidMount = () => {
+    componentDidMount = () =>
         store.dispatch(ActionCreators.clearHistory())
-        //store.dispatch(triggerUndoableStart())
 
-
-        // todo get rid of this shit
-        globalHistory.listen((history: HistoryListenerParameter) => {
-            if (this.props.currentPageURL !== history.location.pathname) {
-                this.props.changeURL({URL: history.location.pathname})
-            }
-        })
-
-
-        /* todo do we need this as route pages is gone for now*/
-        if (!this.props.currentPage && window.location.pathname.indexOf('/pages/edit') !== -1) {
-            navigate('/pages', {replace: true})
-        }
-    }
 
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
         if (nextProps.previewPort !== this.props.previewPort) {
@@ -156,7 +126,7 @@ class Layout extends React.Component<IProps, IState> {
     }
 
     getActiveLinkClassName = (path: string) =>
-        this.fixPathForHome(path) === this.props.currentPageURL ? 'link-active' : null
+        this.fixPathForHome(path) === this.props.currentPageIDURL ? 'link-active' : null
 
     fixPathForHome = (path: string) => (path === '/' ? path : '/' + path)
 
@@ -258,17 +228,28 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 export default connect(
     (state: IStore) => ({
-        currentPageURL: state.history.URL,
+        currentPageIDURL: state.history.URL,
+        isSaved: state.ui.isSaved,
+        currentPageID: state.ui.currentPageID,
+        isDebug: state.ui.isDebug,
+
+      /*  manifest: state.manifest.manifest,
+        undoableCount: 0,
+        isUndoable: false,
+        isRedoable: false,
+        redoableCount:0,
+        error: state.manifest.error,
+        isBusy: state.manifest.isBusy || state.ui.isBusy,*/
+
         manifest: state.manifest.present.manifest,
         undoableCount: state.manifest.past.length,
         isUndoable: state.manifest.past.length > 0,
         isRedoable: state.manifest.future.length > 0,
         redoableCount: state.manifest.future.length,
         error: state.manifest.present.error,
-        isSaved: state.ui.isSaved,
-        currentPage: state.ui.currentPage,
-        isDebug: state.ui.isDebug,
         isBusy: state.manifest.present.isBusy || state.ui.isBusy,
+
+
         previewPort: state.ui.previewPort
 
     }),

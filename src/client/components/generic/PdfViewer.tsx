@@ -6,7 +6,7 @@ import React from 'react'
 
 interface IPdfViewerState {
     pages: number
-    currentPage: number
+    currentPageID: number
 }
 
 interface IPdfViewerProps {
@@ -18,7 +18,7 @@ class PdfViewer extends React.Component<IPdfViewerProps, IPdfViewerState> {
 
         this.state = {
             pages: -1,
-            currentPage: 1
+            currentPageID: 1
         }
     }
 
@@ -27,35 +27,35 @@ class PdfViewer extends React.Component<IPdfViewerProps, IPdfViewerState> {
     }
 
     nextPage = () => {
-        if (this.state.currentPage + 1 <= this.state.pages) {
-            this.setState({currentPage: this.state.currentPage + 1})
+        if (this.state.currentPageID + 1 <= this.state.pages) {
+            this.setState({currentPageID: this.state.currentPageID + 1})
         }
     }
 
     previousPage = () => {
-        if (this.state.currentPage - 1 > 0) {
-            this.setState({currentPage: this.state.currentPage - 1})
+        if (this.state.currentPageID - 1 > 0) {
+            this.setState({currentPageID: this.state.currentPageID - 1})
         }
     }
 
     render() {
-        const {currentPage, pages} = this.state
+        const {currentPageID, pages} = this.state
 
         return (
             <div className="center-it" style={{flexDirection: 'column', overflow: 'scroll'}}>
                 <Document file={this.props.file} onLoadSuccess={this.onDocumentLoadSuccess}>
-                    <Page pageNumber={currentPage} />
+                    <Page pageNumber={currentPageID} />
                 </Document>
 
                 <p>
-                    Page {currentPage} of {pages}
+                    Page {currentPageID} of {pages}
                 </p>
 
                 <div>
                     <button
                         placeholder="Previous"
                         title="Previous"
-                        disabled={this.state.currentPage === 1}
+                        disabled={this.state.currentPageID === 1}
                         onClick={this.previousPage}>
                         {' '}
                         &lt;
@@ -64,7 +64,7 @@ class PdfViewer extends React.Component<IPdfViewerProps, IPdfViewerState> {
                         style={{marginLeft: 5}}
                         placeholder="Next"
                         title="Next"
-                        disabled={this.state.currentPage + 1 > this.state.pages}
+                        disabled={this.state.currentPageID + 1 > this.state.pages}
                         onClick={this.nextPage}>
                         {' '}
                         &gt;

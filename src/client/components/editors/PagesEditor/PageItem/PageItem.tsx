@@ -7,25 +7,26 @@ import {DragHandle} from '../../../generic/Drag/DragHandle'
 import {DeleteForeverIcon} from '../../../generic/icons'
 
 interface IProps {
-    page: IPage
+    pageID: number
+    pageName: string
     onDeletePage: (pageID: number) => void
-    onPageChange: (page: IPage) => void
+    onPageChange: (pageID: number) => void
+    isPageDeletable: boolean
 }
 
 class PageItem extends React.Component<IProps> {
     render = () => {
-        const page = this.props.page
-        const {id, isDeletable = true} = this.props.page
+        const { pageID,  isPageDeletable,  pageName} = this.props
 
         return (
             <div className="page-and-button-controls">
                 <div className={'page-buttons'}>
                     <DragHandle/>
-                    {isDeletable && (
+                    {isPageDeletable && (
                         <button
                             className="delete-page-button"
                             title="Delete Page"
-                            onClick={() => this.props.onDeletePage(id)}>
+                            onClick={() => this.props.onDeletePage(pageID)}>
                             <DeleteForeverIcon/>
                         </button>
                     )}
@@ -36,11 +37,12 @@ class PageItem extends React.Component<IProps> {
                 </Link>*/}
               {/*  Dont change this to span or clicks wont go through*/}
 
-                {<button className="page-item-button" onClick={() => {
-                    this.props.onPageChange(page)
+              {/* the url is now changed   in the ui reducer*/}
+              {<button className="page-item-button" onClick={() => {
+                    this.props.onPageChange(pageID)
 
                 }}>
-                   {page.name}
+                   {pageName}
                 </button>}
             </div>
         )

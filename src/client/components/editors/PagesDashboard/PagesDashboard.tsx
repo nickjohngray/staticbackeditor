@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 import * as React from 'react'
 import {LocationProps, navigate, RouteComponentProps, Router} from '@reach/router'
+import {find} from 'tslint/lib/utils'
 import {IManifest, IPage, IObjectPath, IMoveNodeOrLeafToMethodWithPageId} from '../../../../shared/typings'
 import './PagesDashboard.css'
 import {Dispatch} from 'redux'
@@ -21,7 +22,7 @@ import {connect} from 'react-redux'
 import Loader from '../../pages/Loaders/OrbLoader/OrbLoader'
 import PageEditor from '../PageEditor/PageEditor'
 import {PagesEditor} from '../PagesEditor/PagesEditor'
-import {setCurrentPage} from '../../../redux/actions/ui.actions'
+import {seCurrentPageID} from '../../../redux/actions/ui.actions'
 import {isEqual} from 'lodash'
 import {findPageById} from '../../../util'
 
@@ -39,8 +40,8 @@ type IProps = RouteComponentProps & {
     updateObjectByPath: (page: IPage, text: string, objectPath: any[]) => void
     addObjectByPath: (page: IPage, jsonObject: object, objectPath: any[]) => void
     deleteObjectByPath: (page: IPage, objectPath: any[]) => void
-    setCurrentPage: (currentPage: IPage) => void
-    currentPage: IPage
+    setCurrentPageID: (currentPageID: number) => void
+    currentPageID: number
     location: LocationProps
 }
 
@@ -58,20 +59,8 @@ class PagesDashboard extends React.Component<IProps, IState> {
         }
     }
 
-
     render = () => {
-        // check if user hit reload browser store clear in this case
-        // there will be no page on edit so go to pages
-        if (!this.props.currentPage && this.props.location.pathname.indexOf('/pages/edit') !== -1) {
-            return (
-                <div>
-                    You web browser was reloaded , your current changes will be saved from your last edit, Please click
-                    Go To Pages button below and select that page again
-                    {this.props.location.pathname}
-                    <button onClick={() => navigate('/pages')}>Go To Pages</button>
-                </div>
-            )
-        }
+
 
         return (
             <div>
@@ -94,18 +83,18 @@ class PagesDashboard extends React.Component<IProps, IState> {
                         isSaved={this.props.isSaved}
                         onAddPage={this.props.addPage}
                         onDeletePage={this.props.deletePage}
-                        onPageChange={this.props.setCurrentPage}
+                        onPageChange={this.props.setCurrentPageID}
                         onMovePageTo={this.props.movePageTo}
                     />
 
-                    {this.props.currentPage ? (
+                    {this.props.currentPageID ? (
                         <PageEditor
                             products={this.props.manifest.products}
                             path="/:pageID"
                             onObjectChange={(value: string, objectPath) => this.updateObject(value, objectPath)}
                             onObjectAdd={(jsonObject: object, objectPath) => this.addObject(jsonObject, objectPath)}
                             onObjectDelete={(objectPath) => this.deleteObject(objectPath)}
-                            page={this.props.currentPage}
+                            page={ findPageById(this.props.currentPageID, this.props.manifest.pages)  }
                             onPageNameAndPathChange={this.props.updatePage}
                             // todo refactor below into one , only need one asset dir
                             assetDirectory={this.props.manifest.repoName}
@@ -115,18 +104,22 @@ class PagesDashboard extends React.Component<IProps, IState> {
                                     fromIndex,
                                     toIndex,
                                     objectPath,
-                                    this.props.currentPage.id,
+                                    this.props.currentPageID,
                                     fromField,
                                     toField
                                 )
                             }
                         />
-                    ) : <PathNotFound setCurrentPage={this.props.setCurrentPage}   default/>}
+                    ) : <PathNotFound setCurrentPageID={this.props.setCurrentPageID} default/>}
                 </Router>
             </div>
                 </div>
         )
     }
+
+    getcurrentPageID = () =>
+         findPageById(this.props.currentPageID, this.props.manifest.pages)
+
 
     pageExists = (pageName: string): boolean => {
         const page = this.getPage(pageName)
@@ -134,15 +127,15 @@ class PagesDashboard extends React.Component<IProps, IState> {
     }
 
     updateObject = (value: string, objectPath: IObjectPath) => {
-        this.props.updateObjectByPath(this.props.currentPage, value, objectPath)
+        this.props.updateObjectByPath(this.getcurrentPageID(), value, objectPath)
     }
 
     addObject = (jsonObject: object, objectPath: IObjectPath) => {
-        this.props.addObjectByPath(this.props.currentPage, jsonObject, objectPath)
+        this.props.addObjectByPath(this.getcurrentPageID(), jsonObject, objectPath)
     }
 
     deleteObject = (objectPath: IObjectPath) => {
-        this.props.deleteObjectByPath(this.props.currentPage, objectPath)
+        this.props.deleteObjectByPath(this.getcurrentPageID(), objectPath)
     }
 
     getPage = (pageName: string) =>
@@ -172,23 +165,25 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         ),
     deletePage: (pageID: number) => dispatch(deletePage(pageID)),
     triggerUndoableStart: () => dispatch(triggerUndoableStart()),
-    setCurrentPage: (currentPage: IPage) => dispatch(setCurrentPage(currentPage))
+    setCurrentPageID: (currentPageID: number) => dispatch(seCurrentPageID(currentPageID))
 })
 
 export default connect(
     (state: IStore) => ({
+        //manifest: state.manifest.manifest,
         manifest: state.manifest.present.manifest,
         isSaved: state.ui.isSaved,
+        //isBusy: state.manifest.isBusy,
         isBusy: state.manifest.present.isBusy,
-        currentPage: state.ui.currentPage,
-        currentPageURL: state.history.URL
+        currentPageID: state.ui.currentPageID,
+        currentPageIDURL: state.history.URL
     }),
     mapDispatchToProps
 )(PagesDashboard)
 
 
 type  IPathNotFound = {
-    setCurrentPage: (currentPage: IPage) => void
+    setCurrentPageID: (currentPageID: number) => void
 } & RouteComponentProps
 
 // go back to home if no current page setup
@@ -196,7 +191,7 @@ type  IPathNotFound = {
 export const PathNotFound = (props: IPathNotFound) => {
 
     useEffect( () => {
-        props.setCurrentPage(undefined)
+        props.setCurrentPageID(-1)
         setTimeout( () => {
             navigate('/')
         },100)
