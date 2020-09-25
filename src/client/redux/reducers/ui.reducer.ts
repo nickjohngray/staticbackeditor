@@ -55,7 +55,7 @@ const uiReducer = handleActions<IUI, any>(
                     draft.error = action.backendPayload.error
                 } else { // 3001[39m
                     const portWithRubbish = action.backendPayload.previewPort
-                    const portFixed = portWithRubbish.substring(0, 4)
+                    const portFixed = portWithRubbish // portWithRubbish.length > 5 ? portWithRubbish.substring(0, 4): portWithRubbish
 
                     draft.previewPort = parseInt(portFixed, 10)
 

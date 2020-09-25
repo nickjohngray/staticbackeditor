@@ -56,10 +56,9 @@ export const killPreview = async ( port: string) => {
         console.log('killing preview running on port : ' + port)
 
         return new Promise((resolve, reject) => {
-           // const cmd = `thefile=$(lsof -F cg -i :${port} -s TCP:LISTEN)`
-            //const cmd =  `lsof -F cg -i :3001 -s TCP:LISTEN`
 
-            const portFixed = port.substring(0, 4)
+           // const portFixed = port.substring(0, 4)
+            const portFixed = port //.substring(0, 4)
             const cmd =  `lsof -F cg -i :${portFixed} -s TCP:LISTEN`
             console.log('running:')
             console.log(cmd)
@@ -141,8 +140,8 @@ export const startUpPreviewRepo = async (repoName) => {
                     str = m.substring(idx + 1) // 3004
                     console.log('returning port number for preview ' + str)
 
-
-                    resolve(str)
+                    const portFixed = str.substring(0, 4)
+                    resolve(portFixed)
                 }
             })
 

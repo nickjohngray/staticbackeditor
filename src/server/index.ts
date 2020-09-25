@@ -17,6 +17,27 @@ import {publish} from './routes/publish'
 const app = express()
 const port = 8050
 // app.use(cors())
+
+
+interface IConfig  {
+    repoName: string
+    previewPort: number
+    timeStart: Date
+}
+
+declare global {
+    namespace NodeJS {
+        interface Global {
+            configs: IConfig[]
+        }
+    }
+}
+
+global.configs = []
+
+
+
+
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(express.static('dist'))

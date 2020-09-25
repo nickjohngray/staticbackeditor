@@ -27,16 +27,41 @@ router.post('/preview', async (req, res) => {
 
     try {
         console.log('Starting Preview for ' + repoName)
-      const previewPort =  await  startUpPreviewRepo(repoName)
-        if(previewPort) {
-            console.log('Preview ready for ' + repoName)
-            res.json({previewPort})
 
-            console.log('killing preview in 10 sec')
+        // if repo is already built return the preview port
+        const repoExists = global.configs.find( (c) =>  c.repoName === repoName)
+        if(repoExists && repoExists.previewPort) {
+            res.json({previewPort: repoExists.previewPort})
+            return
+        }
+
+        const previewPort =  await  startUpPreviewRepo(repoName) as string
+
+        if(previewPort) {
+
+            // remember the preview port
+            const repoExists = global.configs.find( (c) =>  c.repoName === repoName)
+            if(repoExists) {
+               // const portFixed : number =  parseInt( previewPort.substring(0, 4),10)
+                const portFixed : number =  parseInt( previewPort,10)
+                repoExists.previewPort = portFixed
+            } else {
+                throw 'repo must exists if we get in preview'
+            }
+
+            console.log('Preview ready for ' + repoName)
+
+            console.log('killing preview in  30 mins')
             setTimeout ( () => {
                 killPreview(previewPort as string)
-
+                const repoExists = global.configs.find( (c) =>  c.repoName === repoName)
+                repoExists.previewPort = undefined
+                console.log('30 mins up! Preview killed for ' + repoName)
             },1000 * 60 * 30) // 30 minds
+
+            res.json({previewPort})
+
+
 
         } else {
             throw 'error trying to load preview for ' + repoName

@@ -1,13 +1,10 @@
-import {globalHistory, HistoryListenerParameter, Router, navigate, LocationProps} from '@reach/router'
+import {Router, LocationProps} from '@reach/router'
 import React from 'react'
 import {connect} from 'react-redux'
 import {Dispatch} from 'redux'
-import {killPreview} from '../../../../server/routes/route-util'
-import {undo} from '../../../../server/routes/undo'
 import {changeURL} from '../../../redux/actions/history.action'
-import {IHistory, IManifest, IPage} from '../../../../shared/typings'
+import {IHistory, IManifest} from '../../../../shared/typings'
 import {clearPreviewPort, preview} from '../../../redux/actions/ui.actions'
-import PageEditor from '../../editors/PageEditor/PageEditor'
 import PagesDashboard from '../../editors/PagesDashboard/PagesDashboard'
 import './Layout.css'
 import {GoLiveIcon, LogoutIcon, PreviewIcon, RedoIcon, SaveIcon, UndoIcon, ViewLiveIcon} from '../../generic/icons'
@@ -16,12 +13,10 @@ import Loader from '../Loaders/OrbLoader/OrbLoader'
 import {NotFound} from '../NotFound'
 import store, {IStore} from '../../../redux/store'
 import Login from '../Login/Login'
-import {isEqual} from 'lodash'
 import {
     publish,
     saveManifest,
-    setAnyTopLevelProperty,
-    triggerUndoableStart
+    setAnyTopLevelProperty
 } from '../../../redux/actions/manifest.action'
 import {ActionCreators, ActionCreators as UndoActionCreators} from 'redux-undo'
 import ContentToggler from '../../generic/ContentToggler/ContentToggler'
@@ -62,6 +57,7 @@ interface ILink {
 
 class Layout extends React.Component<IProps, IState> {
     windowObjectReference = null
+    previewPort = null
 
     constructor(props) {
         super(props)
@@ -75,63 +71,41 @@ class Layout extends React.Component<IProps, IState> {
         }
     }
 
-    openAppPreview = (portNumber: number = undefined) => {
-        if (!portNumber) {
-            if (!this.props.previewPort) {
-                this.props.preview(this.props.manifest)
-                return
-            }
-        }
-
-        const isDev: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-        // todo this port must
-        const port = portNumber || this.props.previewPort //  isDev ? 3001 : 300
-        // window.open (window.location.hostname + ':3001')
+    openAppPreview = () => {
+        const port = this.previewPort
+        this.previewPort = undefined
         const width = screen.availWidth
         const height = screen.availHeight
 
-        // if (!this.windowObjectReference || this.windowObjectReference.closed) {
         let url = window.location.protocol + '//' + window.location.hostname + ':' + port
 
         if (this.props.currentPageID !== -1) {
-            // add a / after current page to pop window with current page if there is one
-            url += '/' +  findPageById(this.props.currentPageID, this.props.manifest.pages).path
+            url += '/' + findPageById(this.props.currentPageID, this.props.manifest.pages).path
         }
-
-        this.windowObjectReference = window.open(url,
-            this.props.manifest.appName,
-            'resizable,width=' + width + 'height=' + height
-        )
-        // this.windowObjectReference.location.reload()
-        this.windowObjectReference.onClose = () => {
-            this.windowObjectReference = null
+        if (!this.windowObjectReference || this.windowObjectReference.closed) {
+            this.windowObjectReference = window.open(url,
+                this.props.manifest.appName,
+                'resizable,width=' + width + 'height=' + height
+            )
+            this.windowObjectReference.onClose = () => {
+                this.windowObjectReference = null
+            }
+        } else {
+            this.windowObjectReference.location.href = url
         }
-
         this.windowObjectReference.focus()
     }
 
     componentDidMount = () =>
         store.dispatch(ActionCreators.clearHistory())
 
-
     componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any) {
-       // this occurs when the user hits the preview button for first time
-        // and backend returns the preview port
-        if (nextProps.previewPort !== this.props.previewPort) {
-            this.openAppPreview(nextProps.previewPort)
-
-            // kill preview port after 30 mins
-            // it is also killed on backend to save memory
-            // and we dont want several instances running of the clients repo
-                console.log('killing preview in 10 sec')
-                setTimeout(() => {
-                    this.props.clearPreviewPort()
-                /*}, 5000) // 30 minds*/
-                 },1000 * 60 * 30) // 30 minds
-
+        if (nextProps.previewPort && nextProps.previewPort !== this.props.previewPort) {
+            this.previewPort = nextProps.previewPort
+            this.props.clearPreviewPort()
+            this.openAppPreview()
 
         }
-
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -156,7 +130,10 @@ class Layout extends React.Component<IProps, IState> {
                 {this.props.isBusy && <Loader/>}
                 <header>
                     <div className="undo_redo_save_container">
-                        <button title="Preview" onClick={() => this.openAppPreview()}><PreviewIcon/></button>
+                        <button title="Preview" onClick={() => {
+                            this.previewPort = undefined
+                            this.props.preview(this.props.manifest)
+                        }}><PreviewIcon/></button>
                         <button title="Save"
                             /*  to do control below when app knows if its dirty or not*/
                             /* disabled={this.props.isSaved}*/
@@ -249,15 +226,14 @@ export default connect(
         isSaved: state.ui.isSaved,
         currentPageID: state.ui.currentPageID,
         isDebug: state.ui.isDebug,
-
-      /*  manifest: state.manifest.manifest,
-        undoableCount: 0,
-        isUndoable: false,
-        isRedoable: false,
-        redoableCount:0,
-        error: state.manifest.error,
-        isBusy: state.manifest.isBusy || state.ui.isBusy,*/
-
+        // to debug without undoable add this and remove other matching fields
+        /*  manifest: state.manifest.manifest,
+          undoableCount: 0,
+          isUndoable: false,
+          isRedoable: false,
+          redoableCount:0,
+          error: state.manifest.error,
+          isBusy: state.manifest.isBusy || state.ui.isBusy,*/
         manifest: state.manifest.present.manifest,
         undoableCount: state.manifest.past.length,
         isUndoable: state.manifest.past.length > 0,
@@ -265,7 +241,6 @@ export default connect(
         redoableCount: state.manifest.future.length,
         error: state.manifest.present.error,
         isBusy: state.manifest.present.isBusy || state.ui.isBusy,
-
 
         previewPort: state.ui.previewPort
 

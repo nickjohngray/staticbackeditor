@@ -25,6 +25,7 @@ router.post('/login', async (req, res) => {
         return
     }
     try {
+
         const client = await openConnection()
         const userInfo = await getUserInfo(client, email, pwd)
         if (!userInfo) {
@@ -73,17 +74,21 @@ router.post('/login', async (req, res) => {
         }
 
         // install node modules if they not been
-        if (await fs.existsSync( path.join( userInfo.repo, 'node_modules') )) {
-           console.log(' node modules already installed')
-            res.json(manifest)
+        if (await fs.existsSync(path.join(userInfo.repo, 'node_modules'))) {
+            console.log(' node modules already installed')
         } else {
             console.log('installing node modules')
             await installNodeModulesForRepo(repoName)
-            res.json(manifest)
+
+        }
+        const repoExists = global.configs.find( (c) =>  c.repoName === repoName)
+        if(!repoExists) {
+            global.configs.push({repoName: repoName, timeStart: new Date(), previewPort: undefined})
+        } else {
+            repoExists.timeStart = new Date()
         }
 
-
-
+        res.json(manifest)
 
     } catch (error) {
         dumpError(error)
