@@ -64,7 +64,7 @@ export const RTElement = (props) => {
             return <h5 {...attributes}>{children}</h5>
         case 'heading-six':
             return <h6 {...attributes}>{children}</h6>
-        case 'alignLeft':
+      /*  case 'alignLeft':
         case 'alignRight':
         case 'alignCenter':
         case 'alignJustify': {
@@ -80,7 +80,7 @@ export const RTElement = (props) => {
             }
             return <div style={{width: '100%', textAlign: align}} {...attributes}>{children}</div>
         }
-
+*/
         case 'list-item':
             return <li {...attributes}>{children}</li>
         case 'numbered-list':

@@ -21,6 +21,18 @@ export const RTLeaf = ({attributes, children, leaf}) => {
     const selected = useSelected()
     const focused = useFocused()
 
+    if (leaf.align ) {
+        /*let align: any  = 'left'
+        if(leaf.alignRight) {
+            align = 'right'
+        } else if( leaf.alignCenter) {
+            align = 'center'
+        } else if( leaf.alignJustify){
+            align = 'justify'
+        }*/
+        children = <div style={{width:'100%', textAlign:leaf.align}}>{children}</div>
+    }
+
    /* if (leaf.alignLeft || leaf.alignRight || leaf.alignCenter || leaf.alignJustify ) {
         let align: any  = 'left'
         if(leaf.alignRight) {

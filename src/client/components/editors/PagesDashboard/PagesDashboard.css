@@ -78,19 +78,17 @@
     -webkit-writing-mode: horizontal-tb !important;
 }
 
-.content-and-ma{
+.content-and-ma {
     display: flex;
     flex-direction: column;
-
 }
+
 .logo {
-/*background-color: black;*/
+    left: 0;
+    opacity: 0.05;
+
+    /* background-color: black; */
     position: absolute;
-    top:0;
-    left:0;
-    opacity: .05;
+    top: 0;
     z-index: -1;
-
-
-
 }

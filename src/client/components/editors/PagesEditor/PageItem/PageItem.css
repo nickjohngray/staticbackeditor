@@ -34,16 +34,17 @@
 .page-and-button-controls a:hover {
     opacity: 1;
 }
+
 .page-item-button {
-    display: flex;
     align-self: center;
-    flex-direction: row;
-    padding: 0px;
-    margin: 0px;
-    outline: none;
-    flex-grow: 3;
     border: none;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 3;
     font-size: 20px;
     font-weight: 800;
+    margin: 0;
     margin-left: 10px;
+    outline: none;
+    padding: 0;
 }

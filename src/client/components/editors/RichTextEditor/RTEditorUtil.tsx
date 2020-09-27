@@ -14,6 +14,8 @@ export type OrNull<T> = T | null
 export interface IRTButton {
     format: string | {}
     Icon: any
+    disableButtons?: {}
+    value?: string
 }
 
 type IButton = PropsWithChildren<
@@ -169,18 +171,18 @@ export const isBlockActive = (editor, format) => {
     return !!match
 }
 
-export const isMarkActive = (editor, format) => {
+export const isMarkActive = (editor, format, value: string | boolean) => {
     const marks = Editor.marks(editor)
-    return marks ? marks[format] === true : false
+    return marks ? marks[format] === value : false
 }
 
-export const toggleMark = (editor, format) => {
-    const isActive = isMarkActive(editor, format)
+export const toggleMark = (editor, format, value: boolean | string = true) => {
+    const isActive = isMarkActive(editor, format, value)
 
     if (isActive) {
         Editor.removeMark(editor, format)
     } else {
-        Editor.addMark(editor, format, true)
+        Editor.addMark(editor, format, value)
     }
 }
 

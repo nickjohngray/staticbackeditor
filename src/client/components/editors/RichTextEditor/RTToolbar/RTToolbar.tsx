@@ -2,6 +2,7 @@ import React, {PropsWithChildren, Ref} from 'react'
 import {IBaseProps, Menu, OrNull} from '../RTEditorUtil'
 import {RTMarkButton} from './RTMarkButton'
 import './RTToolbar.css'
+import {cloneDeep} from 'lodash'
 
 import {
     AlignCenterIcon, AlignJustifyIcon,
@@ -18,16 +19,23 @@ import {
 } from '../../../generic/icons'
 import {RTBlockButton} from './RTBlockButton'
 
+const align = {
+    alignLeft: 'left',
+    alignRight: 'right',
+    alignCenter: 'center',
+    alignJustify: 'justify'
+}
+
 export const RTToolbar = React.forwardRef(
     (props: PropsWithChildren<IBaseProps>, ref: Ref<OrNull<HTMLDivElement>>) => (
         <Menu
             {...props}
             ref={ref}
             className="rte-toolbar">
-            <RTBlockButton format="alignLeft" Icon={AlignLeftIcon}/>
-            <RTBlockButton format="alignCenter" Icon={AlignCenterIcon}/>
-            <RTBlockButton format="alignRight" Icon={AlignRightIcon}/>
-            <RTBlockButton format="alignJustify" Icon={AlignJustifyIcon}/>
+            <RTMarkButton format={'align'} value={align.alignLeft} disableButtons={   cloneDeep(align) } Icon={AlignLeftIcon}/>
+            <RTMarkButton format={'align'} value={align.alignCenter} disableButtons={align} Icon={AlignCenterIcon}/>
+            <RTMarkButton format={'align'} value={align.alignRight} disableButtons={align} Icon={AlignRightIcon}/>
+            <RTMarkButton format={'align'} value={align.alignJustify} disableButtons={align} Icon={AlignJustifyIcon}/>
             <RTMarkButton format="bold" Icon={FormatBoldIcon}/>
             <RTMarkButton format="italic" Icon={FormatItalicIcon}/>
             <RTMarkButton format="underline" Icon={FormatUnderlinedIcon}/>
