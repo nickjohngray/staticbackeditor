@@ -12,7 +12,7 @@ export interface IBaseProps {
 export type OrNull<T> = T | null
 
 export interface IRTButton {
-    format: string
+    format: string | {}
     Icon: any
 }
 

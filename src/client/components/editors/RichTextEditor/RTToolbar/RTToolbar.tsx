@@ -4,6 +4,8 @@ import {RTMarkButton} from './RTMarkButton'
 import './RTToolbar.css'
 
 import {
+    AlignCenterIcon, AlignJustifyIcon,
+    AlignLeftIcon, AlignRightIcon,
     CodeIcon,
     FormatBoldIcon,
     FormatItalicIcon,
@@ -21,7 +23,11 @@ export const RTToolbar = React.forwardRef(
         <Menu
             {...props}
             ref={ref}
-            className='rte-toolbar'>
+            className="rte-toolbar">
+            <RTBlockButton format="alignLeft" Icon={AlignLeftIcon}/>
+            <RTBlockButton format="alignCenter" Icon={AlignCenterIcon}/>
+            <RTBlockButton format="alignRight" Icon={AlignRightIcon}/>
+            <RTBlockButton format="alignJustify" Icon={AlignJustifyIcon}/>
             <RTMarkButton format="bold" Icon={FormatBoldIcon}/>
             <RTMarkButton format="italic" Icon={FormatItalicIcon}/>
             <RTMarkButton format="underline" Icon={FormatUnderlinedIcon}/>

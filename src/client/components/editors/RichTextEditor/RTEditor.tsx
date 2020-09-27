@@ -15,6 +15,7 @@ import {withHtml} from './withHtml'
 import {RTElement} from './RTElement'
 import {RTLeaf} from './RTLeaf'
 import './website.css'
+import { AlignmentPlugin, AlignmentButtonBar } from '@slate-editor/alignment-plugin'
 
 interface IProps {
     data: INode[]
@@ -23,6 +24,10 @@ interface IProps {
     isReadOnly?: boolean
     style?: {}
 }
+
+const plugins = [
+    AlignmentPlugin()
+]
 
 const RTEditor = ({data, onBlur, onChange, isReadOnly = false, style}: IProps) => {
     const [value, setValue] = useState<INode[]>(data)
@@ -33,6 +38,7 @@ const RTEditor = ({data, onBlur, onChange, isReadOnly = false, style}: IProps) =
     return (
         <div className="rteContainer" style={style}>
             <Slate
+
                 className="rteSlate"
                 editor={editor}
                 value={value}
@@ -45,6 +51,7 @@ const RTEditor = ({data, onBlur, onChange, isReadOnly = false, style}: IProps) =
                 {!isReadOnly && <RTToolbar className="rteToolbar" />}
 
                 <Editable
+
                     readOnly={isReadOnly}
                     onBlur={() => {
                         console.log(value)

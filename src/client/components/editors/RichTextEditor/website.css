@@ -1,8 +1,7 @@
+/*
 .w.a {
     color: #108db8;
     text-decoration: none;
-
-    /* font-weight: bold; */
 }
 
 .w-h1 {
@@ -44,8 +43,6 @@
 .w-a {
     color: #108db8;
     text-decoration: none;
-
-    /* font-weight: bold; */
 }
 
 .social-icons {
@@ -72,8 +69,7 @@
     align-self: center;
 }
 
-/*
-"className": "w-center-text w-social-icons", */
+
 .center-div {
     margin: auto;
     width: 50%;
@@ -86,6 +82,4 @@
     text-align: center;
 }
 
-/* align-items: start;
-align-self: center;
-display: flex; */
+*/

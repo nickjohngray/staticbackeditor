@@ -21,46 +21,28 @@ export const RTLeaf = ({attributes, children, leaf}) => {
     const selected = useSelected()
     const focused = useFocused()
 
-    if (leaf.type === 'linkWithIcon') {
-        if (!faIcons[leaf.icon]) {
-            throw new Error('tried to make fa icon but ' + leaf.icon + ' is not supported')
+   /* if (leaf.alignLeft || leaf.alignRight || leaf.alignCenter || leaf.alignJustify ) {
+        let align: any  = 'left'
+        if(leaf.alignRight) {
+            align = 'right'
+        } else if( leaf.alignCenter) {
+            align = 'center'
+        } else if( leaf.alignJustify){
+            align = 'justify'
         }
+        children = <div style={{width:'100%', textAlign:align}}>{children}</div>
+    }*/
 
-        children = (
-            <a className="w-a" href={leaf.href} placeholder={leaf.placeholder}>
-                <FontAwesomeIcon size={leaf.size} icon={faIcons[leaf.icon]} />
-                <span>{leaf.text}</span>
-            </a>
-        )
+    /*if (leaf.alignRight) {
+        children = <div style={{width:'100%',textAlign:'right'}}>{children}</div>
     }
-    /*if (leaf.type === 'pdf') {
-        children = (
-            <img
-                contentEditable={false}
-                className={css`
-                    display: block;
-                    margin: AUTO;
-                    width: 50%;
-                    box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
-                `}
-                style={{width: '100px', objectFit: 'contain'}}
-                src={pdfIconSrc}
-            />
-            <div>
-                <img style={{width: '100px', objectFit: 'contain'}} src={pdfIconSrc} alt={'pdf-' + leaf.file} />
-                <span>{leaf.file}</span>
-            </div>
-        )
+    if (leaf.alignCenter) {
+        children = <div style={{width:'100%',textAlign:'center'}}>{children}</div>
     }
+    if (leaf.alignJustify) {
+        children = <div style={{width:'100%',textAlign:'justify'}}>{children}</div>
+    }*/
 
-        const lastSlash = leaf.file.lastIndexOf('/')
-        if (lastSlash === -1) {
-            throw "can't build pdf viewer , could not find last slash in" + leaf.file
-        }
-        const fixedPath = '/pdf' + leaf.file.substring(lastSlash)
-        children = <PdfViewer file={fixedPath}> </PdfViewer>
-
-    } */
     if (leaf.br) {
         children = <br />
     }

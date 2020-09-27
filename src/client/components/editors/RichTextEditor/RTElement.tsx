@@ -1,79 +1,14 @@
 /* tslint:disable:no-parameter-reassignment*/
-import {faFacebook, faGoogle, faInstagram} from '@fortawesome/free-brands-svg-icons'
 import {RTImageElement} from './RTImageElement'
 import React from 'react'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import PdfViewer from '../../generic/PdfViewer'
-import {Document, Page} from 'react-pdf'
-import {Transforms, createEditor, Node} from 'slate'
-import {useEditor, ReactEditor, useSelected, useFocused, useReadOnly} from 'slate-react'
-import {css} from 'emotion'
-
-// const pdfIconSrc = require('./../../../assets/images/pdf_icon.png')
+import {useReadOnly} from 'slate-react'
 
 export const RTElement = (props) => {
     const {attributes, children, element} = props
-    /*return <QuoteElement {...props} />*/
-
-    // return <FontAwesomeIcon size="1x" icon={faGoogle} />
 
     switch (element.type) {
         default:
             return <span {...attributes}>{children}</span>
-        /*case 'pdf':
-            const lastSlash = element.file.lastIndexOf('/')
-            if (lastSlash === -1) {
-                throw new Error("can't build pdf viewer , could not find last slash in" + element.file)
-            }
-            const fixedPath = '/easyecom' + element.file.substring(lastSlash)
-            /!* return (
-                <>
-                    <img style={{width: '100px', objectFit: 'contain'}} src={pdfIconSrc} alt={'pdf-' + fixedPath} />
-                    <span>{element.file}</span>
-                </>
-            )*!/
-
-            const selected = useSelected()
-            const focused = useFocused()
-            return (
-                <div {...attributes}>
-                    <div contentEditable={false}>
-                        <img
-                            {...attributes}
-                            className={css`
-                                display: block;
-                                margin: AUTO;
-                                width: 50%;
-                                box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
-                            `}
-                            style={{width: '100px', objectFit: 'contain'}}
-                            src={pdfIconSrc}
-                        />
-                    </div>
-                    {children}
-                    {/!* <PdfViewer file={fixedPath} />*!/}
-                </div>
-            )*/
-
-        /* return (
-                <PdfViewer isDisabled file={fixedPath} {...attributes}>
-                    {children}
-                </PdfViewer>
-            )*/
-
-        /* const lastSlash = element.file.lastIndexOf('/')
-            if (lastSlash === -1) {
-                throw new Error("can't build pdf viewer , could not find last slash in" + element.file)
-            }
-            const fixedPath = '/pdf' + element.file.substring(lastSlash)
-            return <PdfElement {...{attributes, children, element: {...element, url: fixedPath}}} />*/
-        /*return (
-                <Document file={fixedPath} onLoadSuccess={this.onDocumentLoadSuccess}>
-                    <Page pageNumber={1} />
-                </Document>
-            )*/
-
-        /*  PdfViewer file={fixedPath}> </PdfViewer>*/
         case 'div':
         case 'richText':
             return (
@@ -129,6 +64,23 @@ export const RTElement = (props) => {
             return <h5 {...attributes}>{children}</h5>
         case 'heading-six':
             return <h6 {...attributes}>{children}</h6>
+        case 'alignLeft':
+        case 'alignRight':
+        case 'alignCenter':
+        case 'alignJustify': {
+            let align: any = 'left'
+            if(element.type) {
+                if (element.type === 'alignRight') {
+                    align = 'right'
+                } else if (element.type === 'alignCenter') {
+                    align = 'center'
+                } else if (element.type === 'alignJustify') {
+                    align = 'justify'
+                }
+            }
+            return <div style={{width: '100%', textAlign: align}} {...attributes}>{children}</div>
+        }
+
         case 'list-item':
             return <li {...attributes}>{children}</li>
         case 'numbered-list':
@@ -142,33 +94,4 @@ export const RTElement = (props) => {
         case 'image':
             return <RTImageElement {...props} />
     }
-}
-
-const PdfElement = ({attributes, children, element}) => {
-    const editor = useEditor()
-    const {url} = element
-    return (
-        <div {...attributes}>
-            <div contentEditable={false}>
-                <div
-                    style={{
-                        padding: '75% 0 0 0',
-                        position: 'relative'
-                    }}>
-                    <iframe
-                        src={`${url}?title=0&byline=0&portrait=0`}
-                        frameBorder="0"
-                        style={{
-                            position: 'absolute',
-                            top: '0',
-                            left: '0',
-                            width: '100%',
-                            height: '100%'
-                        }}
-                    />
-                </div>
-            </div>
-            {children}
-        </div>
-    )
 }
