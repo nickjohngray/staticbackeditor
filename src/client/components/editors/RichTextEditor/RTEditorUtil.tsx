@@ -14,8 +14,8 @@ export type OrNull<T> = T | null
 export interface IRTButton {
     format: string | {}
     Icon: any
-    disableButtons?: {}
-    value?: string
+    value?: string,
+    onClick?: () => void
 }
 
 type IButton = PropsWithChildren<

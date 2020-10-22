@@ -3,8 +3,10 @@ import {useSlate} from 'slate-react'
 import {IRTButton, isMarkActive, toggleMark} from '../RTEditorUtil'
 import React from 'react'
 import {css, cx} from 'emotion'
+import { SketchPicker } from 'react-color'
+import {ColorPicker} from './ColorPicker/ColorPicker'
 
-export const RTMarkButton = ({format, Icon, disableButtons = {}, value}: IRTButton) => {
+export const RTMarkButton = ({format, Icon, value, onClick}: IRTButton) => {
     const editor = useSlate()
     const isActive = isMarkActive(editor, format, value)
 
@@ -12,15 +14,14 @@ export const RTMarkButton = ({format, Icon, disableButtons = {}, value}: IRTButt
         <span
             onMouseDown={(event) => {
                 event.preventDefault()
-                toggleMark(editor, format, value)
-
-               /* const disableButtonKeys = Object.keys( disableButtons)
-
-                disableButtonKeys.forEach((key) => {
-                    if(key === format) return
-                    Editor.addMark(editor, key, false)
-                })
-*/
+                /*if( format === 'color' ) {
+                    return <ColorPicker />
+                }*/
+                if(!onClick) {
+                    toggleMark(editor, format, value)
+                } else {
+                    onClick()
+                }
 
             }}>
             <Icon

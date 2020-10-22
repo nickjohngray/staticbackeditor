@@ -100,7 +100,7 @@ export class PagesEditor extends React.Component<IProps, IState> {
                 <PageItem key={page.id + '-' + key}
                           pageName={page.name}
                           pageID={page.id}
-                          isPageDeletable={page.isDeletable}
+                          isPageDeletable={!page.isDeletable === false}
                           onPageChange={this.props.onPageChange}
                           onDeletePage={this.props.onDeletePage}
                 />

@@ -20,16 +20,10 @@ export const RTLeaf = ({attributes, children, leaf}) => {
     // return <FontAwesomeIcon size="1x" icon={faGoogle} />
     const selected = useSelected()
     const focused = useFocused()
-
+    if (leaf.color ) {
+        children = <span style={{color:leaf.color}}>{children}</span>
+    }
     if (leaf.align ) {
-        /*let align: any  = 'left'
-        if(leaf.alignRight) {
-            align = 'right'
-        } else if( leaf.alignCenter) {
-            align = 'center'
-        } else if( leaf.alignJustify){
-            align = 'justify'
-        }*/
         children = <div style={{width:'100%', textAlign:leaf.align}}>{children}</div>
     }
 

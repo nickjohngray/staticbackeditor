@@ -1,0 +1,16 @@
+.colorPickerContainer {
+    background-color: #00000021;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10000000;
+}
+
+.colorPicker {
+    align-items: center;
+    left: 10%;
+    position: absolute;
+    top: 10%;
+}

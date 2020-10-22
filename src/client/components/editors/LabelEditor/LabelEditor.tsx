@@ -153,9 +153,8 @@ class LabelEditor extends React.Component<IProps, IState> {
         this.setState({value: event.target.value})
     }
 
-
     toggleEditMode = () => {
-        const isEditMode = !this.state.isEditMode
+        const isEditMode =  true // !this.state.isEditMode
         this.setState({isEditMode})
     }
 
