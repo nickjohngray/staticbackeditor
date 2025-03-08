@@ -35,7 +35,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/redux-actions": "^2.6.1",
     "add": "^2.0.6",
-    "axios": "^0.19.2",
+    "axios": "^1.8.2",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
